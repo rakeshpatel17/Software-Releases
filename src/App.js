@@ -24,8 +24,11 @@ function AppRoutes({ isLoggedIn, handleLoginSuccess, handleLogout }) {
 
   return (
     <Routes>
-      {/* Public Route */}
-      <Route path="/login" element={<Login onLoginSuccess={onLoginSuccess} />} />
+      {/* Public Route - redirect to dashboard if already logged in */}
+      <Route 
+        path="/login" 
+        element={isLoggedIn ? <Navigate to="/dashboard" /> : <Login onLoginSuccess={onLoginSuccess} />} 
+      />
 
       {/* Protected Route */}
       <Route
