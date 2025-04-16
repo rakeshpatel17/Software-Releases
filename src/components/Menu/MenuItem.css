@@ -1,0 +1,24 @@
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    color: #34495e;
+    transition: background-color 0.3s ease;
+  }
+  
+  .menu-item:hover {
+    background-color: #ecf0f1;
+  }
+  
+  .menu-item-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 0.75rem;
+  }
+  
+  .menu-item-name {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  

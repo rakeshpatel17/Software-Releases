@@ -23,6 +23,7 @@ function AppRoutes({ isLoggedIn, handleLoginSuccess, handleLogout }) {
   };
 
   return (
+    <>
     <Routes>
       {/* Public Route - redirect to dashboard if already logged in */}
       <Route 
@@ -43,6 +44,7 @@ function AppRoutes({ isLoggedIn, handleLoginSuccess, handleLogout }) {
       {/* Redirect any unknown routes */}
       <Route path="*" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
     </Routes>
+    </>
   );
 }
 
