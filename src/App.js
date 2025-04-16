@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useState} from "react";
 import Login from "./components/Login";
-import Dashboard from "./components/Dashboard";
+import Dashboard from "./pages/Dashboard";
 
 // PrivateRoute component: checks if authenticated
 function PrivateRoute({ isAuthenticated, children }) {
