@@ -9,7 +9,7 @@ function SubHeading({ name }) {
     <h3 className="subheading">{name}</h3>
     </>
   );
-}
+} 
 
 SubHeading.propTypes = {
   name: PropTypes.string.isRequired,

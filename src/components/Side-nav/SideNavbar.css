@@ -1,0 +1,14 @@
+/* SideNavbar.css */
+.side-navbar {
+    width: 250px;
+    background-color: #fff;
+    border-right: 1px solid #e0e0e0;
+    height: 100vh;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+  
+  .menu {
+    margin-top: 1rem;
+  }
+  

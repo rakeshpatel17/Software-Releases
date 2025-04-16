@@ -1,0 +1,60 @@
+/* Container for both link and dropdown mode */
+.menu-item-container {
+  position: relative;
+}
+
+/* The clickable area (link or dropdown toggle) */
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  color: #34495e;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.menu-item:hover {
+  background-color: #ecf0f1;
+}
+
+.menu-item-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 0.75rem;
+}
+
+.menu-item-name {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Transparent link overlay for direct links */
+.menu-item-link-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-decoration: none;
+  z-index: 1;
+}
+
+/* Dropdown container styles */
+.dropdown-container {
+  background-color: #f9f9f9;
+  border-left: 2px solid #dcdcdc;
+  margin-left: 1.5rem;
+  padding-left: 1rem;
+  margin-top: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+/* Optional: simple fade-in animation for dropdown */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
