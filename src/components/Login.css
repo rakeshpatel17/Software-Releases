@@ -17,7 +17,7 @@ body, html {
   
   .login-box {
     display: flex;
-    width: 1000px; /* Increased from 800px */
+    width: 1000px; 
     height: 550px;
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
     border-radius: 12px;
@@ -28,10 +28,10 @@ body, html {
   .login-image {
     width: 50%;
     height: 100%;
-    background-size: contain;      /* Ensures image fits without stretching */
+    background-size: contain;      
     background-position: center;
     background-repeat: no-repeat;
-    background-color: #092156;        /* Optional: Add background color for contrast */
+    background-color: #092156;        
   }
   
   .login-form-section {
@@ -49,4 +49,41 @@ body, html {
     font-weight: bold;
     color: #333;
   }
+
+
+
+@media (max-width: 992px) {
+  .login-box {
+    width: 90%;
+    height: auto;
+    flex-direction: column;
+  }
+
+  .login-image {
+    width: 100%;
+    height: 250px;
+    background-size: cover;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .login-form-section {
+    width: 100%;
+    padding: 30px;
+  }
+}
+
+@media (max-width: 576px) {
+  .login-title {
+    font-size: 1.5rem;
+  }
+
+  .login-form-section {
+    padding: 20px;
+  }
+
+  .login-box {
+    border-radius: 8px;
+  }
+}
+
   

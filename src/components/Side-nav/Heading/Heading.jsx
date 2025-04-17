@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './Heading.css'; // custom CSS for styling
 
-
 const Heading = ({ link, name }) => {
   return (
     <div className="heading-container">
@@ -13,7 +12,7 @@ const Heading = ({ link, name }) => {
 };
 
 Heading.propTypes = {
-  link: PropTypes.string.isRequired,
+  icon: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
 };
 

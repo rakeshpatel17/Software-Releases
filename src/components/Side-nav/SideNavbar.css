@@ -1,14 +1,61 @@
-/* SideNavbar.css */
 .side-navbar {
-    width: 250px;
-    background-color: #fff;
-    border-right: 1px solid #e0e0e0;
-    height: 100vh;
-    padding: 1rem;
-    box-sizing: border-box;
+  width: 250px;
+  height: 100vh;
+  background-color: #d5ddeb;
+  border-right: 1px solid #20338b;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.03);
+}
+
+.side-navbar-header {
+  padding: 0 20px 20px;
+  /* border-bottom: 1px solid #161616; */
+}
+
+.side-navbar-content {
+  padding: 20px 0;
+  flex-grow: 1;
+}
+
+.hamburger {
+  display: none;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 1100;
+  transition: left 0.3s ease-in-out;
+}
+
+.hamburger.sidebar-open {
+  left: 260px; /* Sidebar width (250px) + 10px padding */
+}
+
+@media (min-width: 769px) {
+  .hamburger {
+    display: none;
   }
-  
-  .menu {
-    margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
   }
-  
+
+  .side-navbar {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    transition: left 0.3s ease-in-out;
+    z-index: 1000;
+  }
+
+  .side-navbar.open {
+    left: 0;
+  }
+}
