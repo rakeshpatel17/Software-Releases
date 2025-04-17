@@ -41,13 +41,24 @@
   
   .card-badge {
     display: inline-block;
-    background-color: #3498db;
     color: #fff;
     padding: 0.25rem 0.75rem;
     border-radius: 50px;
     font-size: 0.75rem;
     margin-bottom: 0.5rem;
   }
+  .card-badge.verified {
+    background-color: #2ecc71; /* green */
+  }
+  
+  .card-badge.new {
+    background-color: #3498db; /* blue */
+  }
+  
+  .card-badge.rejected {
+    background-color: #e74c3c; /* red */
+  }
+  
   
   .card-children {
     margin-top: 0.5rem;

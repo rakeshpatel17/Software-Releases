@@ -47,7 +47,18 @@
 }
 
 .dashboard-main {
-  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+
+.card-scrollable {
+  overflow-y: auto;
+  flex-grow: 1;
+  padding: 0 10px 20px 10px; /* Added bottom padding to prevent last card from being cut off */
+  box-sizing: border-box;
 }
 
 .card-grid {

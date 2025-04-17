@@ -10,7 +10,8 @@ const Card = ({ info, className = '', children, ...rest }) => {
       {image && <img src={image} alt={title} className="card-image" />}
 
       <div className="card-body">
-        {badge && <span className="card-badge">{badge}</span>}
+      {badge && (
+        <span className={`card-badge ${badge.toLowerCase()}`}>{badge}</span>)}
         <h3 className="card-title">{title}</h3>
         <p className="card-description">{description}</p>
         {children && <div className="card-children">{children}</div>}
