@@ -16,6 +16,14 @@ function MenuItem({ iconClass, name, hyperlink, data }) {
         {/* Bootstrap icon */}
         <i className={`menu-item-icon ${iconClass}`}></i>
         <span className="menu-item-name">{name}</span>
+        {/* Dropdown arrow for expandable items */}
+        {data && (
+          <i
+            className={`dropdown-arrow bi ${
+              isOpen ? 'bi-chevron-up' : 'bi-chevron-down'
+            }`}
+          ></i>
+        )}
       </div>
 
       {data && isOpen && (

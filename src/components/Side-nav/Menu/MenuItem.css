@@ -27,3 +27,14 @@
 .menu-item-name {
   font-size: 14px;
 }
+
+.dropdown-arrow {
+  font-size: 14px;
+  color: #333;
+  transition: transform 0.3s ease;
+  margin-left: auto;
+}
+ 
+.dropdown-arrow.rotate {
+  transform: rotate(90deg);
+}
