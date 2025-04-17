@@ -20,7 +20,7 @@ function TopNavbar({ onSearch, onLogout }) {
   }, []);
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div className='dashboard-header'>
       <input
         type="text"
         placeholder="Search..."
