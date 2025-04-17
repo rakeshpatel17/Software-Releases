@@ -1,21 +1,19 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import './DropdownItem.css'
+import './DropdownItem.css';
 
-function DropdownItem({ icon, name, hyperlink }) {
+function DropdownItem({ iconClass, name, hyperlink }) {
   return (
-    <>
-        <a href={hyperlink} className="dropdown-item">
-        <img src={icon} alt={`${name} icon`} className="dropdown-item-icon" />
-        <span className="dropdown-item-name">{name}</span>
-        </a>
-    </>
+    <a href={hyperlink} className="dropdown-item">
+      <i className={`dropdown-item-icon ${iconClass}`}></i>
+      <span className="dropdown-item-name">{name}</span>
+    </a>
   );
 }
 
 DropdownItem.propTypes = {
-  icon: PropTypes.string.isRequired,
+  iconClass: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   hyperlink: PropTypes.string.isRequired,
 };

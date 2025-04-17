@@ -1,21 +1,24 @@
 .heading-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 16px;
-    background-color: #f9f9f9; /* Optional: Add background color */
-    border-bottom: 1px solid #e0e0e0; /* Optional: Add bottom border */
-  }
-  
-  .heading-image {
-    width: 40px;
-    height: 40px;
-    object-fit: contain;
-  }
-  
-  .heading-text {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #333;
-  }
-  
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px;
+  /* margin-bottom: 10px; */
+}
+
+.heading-image {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #fff;
+  border: none;
+  box-shadow: none;
+}
+
+.heading-text {
+  padding-top: 5px;
+  font-size: 22px;
+  font-weight: 600;
+  color: #2c2c2c;
+}
