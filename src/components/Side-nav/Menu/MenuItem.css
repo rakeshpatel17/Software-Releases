@@ -28,13 +28,13 @@
   font-size: 14px;
 }
 
-.dropdown-arrow {
+.dropdown-arrow-left {
   font-size: 14px;
   color: #333;
+  margin-right: 5px;
   transition: transform 0.3s ease;
-  margin-left: auto;
 }
- 
-.dropdown-arrow.rotate {
-  transform: rotate(90deg);
+
+.dropdown-arrow-left.rotate {
+  transform: rotate(-90deg); /* optional if you want rotate on open */
 }

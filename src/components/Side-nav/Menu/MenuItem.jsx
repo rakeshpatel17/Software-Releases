@@ -13,18 +13,20 @@ function MenuItem({ iconClass, name, hyperlink, data }) {
   return (
     <div className="menu-item-container">
       <div className="menu-item" onClick={handleToggle}>
-        {/* Bootstrap icon */}
-        <i className={`menu-item-icon ${iconClass}`}></i>
-        <span className="menu-item-name">{name}</span>
-        {/* Dropdown arrow for expandable items */}
+        {/* Dropdown arrow for expandable items (now on the left) */}
         {data && (
           <i
-            className={`dropdown-arrow bi ${
-              isOpen ? 'bi-chevron-up' : 'bi-chevron-down'
-            }`}
+            className={`dropdown-arrow-left bi ${isOpen ? 'bi-chevron-up' : 'bi-chevron-down'
+              }`}
           ></i>
         )}
+
+        {/* Bootstrap icon */}
+        <i className={`menu-item-icon ${iconClass}`}></i>
+
+        <span className="menu-item-name">{name}</span>
       </div>
+
 
       {data && isOpen && (
         <div className="dropdown-container">
