@@ -45,7 +45,7 @@ function AppRoutes({ isLoggedIn, handleLoginSuccess, handleLogout }) {
       />
 
       {/* For releases */}
-      <Route path="/:id" element={<ReleasePatches />} />
+      <Route path="/:id" element={<ReleasePatches onLogout={onLogout}/>} />
 
       {/* Redirect any unknown routes */}
       <Route path="*" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
