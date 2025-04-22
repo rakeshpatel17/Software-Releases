@@ -5,7 +5,7 @@ const common_headers = {
   // Add Authorization or other headers if needed
 };
 
-const get_patches = async (releaseId) => {
+const get_patches = async (releaseId = null) => {
   try {
     const endpoint = `${base_url}/patches`; //endpoint for displaying all patches
 
@@ -19,9 +19,10 @@ const get_patches = async (releaseId) => {
     const data = await response.json();
 
     // Filter if releaseId is provided
-    const filteredData = releaseId !== 'releases'
-      ? data.filter((patch) => patch.release === (releaseId))
-      : data;
+    const filteredData =
+      releaseId 
+        ? data.filter(patch => String(patch.release) === String(releaseId))
+        : data;
 
     console.log("filtered Patch Data:", filteredData);
     return filteredData;

@@ -102,7 +102,7 @@ function SideNavbar() {
           const releases = releaseData.map((item) => ({
             iconClass: "", // Optional icon class
             name: item.name,
-            hyperlink: `/${item.name}`,
+            hyperlink: `/releases/${item.name}`,
           }));
           setReleaseNames(releases);
         }

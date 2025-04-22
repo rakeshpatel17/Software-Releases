@@ -46,10 +46,14 @@ function AppRoutes({ isLoggedIn, handleLoginSuccess, handleLogout }) {
       />
 
       {/* For releases */}
-      <Route path="/:id" element={<ReleasePatches onLogout={onLogout}/>} />
-
-        {/* Redirect any unknown routes */}
-        <Route path="*" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
+      <Route 
+        path="/releases/:id"
+          element={
+            <PrivateRoute isAuthenticated={isLoggedIn}>
+              <ReleasePatches onLogout={onLogout}/>
+            </PrivateRoute>
+        }
+      />
 
         <Route
           path="/products/:productName"  // change productname to productName
@@ -60,7 +64,8 @@ function AppRoutes({ isLoggedIn, handleLoginSuccess, handleLogout }) {
           }
         />
 
-
+        {/* Redirect any unknown routes */}
+        <Route path="*" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
 
 
       </Routes>
