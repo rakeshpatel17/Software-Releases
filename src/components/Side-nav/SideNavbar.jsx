@@ -41,15 +41,35 @@
 // }
 
 // export default SideNavbar;
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Heading from './Heading/Heading';
 import Subheading from './Menu/SubHeading';
 import MenuItem from './Menu/MenuItem';
 import './SideNavbar.css';
 import logo from '../../assets/logo.png';
+import get_release from '../../api/release';
 
 function SideNavbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [releaseNames, setReleaseNames] = useState([]);
+
+  useEffect(() => {
+    const fetchReleases = async () => {
+      const data = await get_release();
+
+      if (data && Array.isArray(data)) {
+        const names = data.map((item) => ({
+          iconClass: "", // Leaving iconClass as empty
+          name: item.name, // name from backend
+          hyperlink: `/${item.name}`, // sample formatting for URL
+        }));
+        setReleaseNames(names);
+        console.log("Release names:", names);
+      }
+    };
+
+    fetchReleases();
+  }, []);
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -74,11 +94,12 @@ function SideNavbar() {
           />
           <MenuItem
             iconClass="bi bi-gear-fill"
-            name="Settings"
-            data={[
-              { iconClass: 'bi bi-person-fill', name: 'Profile', hyperlink: '/profile' },
-              { iconClass: 'bi bi-shield-lock-fill', name: 'Security', hyperlink: '/security' },
-            ]}
+            name="Releases"
+            // data={[
+            //   { iconClass: 'bi bi-person-fill', name: 'Release 1.1', hyperlink: '/Release 1.1' },
+            //   { iconClass: 'bi bi-shield-lock-fill', name: 'Release 2.1', hyperlink: '/Release 1.2' },
+            // ]}
+            data = {releaseNames}
           />
         </nav>
       </aside>

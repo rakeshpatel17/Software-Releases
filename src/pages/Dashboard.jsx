@@ -4,7 +4,7 @@ import TopNavbar from '../components/Top-nav/TopNavbar';
 import './Dashboard.css';
 import Card from '../components/Card/Card';
 
-const fetchedReleases = [
+const fetchedPatches = [
   {
     title: 'Patch 1',
     description: 'Products and images in patch 1',
@@ -43,12 +43,13 @@ const fetchedReleases = [
 
 function Dashboard({ onLogout }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [releases, setReleases] = useState(fetchedReleases);
+  const [patches, setPatches] = useState(fetchedPatches);
   
-  const filteredReleases = releases.filter(release =>
+  const filteredpatches = patches.filter(release =>
     release.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  console.log(filteredReleases);
+  console.log(filteredpatches);
+
   return (
     <div className="dashboard-container">
       <SideNavbar />
@@ -58,10 +59,10 @@ function Dashboard({ onLogout }) {
           <h2>Dashboard</h2>
           <div className="card-scrollable">
             <div className="card-grid">
-              {filteredReleases.map((release, index) => (
+              {filteredpatches.map((release, index) => (
                 <Card key={index} info={release} />
               ))}
-            </div>
+            </div>  
           </div>
         </div>
       </div>
