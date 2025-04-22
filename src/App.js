@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-route
 import { useState} from "react";
 import Login from "./components/Login";
 import Dashboard from "./pages/Dashboard";
+import ReleasePatches from "./pages/ReleasePatches";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 
@@ -42,6 +43,9 @@ function AppRoutes({ isLoggedIn, handleLoginSuccess, handleLogout }) {
           </PrivateRoute>
         }
       />
+
+      {/* For releases */}
+      <Route path="/:id" element={<ReleasePatches />} />
 
       {/* Redirect any unknown routes */}
       <Route path="*" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
