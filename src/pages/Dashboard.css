@@ -4,7 +4,7 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f5f6fa;
 }
-
+ 
 .dashboard-content {
   flex-grow: 1;
   padding: 20px;
@@ -14,7 +14,7 @@
   height: 100vh; /* Full screen height */
   overflow-y: auto; /* Enable vertical scrolling */
 }
-
+ 
 .dashboard-header {
   display: flex;
   justify-content: space-between;
@@ -22,7 +22,7 @@
   padding-bottom: 20px;
   border-bottom: 1px solid #e0e0e0;
 }
-
+ 
 .search-input {
   padding: 8px 12px;
   border: 1px solid #ccc;
@@ -30,39 +30,39 @@
   width: 250px;
   outline: none;
 }
-
+ 
 .profile {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-
+ 
 .restaurant-name {
   font-weight: bold;
   color: #333;
 }
-
+ 
 .profile-icon {
   width: 32px;
   height: 32px;
   border-radius: 50%;
 }
-
+ 
 .dashboard-main {
   display: flex;
   flex-direction: column;
   height: 100%;
   overflow-y: auto;
 }
-
-
+ 
+ 
 .card-scrollable {
   overflow-y: auto;
   flex-grow: 1;
   padding: 0 10px 20px 10px; /* Added bottom padding to prevent last card from being cut off */
   box-sizing: border-box;
 }
-
+ 
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Adjusting column size for responsiveness */
@@ -70,7 +70,7 @@
   margin-top: 1rem;
   padding: 1rem; /* Adds a little padding inside the grid */
 }
-
+ 
 .card {
   background-color: #ecf0f1;
   border-radius: 0.25rem;
@@ -78,19 +78,19 @@
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for card effect */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-
+ 
 .card:hover {
   transform: translateY(-8px);
   box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2); /* Hover effect */
 }
-
+ 
 /* For Mobile View, slightly larger gap and text size */
 @media (max-width: 768px) {
   .card-grid {
     grid-template-columns: 1fr; /* Stack cards vertically on smaller screens */
     gap: 1.5rem; /* More space between cards on mobile */
   }
-  
+ 
   .search-input {
     width: 100%; /* Makes the search bar responsive */
   }

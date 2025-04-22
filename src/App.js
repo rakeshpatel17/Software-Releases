@@ -3,6 +3,7 @@ import { useState } from "react";
 import Login from "./components/Login";
 import Dashboard from "./pages/Dashboard";
 import ProductPage from "./pages/Productpage";
+import ReleasePatches from "./pages/ReleasePatches";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 
@@ -34,15 +35,18 @@ function AppRoutes({ isLoggedIn, handleLoginSuccess, handleLogout }) {
           element={isLoggedIn ? <Navigate to="/dashboard" /> : <Login onLoginSuccess={onLoginSuccess} />}
         />
 
-        {/* Protected Route */}
-        <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute isAuthenticated={isLoggedIn}>
-              <Dashboard onLogout={onLogout} />
-            </PrivateRoute>
-          }
-        />
+      {/* Protected Route */}
+      <Route
+        path="/dashboard"
+        element={
+          <PrivateRoute isAuthenticated={isLoggedIn}>
+            <Dashboard onLogout={onLogout} />
+          </PrivateRoute>
+        }
+      />
+
+      {/* For releases */}
+      <Route path="/:id" element={<ReleasePatches onLogout={onLogout}/>} />
 
         {/* Redirect any unknown routes */}
         <Route path="*" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
@@ -51,7 +55,7 @@ function AppRoutes({ isLoggedIn, handleLoginSuccess, handleLogout }) {
           path="/products/:productName"  // change productname to productName
           element={
             <PrivateRoute isAuthenticated={isLoggedIn}>
-              <ProductPage />
+              <ProductPage onLogout={onLogout}/>
             </PrivateRoute>
           }
         />

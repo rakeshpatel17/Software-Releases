@@ -7,7 +7,7 @@ const common_headers = {
 
 const getProductDetails = async (productId) => {
   try {
-    const endpoint = `${base_url}/products/${productId}/`; // backend expects trailing slash
+    const endpoint = `${base_url}/${productId}/`; // backend expects trailing slash
 
     const response = await fetch(endpoint, {
       method: "GET",
