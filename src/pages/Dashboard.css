@@ -65,11 +65,12 @@
  
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Adjusting column size for responsiveness */
-  gap: 1rem; /* Controls spacing between cards */
-  margin-top: 1rem;
-  padding: 1rem; /* Adds a little padding inside the grid */
+  grid-template-columns: repeat(auto-fill, 280px); /* fixed width */
+  gap: 1rem;
+  justify-content: center; /* keeps cards centered */
+  padding: 1rem;
 }
+
  
 .card {
   background-color: #ecf0f1;
@@ -94,4 +95,66 @@
   .search-input {
     width: 100%; /* Makes the search bar responsive */
   }
+}
+
+
+.product-cards-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.product-card-wrapper {
+  width: 100%;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* Override card.css internal styles */
+.product-card-wrapper .enhanced-card {
+  width: 100% !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Toggle icon */
+.expand-toggle-icon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 32px;
+  text-align: center;
+  z-index: 10; /* ensure it’s above everything */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* optional: makes it pop */
+}
+
+
+/* Expanded section */
+.expand-content {
+  margin-top: 10px;
+  padding: 0.75rem;
+  background-color: #f0f4f8;
+  border-radius: 8px;
+  display: none;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.expand-content.visible {
+  display: block;
 }
