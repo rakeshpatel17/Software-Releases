@@ -62,7 +62,6 @@ function ProductPage({ onLogout }) {
                         <thead>
                             <tr>
                                 <th>Image URL</th>
-                                <th>Preview</th>
                                 <th>Build Number</th>
                                 <th>Release Date</th>
                                 <th>OT2 Pass</th>
