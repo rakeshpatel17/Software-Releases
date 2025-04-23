@@ -86,6 +86,7 @@ import logo from '../../assets/logo.png';
 // API calls
 import get_release from '../../api/release';
 import get_products from '../../api/product'; 
+import DropdownItem from './Menu/DropdownItem';
 
 function SideNavbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -139,7 +140,7 @@ function SideNavbar() {
         <nav className="menu">
           <MenuItem
             iconClass="bi bi-house-door-fill"
-            name="Dashboard"
+            name="Home"
             hyperlink="/dashboard"
           />
           <MenuItem

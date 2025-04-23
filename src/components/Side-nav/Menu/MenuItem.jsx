@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import './MenuItem.css';
 import DropdownItem from './DropdownItem';
-
+ 
 function MenuItem({ iconClass, name, hyperlink, data }) {
   const [isOpen, setIsOpen] = useState(false);
-
+ 
   const handleToggle = () => {
     if (data) setIsOpen(prev => !prev);
   };
-
+ 
   return (
     <div className="menu-item-container">
       {!data && hyperlink ? (
@@ -28,7 +28,7 @@ function MenuItem({ iconClass, name, hyperlink, data }) {
           <span className="menu-item-name">{name}</span>
         </div>
       )}
-
+ 
       {data && isOpen && (
         <div className="dropdown-container">
           {data.map((item, index) => (
@@ -39,7 +39,7 @@ function MenuItem({ iconClass, name, hyperlink, data }) {
     </div>
   );
 }
-
+ 
 MenuItem.propTypes = {
   iconClass: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
@@ -52,5 +52,5 @@ MenuItem.propTypes = {
     })
   )
 };
-
+ 
 export default MenuItem;
