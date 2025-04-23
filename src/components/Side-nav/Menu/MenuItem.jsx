@@ -12,21 +12,22 @@ function MenuItem({ iconClass, name, hyperlink, data }) {
 
   return (
     <div className="menu-item-container">
-      <div className="menu-item" onClick={handleToggle}>
-        {/* Dropdown arrow for expandable items (now on the left) */}
-        {data && (
-          <i
-            className={`dropdown-arrow-left bi ${isOpen ? 'bi-chevron-up' : 'bi-chevron-down'
-              }`}
-          ></i>
-        )}
-
-        {/* Bootstrap icon */}
-        <i className={`menu-item-icon ${iconClass}`}></i>
-
-        <span className="menu-item-name">{name}</span>
-      </div>
-
+      {!data && hyperlink ? (
+        <a href={hyperlink} className="menu-item no-dropdown">
+          <i className={`menu-item-icon ${iconClass}`}></i>
+          <span className="menu-item-name">{name}</span>
+        </a>
+      ) : (
+        <div className="menu-item" onClick={handleToggle}>
+          {data && (
+            <i
+              className={`dropdown-arrow-left bi ${isOpen ? 'bi-chevron-up' : 'bi-chevron-down'}`}
+            ></i>
+          )}
+          <i className={`menu-item-icon ${iconClass}`}></i>
+          <span className="menu-item-name">{name}</span>
+        </div>
+      )}
 
       {data && isOpen && (
         <div className="dropdown-container">
@@ -34,10 +35,6 @@ function MenuItem({ iconClass, name, hyperlink, data }) {
             <DropdownItem key={index} {...item} />
           ))}
         </div>
-      )}
-
-      {!data && hyperlink && (
-        <a href={hyperlink} className="menu-item-link-overlay" />
       )}
     </div>
   );

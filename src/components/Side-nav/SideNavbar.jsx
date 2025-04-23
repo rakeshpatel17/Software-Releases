@@ -139,8 +139,8 @@ function SideNavbar() {
         <nav className="menu">
           <MenuItem
             iconClass="bi bi-house-door-fill"
-            name="Home"
-            hyperlink="/home"
+            name="Dashboard"
+            hyperlink="/dashboard"
           />
           <MenuItem
             name="Releases"
