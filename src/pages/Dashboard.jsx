@@ -8,7 +8,7 @@ const fetchedPatches = [
   {
     title: 'Patch 1',
     description: 'Products and images in patch 1',
-    badge: 'New',
+    badge: 'Released',
     footer: 'Last updated 2 days ago'
   },
   {
@@ -57,7 +57,7 @@ const fetchedPatches = [
     description: 'Products and images in patch 3',
     //image: 'https://th.bing.com/th/id/OIP.VhbwgZr6U_AEr2dwDABvIAHaDu?w=349&h=176&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2',
     badge: 'Rejected',
-    footer: 'Last updated 3 days ago'
+    footer: 'Last updated 3 days ago',
   },
   {
     title: 'Patch 4',

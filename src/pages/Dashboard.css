@@ -65,11 +65,12 @@
  
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Adjusting column size for responsiveness */
-  gap: 1rem; /* Controls spacing between cards */
-  margin-top: 1rem;
-  padding: 1rem; /* Adds a little padding inside the grid */
+  grid-template-columns: repeat(auto-fill, 280px); /* fixed width */
+  gap: 1rem;
+  justify-content: center; /* keeps cards centered */
+  padding: 1rem;
 }
+
  
 .card {
   background-color: #ecf0f1;
@@ -95,3 +96,4 @@
     width: 100%; /* Makes the search bar responsive */
   }
 }
+

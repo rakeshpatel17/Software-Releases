@@ -58,6 +58,11 @@
   .card-badge.rejected {
     background-color: #e74c3c; /* red */
   }
+
+  .card-badge.released {
+    background-color: #015d17; /* red */
+  }
+
   
   
   .card-children {
