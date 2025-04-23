@@ -61,24 +61,19 @@ function ProductPage({ onLogout }) {
           <table className="product-table">
   <thead>
     <tr>
-      <th></th> {/* Dropdown toggle column */}
       <th>Preview</th>
       <th>Build Number</th>
       <th>Release Date</th>
       <th>OT2 Pass</th>
       <th>Twistlock Report</th>
       <th>Image URL</th>
+      <th>More Details</th> {/* Dropdown toggle column */}
     </tr>
   </thead>
   <tbody>
     {images.map((img, idx) => (
       <React.Fragment key={idx}>
         <tr>
-          <td>
-            <button onClick={() => toggleRow(idx)}>
-              {expandedRows[idx] ? '▲' : '▼'}
-            </button>
-          </td>
           <td>
             <img
               src={img.image_url}
@@ -106,6 +101,11 @@ function ProductPage({ onLogout }) {
             >
               {img.image_url}
             </a>
+          </td>
+          <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <button onClick={() => toggleRow(idx)}>
+              {expandedRows[idx] ? '▲' : '▼'}
+            </button>
           </td>
         </tr>
         {expandedRows[idx] && (
