@@ -5,125 +5,43 @@ import './Dashboard.css';
 import Card from '../components/Card/Card';
 
 const fetchedPatches = [
-  {
-    title: 'Patch 1',
-    description: 'Products and images in patch 1',
-    badge: 'New',
-    footer: 'Last updated 2 days ago'
-  },
-  {
-    title: 'Patch 2',
-    description: 'Products and images in patch 2',
-    //image: 'https://th.bing.com/th/id/OIP.VhbwgZr6U_AEr2dwDABvIAHaDu?w=349&h=176&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2',
-    badge: 'Verified',
-    footer: 'Last updated 7 days ago'
-  },
-  {
-    title: 'Patch 3',
-    description: 'Products and images in patch 3',
-    //image: 'https://th.bing.com/th/id/OIP.VhbwgZr6U_AEr2dwDABvIAHaDu?w=349&h=176&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2',
-    badge: 'Rejected',
-    footer: 'Last updated 3 days ago'
-  },
-  {
-    title: 'Patch 4',
-    description: 'Products and images in patch 4',
-    //image: 'https://th.bing.com/th/id/OIP.VhbwgZr6U_AEr2dwDABvIAHaDu?w=349&h=176&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2',
-    badge: 'New',
-    footer: 'Last updated 4 days ago'
-  },
-  {
-    title: 'Patch 5',
-    description: 'Products and images in patch 4',
-    //image: 'https://th.bing.com/th/id/OIP.VhbwgZr6U_AEr2dwDABvIAHaDu?w=349&h=176&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2',
-    badge: 'New',
-    footer: 'Last updated 5 days ago'
-  },
-  {
-    title: 'Patch 1',
-    description: 'Products and images in patch 1',
-    badge: 'New',
-    footer: 'Last updated 2 days ago'
-  },
-  {
-    title: 'Patch 2',
-    description: 'Products and images in patch 2',
-    //image: 'https://th.bing.com/th/id/OIP.VhbwgZr6U_AEr2dwDABvIAHaDu?w=349&h=176&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2',
-    badge: 'Verified',
-    footer: 'Last updated 7 days ago'
-  },
-  {
-    title: 'Patch 3',
-    description: 'Products and images in patch 3',
-    //image: 'https://th.bing.com/th/id/OIP.VhbwgZr6U_AEr2dwDABvIAHaDu?w=349&h=176&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2',
-    badge: 'Rejected',
-    footer: 'Last updated 3 days ago',
-  },
-  {
-    title: 'Patch 4',
-    description: 'Products and images in patch 4',
-    //image: 'https://th.bing.com/th/id/OIP.VhbwgZr6U_AEr2dwDABvIAHaDu?w=349&h=176&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2',
-    badge: 'New',
-    footer: 'Last updated 4 days ago'
-  },
-  {
-    title: 'Patch 5',
-    description: 'Products and images in patch 4',
-    //image: 'https://th.bing.com/th/id/OIP.VhbwgZr6U_AEr2dwDABvIAHaDu?w=349&h=176&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2',
-    badge: 'New',
-    footer: 'Last updated 5 days ago'
-  },
-  {
-    title: 'Patch 1',
-    description: 'Products and images in patch 1',
-    badge: 'New',
-    footer: 'Last updated 2 days ago'
-  },
-  {
-    title: 'Patch 2',
-    description: 'Products and images in patch 2',
-    badge: 'Verified',
-    footer: 'Last updated 7 days ago'
-  },
-  {
-    title: 'Patch 3',
-    description: 'Products and images in patch 3',
-    badge: 'Rejected',
-    footer: 'Last updated 3 days ago'
-  },
-  {
-    title: 'Patch 4',
-    description: 'Products and images in patch 4',
-    badge: 'New',
-    footer: 'Last updated 4 days ago'
-  },
-  {
-    title: 'Patch 5',
-    description: 'Products and images in patch 4',
-    badge: 'New',
-    footer: 'Last updated 5 days ago'
-  },
+  { title: 'Patch 1', description: 'Products and images in patch 1', badge: 'New', footer: '2025-04-21' },
+  { title: 'Patch 2', description: 'Products and images in patch 2', badge: 'Verified', footer: '2025-04-16' },
+  { title: 'Patch 3', description: 'Products and images in patch 3', badge: 'Rejected', footer: '2025-04-20' },
+  { title: 'Patch 4', description: 'Products and images in patch 4', badge: 'New', footer: '2025-04-19' },
+  { title: 'Patch 5', description: 'Products and images in patch 5', badge: 'New', footer: '2025-04-18' },
+  { title: 'Patch 6', description: 'Products and images in patch 6', badge: 'New', footer: '2025-04-21' },
+  { title: 'Patch 7', description: 'Products and images in patch 7', badge: 'Verified', footer: '2025-04-16' },
+  { title: 'Patch 8', description: 'Products and images in patch 8', badge: 'Rejected', footer: '2025-04-20' },
+  { title: 'Patch 9', description: 'Products and images in patch 9', badge: 'New', footer: '2025-04-19' },
+  { title: 'Patch 10', description: 'Products and images in patch 10', badge: 'Released', footer: '2025-04-22' }
 ];
 
 function Dashboard({ onLogout }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [patches, setPatches] = useState(fetchedPatches);
-  
-  const filteredPatches = patches.filter(release =>
+
+  const parseDate = (dateStr) => {
+    const d = new Date(dateStr);
+    return isNaN(d) ? null : d;
+  };
+
+  const filteredPatches = fetchedPatches.filter(release =>
     release.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Group by badge status and order manually
-  const groupByBadge = (badgeName) =>
-    filteredPatches.filter(patch => patch.badge === badgeName);
- 
-  const groupedPatches = [
-    { title: 'New Patches', items: groupByBadge('New') },
-    { title: 'Verified Patches', items: groupByBadge('Verified') },
-    { title: 'Rejected Patches', items: groupByBadge('Rejected') },
+  // Grouping
+  const newReleased = filteredPatches
+    .filter(p => p.badge === 'New' || p.badge === 'Released')
+    .sort((a, b) => new Date(b.footer) - new Date(a.footer));
+
+  const verified = filteredPatches.filter(p => p.badge === 'Verified');
+  const rejected = filteredPatches.filter(p => p.badge === 'Rejected');
+
+  const displayGroups = [
+    { title: 'New & Released Patches', items: newReleased },
+    { title: 'Verified Patches', items: verified },
+    { title: 'Rejected Patches', items: rejected }
   ];
-  
-  console.log(filteredPatches);
 
   return (
     <div className="dashboard-container">
@@ -132,14 +50,7 @@ function Dashboard({ onLogout }) {
         <TopNavbar onSearch={setSearchTerm} onLogout={onLogout} />
         <div className="dashboard-main">
           <h2>Dashboard</h2>
-          {/* <div className="card-scrollable">
-            <div className="card-grid">
-              {filteredpatches.map((release, index) => (
-                <Card key={index} info={release} />
-              ))}
-            </div>  
-          </div> */}
-          {groupedPatches.map((group, idx) => (
+          {displayGroups.map((group, idx) => (
             group.items.length > 0 && (
               <div key={idx}>
                 <div className="card-scrollable">
