@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import './Form.css';
 import post_patches from '../../api/post_patches';
+import get_release from '../../api/release';
 
 function Form({ onCancel }) {
   const [formData, setFormData] = useState({
@@ -12,6 +13,22 @@ function Form({ onCancel }) {
     patch_state: 'new',
     is_deleted: false,
   });
+  const [releaseList, setReleaseList] = useState([]);
+
+  useEffect(() => {
+    const fetchReleases = async () => {
+      const data = await get_release();
+      if (data && data.length > 0) {
+        setReleaseList(data);
+        setFormData((prev) => ({
+          ...prev,
+          release: data[0].id, // first release ID as default
+        }));
+      }
+    };
+
+    fetchReleases();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -49,17 +66,20 @@ return (
     </div>
 
     <div className="form-group">
-      <label className="form-label">Release</label>
-      <select
-        name="release"
-        value={formData.release}
-        onChange={handleChange}
-        className="form-select"
-      >
-        <option>Release 1</option>
-        <option>Release 2</option>
-      </select>
-    </div>
+        <label className="form-label">Release</label>
+        <select
+          name="release"
+          value={formData.release}
+          onChange={handleChange}
+          className="form-select"
+        >
+          {releaseList.map((release) => (
+            <option key={release.id} value={release.id}>
+              {release.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
     <div className="form-group">
       <label className="form-label">Release date</label>

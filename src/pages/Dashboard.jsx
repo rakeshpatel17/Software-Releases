@@ -3,6 +3,7 @@ import SideNavbar from '../components/Side-nav/SideNavbar';
 import TopNavbar from '../components/Top-nav/TopNavbar';
 import './Dashboard.css';
 import Card from '../components/Card/Card';
+import Form from '../components/Form/Form';
 
 
 const fetchedPatches = [
@@ -20,6 +21,7 @@ const fetchedPatches = [
 
 function Dashboard({ onLogout }) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [showForm, setShowForm] = useState(false);
 
   const parseDate = (dateStr) => {
     const d = new Date(dateStr);
@@ -50,8 +52,19 @@ function Dashboard({ onLogout }) {
       <div className="dashboard-content">
         <TopNavbar onSearch={setSearchTerm} onLogout={onLogout} />
         <div className="dashboard-main">
-          <h2>Dashboard</h2>
-          {displayGroups.map((group, idx) => (
+          <div className="dashboard-header">
+            <h2 className="dashboard-title">Dashboard</h2>
+            <button
+              className="add-patch-button"
+              onClick={() => setShowForm(true)}
+            >
+              ➕ Add Patch
+            </button>
+          </div>
+          {showForm ? (
+            <Form onCancel={() => setShowForm(false)} />
+          ):
+          (displayGroups.map((group, idx) => (
             group.items.length > 0 && (
               <div key={idx}>
                 <div className="card-scrollable">
@@ -63,7 +76,7 @@ function Dashboard({ onLogout }) {
                 </div>
               </div>
             )
-          ))}
+          )))}
         </div>
       </div>
     </div>
