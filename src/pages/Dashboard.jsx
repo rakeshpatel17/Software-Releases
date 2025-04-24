@@ -4,6 +4,7 @@ import TopNavbar from '../components/Top-nav/TopNavbar';
 import './Dashboard.css';
 import Card from '../components/Card/Card';
 
+
 const fetchedPatches = [
   { title: 'Patch 1', description: 'Products and images in patch 1', badge: 'New', footer: '2025-04-21' },
   { title: 'Patch 2', description: 'Products and images in patch 2', badge: 'Verified', footer: '2025-04-16' },

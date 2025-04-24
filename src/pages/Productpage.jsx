@@ -64,7 +64,7 @@ function ProductPage({ onLogout }) {
                     <table className="product-table">
                         <thead>
                             <tr>
-                                <th>Preview</th>
+                                <th>Image</th>
                                 <th>Build Number</th>
                                 <th>Release Date</th>
                                 <th>OT2 Pass</th>
@@ -80,11 +80,12 @@ function ProductPage({ onLogout }) {
                                     <tr>
 
                                         <td>
-                                            <img
+                                            {/* <img
                                                 src={img.image_url}
                                                 alt={`Build ${img.build_number}`}
                                                 style={{ width: '80px', height: 'auto', borderRadius: '4px' }}
-                                            />
+                                            /> */}
+                                            {img.image_name}
                                         </td>
                                         <td>{highlightMatch(img.build_number, searchTerm)}</td>
                                         <td>{new Date(img.release_date).toLocaleDateString()}</td>

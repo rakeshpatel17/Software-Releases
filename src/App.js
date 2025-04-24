@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import ProductPage from "./pages/Productpage";
 import ReleasePatches from "./pages/ReleasePatches";
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import  Form  from "./components/Form/Form";
 
 
 // PrivateRoute component: checks if authenticated
@@ -33,6 +34,10 @@ function AppRoutes({ isLoggedIn, handleLoginSuccess, handleLogout }) {
         <Route
           path="/login"
           element={isLoggedIn ? <Navigate to="/dashboard" /> : <Login onLoginSuccess={onLoginSuccess} />}
+        />
+        <Route
+          path="/form"
+          element={<Form />}
         />
 
       {/* Protected Route */}
