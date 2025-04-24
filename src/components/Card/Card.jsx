@@ -17,7 +17,15 @@ const Card = ({ info, className = '', children, ...rest }) => {
         {children && <div className="card-children">{children}</div>}
       </div>
 
-      {footer && <div className="card-footer">{footer}</div>}
+      {footer && (
+  <div className="card-footer">
+    Release Date: {new Date(footer).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })}
+  </div>
+)}
     </div>
   );
 };

@@ -23,6 +23,9 @@ function ProductPage({ onLogout }) {
     const [images, setImages] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [expandedRows, setExpandedRows] = useState({});
+    /*text area */
+    const [editingIndex, setEditingIndex] = useState(null);
+    const [editedDescription, setEditedDescription] = useState('');
 
     const toggleRow = (idx) => {
         setExpandedRows((prev) => ({
@@ -61,11 +64,12 @@ function ProductPage({ onLogout }) {
                     <table className="product-table">
                         <thead>
                             <tr>
-                                <th>Image URL</th>
+                                <th>Image</th>
                                 <th>Build Number</th>
                                 <th>Release Date</th>
                                 <th>OT2 Pass</th>
-                                <th>Twistlock Report</th>
+                                <th>Twist Lock Report</th>
+                                <th>Status</th>
                                 <th>More Details</th> {/* Dropdown toggle column */}
 
                             </tr>
@@ -76,11 +80,12 @@ function ProductPage({ onLogout }) {
                                     <tr>
 
                                         <td>
-                                            <img
+                                            {/* <img
                                                 src={img.image_url}
                                                 alt={`Build ${img.build_number}`}
                                                 style={{ width: '80px', height: 'auto', borderRadius: '4px' }}
-                                            />
+                                            /> */}
+                                            {img.image_name}
                                         </td>
                                         <td>{highlightMatch(img.build_number, searchTerm)}</td>
                                         <td>{new Date(img.release_date).toLocaleDateString()}</td>
@@ -94,15 +99,8 @@ function ProductPage({ onLogout }) {
                                                 View Report
                                             </a>
                                         </td>
-                                        <td>
-                                            <a
-                                                href={img.image_url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                {img.image_url}
-                                            </a>
-                                        </td>
+                                        <td> {img.twistlock_report_clean ? (<span style={{ color: 'green', fontWeight: 'bold' }}> ✔ Success </span>) : (<span style={{ color: 'red', fontWeight: 'bold' }}> ✖ Fail </span>)} </td>
+
                                         <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                                             <button onClick={() => toggleRow(idx)}>
                                                 {expandedRows[idx] ? '▲' : '▼'}
@@ -122,39 +120,83 @@ function ProductPage({ onLogout }) {
                                                         </span>
                                                     </p>
                                                     {/* <p><strong>Security Issues:</strong> {img.security_issues.length > 0 ? img.security_issues.join(', ') : 'None'}</p> */}
-                                                    
+
                                                     <div style={{ marginTop: '12px' }}>
-                                                      <strong>Security Issues:</strong>
-                                                      {img.security_issues.length > 0 ? (
-                                                        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '8px' }}>
-                                                          <thead>
-                                                            <tr>
-                                                              <th>CVE ID</th>
-                                                              <th>CVSS Score</th>
-                                                              <th>Severity</th>
-                                                              <th>Affected Libraries</th>
-                                                              <th>Library Path</th>
-                                                              <th>Description</th>
-                                                              <th>Created At</th>
-                                                            </tr>
-                                                          </thead>
-                                                          <tbody>
-                                                            {img.security_issues.map((issue, index) => (
-                                                              <tr key={index}>
-                                                                <td>{issue.cve_id}</td>
-                                                                <td>{issue.cvss_score}</td>
-                                                                <td>{issue.severity}</td>
-                                                                <td>{issue.affected_libraries}</td>
-                                                                <td>{issue.library_path}</td>
-                                                                <td>{issue.description}</td>
-                                                                <td>{new Date(issue.created_at).toLocaleString()}</td>
-                                                              </tr>
-                                                            ))}
-                                                          </tbody>
-                                                        </table>
-                                                      ) : (
-                                                        <p>None</p>
-                                                      )}
+                                                        <strong>Security Issues:</strong>
+                                                        {img.security_issues.length > 0 ? (
+                                                            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '8px' }}>
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>CVE ID</th>
+                                                                        <th>CVSS Score</th>
+                                                                        <th>Severity</th>
+                                                                        <th>Affected Libraries</th>
+                                                                        <th>Library Path</th>
+                                                                        <th>Description</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {img.security_issues.map((issue, index) => (
+                                                                        <tr key={index}>
+                                                                            <td>{issue.cve_id}</td>
+                                                                            <td>{issue.cvss_score}</td>
+                                                                            <td>{issue.severity}</td>
+                                                                            <td>{issue.affected_libraries}</td>
+                                                                            <td>{issue.library_path}</td>
+                                                                            {/* <td>{issue.description}</td> */}
+                                                                            {/* <td>
+                                                                                {editingIndex === index ? (
+                                                                                    <>
+                                                                                        <textarea
+                                                                                            value={editedDescription}
+                                                                                            onChange={(e) => setEditedDescription(e.target.value)}
+                                                                                            rows={3}
+                                                                                            style={{ width: '100%' }}
+                                                                                        />
+                                                                                        <button
+                                                                                            style={{ marginTop: '4px' }}
+                                                                                            onClick={() => {
+                                                                                                const updatedIssues = [...img.security_issues];
+                                                                                                updatedIssues[index].description = editedDescription;
+                                                                                                img.security_issues = updatedIssues; // In-place update (adjust if using props/state)
+
+                                                                                                setEditingIndex(null); // Close editing
+                                                                                            }}
+                                                                                        >
+                                                                                            Save
+                                                                                        </button>
+                                                                                    </>
+                                                                                ) : (
+                                                                                    <>
+                                                                                        <button
+                                                                                            onClick={() => {
+                                                                                                setEditingIndex(index);
+                                                                                                setEditedDescription(issue.description);
+                                                                                            }}
+                                                                                        >
+                                                                                            Edit
+                                                                                        </button>
+                                                                                    </>
+                                                                                )}
+                                                                            </td> */}
+                                                                            <td> {editingIndex === index ? (<> <textarea value={editedDescription} onChange={(e) => setEditedDescription(e.target.value)} rows={3} style={{ width: '100%' }} /> <button style={{ marginTop: '4px' }} onClick={() => {
+                                                                                const updatedIssues = [...img.security_issues]; updatedIssues[index].description = editedDescription; img.security_issues = updatedIssues; // update in-place or handle via props/state if needed
+                                                                             
+                                                                                setEditingIndex(null); // exit edit mode
+                                                                            }}
+                                                                            >
+                                                                                Save
+                                                                            </button>
+                                                                            </>) : (<> <div style={{ marginBottom: '4px' }}>{issue.description}</div> <button onClick={() => { setEditingIndex(index); setEditedDescription(issue.description); }} > Edit </button> </>)}
+
+                                                                            </td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                        ) : (
+                                                            <p>None</p>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </td>

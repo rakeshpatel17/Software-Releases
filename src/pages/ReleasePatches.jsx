@@ -21,7 +21,7 @@ function ReleasePatches({ onLogout }) {
         title: patch.name || "Untitled Patch",
         description: patch.description || "No description available",
         badge: patch.patch_state, // You can customize or derive this from patch data
-        footer: `last updated on : ${patch.updated_at}`, // Human-readable format
+        footer: patch.release_date, // Human-readable format
       }));
     // Filtering the mapped data based on title (patch name)
     const filtered = mappedData.filter(patch =>
