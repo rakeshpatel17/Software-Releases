@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import SideNavbar from '../components/Side-nav/SideNavbar';
@@ -7,13 +6,13 @@ import Card from '../components/Card/Card';
 import get_patches from '../api/patches';
 import Form from '../components/Form/Form';
 import './Dashboard.css';
-
+ 
 function ReleasePatches({ onLogout }) {
   const { id } = useParams();
   const [patches, setPatches] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
-
+ 
   useEffect(() => {
     const fetchPatches = async () => {
       const data = await get_patches(id);
@@ -28,10 +27,10 @@ function ReleasePatches({ onLogout }) {
       );
       setPatches(filtered || []);
     };
-
+ 
     fetchPatches();
   }, [id, searchTerm]);
-
+ 
   return (
     <div className="dashboard-container">
       <SideNavbar />
@@ -42,28 +41,14 @@ function ReleasePatches({ onLogout }) {
             <h2 className="dashboard-title">Patches for {id}</h2>
             <button
               className="add-patch-button"
-              onClick={() => setShowForm(true)} 
+              onClick={() => setShowForm(true)}
             >
               ➕ Add Patch
             </button>
           </div>
-
+ 
           {showForm ? (
-            <>
-              <Form />
-              <button
-                onClick={() => setShowForm(false)}
-                style={{
-                  marginTop: '1rem',
-                  backgroundColor: '#ccc',
-                  padding: '8px 12px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                }}
-              >
-                Cancel
-              </button>
-            </>
+            <Form onCancel={() => setShowForm(false)} />
           ) : (
             <div className="card-scrollable">
               <div className="card-grid">
@@ -73,10 +58,11 @@ function ReleasePatches({ onLogout }) {
               </div>
             </div>
           )}
+ 
         </div>
       </div>
     </div>
   );
 }
-
+ 
 export default ReleasePatches;
