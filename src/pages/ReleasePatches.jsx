@@ -14,22 +14,39 @@ function ReleasePatches({ onLogout }) {
   const [showForm, setShowForm] = useState(false);
  
   useEffect(() => {
-    const fetchPatches = async () => {
+    const fetch = async () => {
       const data = await get_patches(id);
+      console.log("fetched raw data : ", data);
       const mappedData = (data || []).map((patch) => ({
         title: patch.name || "Untitled Patch",
         description: patch.description || "No description available",
-        badge: patch.patch_state,
-        footer: patch.release_date,
+        badge: patch.patch_state || "no patche state",
+        footer: patch.release_date || "no release_date",
       }));
-      const filtered = mappedData.filter(patch =>
-        patch.title.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setPatches(filtered || []);
+      //console.log("fetched patches in dashboard : ", mappedData);
+      setPatches(mappedData); 
     };
  
-    fetchPatches();
-  }, [id, searchTerm]);
+    fetch();
+  }, [id]);
+
+  const filteredPatches = patches.filter(p =>
+    p.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Grouping
+  const newReleased = filteredPatches
+    .filter(p => p.badge.toLowerCase() === 'new' || p.badge.toLowerCase() === 'released')
+    .sort((a, b) => new Date(b.footer) - new Date(a.footer));
+
+  const verified = filteredPatches.filter(p => p.badge.toLowerCase() === 'verified');
+  const rejected = filteredPatches.filter(p => p.badge.toLowerCase() === 'rejected');
+
+  const displayGroups = [
+    { title: 'New & Released Patches', items: newReleased },
+    { title: 'Verified Patches', items: verified },
+    { title: 'Rejected Patches', items: rejected }
+  ];
  
   return (
     <div className="dashboard-container">
@@ -48,16 +65,20 @@ function ReleasePatches({ onLogout }) {
           </div>
  
           {showForm ? (
-            <Form onCancel={() => setShowForm(false)} />
-          ) : (
-            <div className="card-scrollable">
-              <div className="card-grid">
-                {patches.map((patch, index) => (
-                  <Card key={index} info={patch} />
-                ))}
+            <Form onCancel={() => setShowForm(false)} lockedRelease={id}/>
+          ) : (displayGroups.map((group, idx) => (
+            group.items.length > 0 && (
+              <div key={idx}>
+                <div className="card-scrollable">
+                  <div className="card-grid">
+                    {group.items.map((patch, index) => (
+                      <Card key={index} info={patch} />
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
+            )
+          )))}
  
         </div>
       </div>

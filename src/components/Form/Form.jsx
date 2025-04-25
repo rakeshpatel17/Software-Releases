@@ -3,7 +3,7 @@ import './Form.css';
 import post_patches from '../../api/post_patches';
 import get_release from '../../api/release';
 
-function Form({ onCancel }) {
+function Form({ onCancel, lockedRelease }) {
   const [formData, setFormData] = useState({
     name: '',
     release: 'Release 1',
@@ -15,20 +15,36 @@ function Form({ onCancel }) {
   });
   const [releaseList, setReleaseList] = useState([]);
 
+  // useEffect(() => {
+  //   const fetchReleases = async () => {
+  //     const data = await get_release();
+  //     if (data && data.length > 0) {
+  //       setReleaseList(data);
+  //       setFormData((prev) => ({
+  //         ...prev,
+  //         release: data[0].id, // first release ID as default
+  //       }));
+  //     }
+  //   };
+
+  //   fetchReleases();
+  // }, []);
   useEffect(() => {
     const fetchReleases = async () => {
       const data = await get_release();
       if (data && data.length > 0) {
         setReleaseList(data);
+  
         setFormData((prev) => ({
           ...prev,
-          release: data[0].id, // first release ID as default
+          release: lockedRelease || data[0].id, // use lockedRelease if present
         }));
       }
     };
-
+  
     fetchReleases();
-  }, []);
+  }, [lockedRelease]);
+  
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -66,19 +82,24 @@ return (
     </div>
 
     <div className="form-group">
-        <label className="form-label">Release</label>
-        <select
-          name="release"
-          value={formData.release}
-          onChange={handleChange}
-          className="form-select"
-        >
-          {releaseList.map((release) => (
-            <option key={release.id} value={release.id}>
-              {release.name}
-            </option>
-          ))}
-        </select>
+    <label className="form-label">Release</label>
+    <select
+      name="release"
+      value={formData.release}
+      onChange={handleChange}
+      className="form-select"
+      disabled={!!lockedRelease} // disable if lockedRelease is passed
+    >
+      {lockedRelease ? (
+        <option>{lockedRelease}</option> // just show the string
+      ) : (
+        releaseList.map((release) => (
+          <option key={release.id} value={release.id}>
+            {release.name}
+          </option>
+        ))
+      )}
+    </select>
       </div>
 
     <div className="form-group">
@@ -89,6 +110,7 @@ return (
         value={formData.releaseDate}
         onChange={handleChange}
         className="form-input"
+        min={new Date().toISOString().split("T")[0]}
       />
     </div>
 

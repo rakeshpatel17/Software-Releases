@@ -1,44 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SideNavbar from '../components/Side-nav/SideNavbar';
 import TopNavbar from '../components/Top-nav/TopNavbar';
 import './Dashboard.css';
 import Card from '../components/Card/Card';
 import Form from '../components/Form/Form';
+import get_patches from '../api/patches';
 
 
-const fetchedPatches = [
-  { title: 'Patch 1', description: 'Products and images in patch 1', badge: 'New', footer: '2025-04-21' },
-  { title: 'Patch 2', description: 'Products and images in patch 2', badge: 'Verified', footer: '2025-04-16' },
-  { title: 'Patch 3', description: 'Products and images in patch 3', badge: 'Rejected', footer: '2025-04-20' },
-  { title: 'Patch 4', description: 'Products and images in patch 4', badge: 'New', footer: '2025-04-19' },
-  { title: 'Patch 5', description: 'Products and images in patch 5', badge: 'New', footer: '2025-04-18' },
-  { title: 'Patch 6', description: 'Products and images in patch 6', badge: 'New', footer: '2025-04-21' },
-  { title: 'Patch 7', description: 'Products and images in patch 7', badge: 'Verified', footer: '2025-04-16' },
-  { title: 'Patch 8', description: 'Products and images in patch 8', badge: 'Rejected', footer: '2025-04-20' },
-  { title: 'Patch 9', description: 'Products and images in patch 9', badge: 'New', footer: '2025-04-19' },
-  { title: 'Patch 10', description: 'Products and images in patch 10', badge: 'Released', footer: '2025-04-22' }
-];
+// const fetchedPatches = [
+//   { title: 'Patch 1', description: 'Products and images in patch 1', badge: 'new', footer: '2025-04-21' },
+//   { title: 'Patch 2', description: 'Products and images in patch 2', badge: 'verified', footer: '2025-04-16' },
+//   { title: 'Patch 3', description: 'Products and images in patch 3', badge: 'rejected', footer: '2025-04-20' },
+//   { title: 'Patch 4', description: 'Products and images in patch 4', badge: 'new', footer: '2025-04-19' },
+//   { title: 'Patch 5', description: 'Products and images in patch 5', badge: 'new', footer: '2025-04-18' },
+//   { title: 'Patch 6', description: 'Products and images in patch 6', badge: 'new', footer: '2025-04-21' },
+//   { title: 'Patch 7', description: 'Products and images in patch 7', badge: 'verified', footer: '2025-04-16' },
+//   { title: 'Patch 8', description: 'Products and images in patch 8', badge: 'rejected', footer: '2025-04-20' },
+//   { title: 'Patch 9', description: 'Products and images in patch 9', badge: 'new', footer: '2025-04-19' },
+//   { title: 'Patch 10', description: 'Products and images in patch 10', badge: 'released', footer: '2025-04-22' }
+// ];
 
 function Dashboard({ onLogout }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const [fetchedPatches, setFetchedPatches] = useState([]);
 
-  const parseDate = (dateStr) => {
-    const d = new Date(dateStr);
-    return isNaN(d) ? null : d;
-  };
+  useEffect(() => {
+    const fetch = async () => {
+      const data = await get_patches();
+      console.log("fetched raw data : ", data);
+      const mappedData = (data || []).map((patch) => ({
+        title: patch.name || "Untitled Patch",
+        description: patch.description || "No description available",
+        badge: patch.patch_state || "no patche state",
+        footer: patch.release_date || "no release_date",
+      }));
+      console.log("fetched patches in dashboard : ", mappedData);
+      setFetchedPatches(mappedData); 
+    };
+ 
+    fetch();
+  }, []);
+  
 
-  const filteredPatches = fetchedPatches.filter(release =>
-    release.title.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredPatches = fetchedPatches.filter(p =>
+    p.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Grouping
   const newReleased = filteredPatches
-    .filter(p => p.badge === 'New' || p.badge === 'Released')
+    .filter(p => p.badge.toLowerCase() === 'new' || p.badge.toLowerCase() === 'released')
     .sort((a, b) => new Date(b.footer) - new Date(a.footer));
 
-  const verified = filteredPatches.filter(p => p.badge === 'Verified');
-  const rejected = filteredPatches.filter(p => p.badge === 'Rejected');
+  const verified = filteredPatches.filter(p => p.badge.toLowerCase() === 'verified');
+  const rejected = filteredPatches.filter(p => p.badge.toLowerCase() === 'rejected');
 
   const displayGroups = [
     { title: 'New & Released Patches', items: newReleased },
