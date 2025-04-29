@@ -40,30 +40,19 @@ function ReleasePatches({ onLogout }) {
         <div className="dashboard-main">
           <div className="dashboard-header">
             <h2 className="dashboard-title">Patches for {id}</h2>
-            <button
-              className="add-patch-button"
-              onClick={() => setShowForm(true)} 
-            >
-              ➕ Add Patch
-            </button>
+            {!showForm && (
+              <button
+                className="add-patch-button"
+                onClick={() => setShowForm(true)}
+              >
+                ➕ Add Patch
+              </button>
+            )}
           </div>
 
+
           {showForm ? (
-            <>
-              <Form />
-              <button
-                onClick={() => setShowForm(false)}
-                style={{
-                  marginTop: '1rem',
-                  backgroundColor: '#ccc',
-                  padding: '8px 12px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                }}
-              >
-                Cancel
-              </button>
-            </>
+            <Form onCancel={() => setShowForm(false)} />
           ) : (
             <div className="card-scrollable">
               <div className="card-grid">
@@ -73,6 +62,7 @@ function ReleasePatches({ onLogout }) {
               </div>
             </div>
           )}
+
         </div>
       </div>
     </div>
