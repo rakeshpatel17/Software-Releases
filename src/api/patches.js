@@ -20,7 +20,7 @@ const get_patches = async (releaseId = null) => {
 
     // Filter if releaseId is provided
     const filteredData =
-      releaseId 
+      releaseId
         ? data.filter(patch => String(patch.release) === String(releaseId))
         : data;
 
@@ -32,4 +32,4 @@ const get_patches = async (releaseId = null) => {
   }
 };
 
-export default get_patches;
+export default get_patches ;
