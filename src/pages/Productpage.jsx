@@ -124,79 +124,70 @@ function ProductPage({ onLogout }) {
                                                     <div style={{ marginTop: '12px' }}>
                                                         <strong>Security Issues:</strong>
                                                         {img.security_issues.length > 0 ? (
-                                                            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '8px' }}>
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>CVE ID</th>
-                                                                        <th>CVSS Score</th>
-                                                                        <th>Severity</th>
-                                                                        <th>Affected Libraries</th>
-                                                                        <th>Library Path</th>
-                                                                        <th>Description</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    {img.security_issues.map((issue, index) => (
-                                                                        <tr key={index}>
-                                                                            <td>{issue.cve_id}</td>
-                                                                            <td>{issue.cvss_score}</td>
-                                                                            <td>{issue.severity}</td>
-                                                                            <td>{issue.affected_libraries}</td>
-                                                                            <td>{issue.library_path}</td>
-                                                                            {/* <td>{issue.description}</td> */}
-                                                                            {/* <td>
-                                                                                {editingIndex === index ? (
-                                                                                    <>
-                                                                                        <textarea
-                                                                                            value={editedDescription}
-                                                                                            onChange={(e) => setEditedDescription(e.target.value)}
-                                                                                            rows={3}
-                                                                                            style={{ width: '100%' }}
-                                                                                        />
-                                                                                        <button
-                                                                                            style={{ marginTop: '4px' }}
-                                                                                            onClick={() => {
-                                                                                                const updatedIssues = [...img.security_issues];
-                                                                                                updatedIssues[index].description = editedDescription;
-                                                                                                img.security_issues = updatedIssues; // In-place update (adjust if using props/state)
-
-                                                                                                setEditingIndex(null); // Close editing
-                                                                                            }}
-                                                                                        >
-                                                                                            Save
-                                                                                        </button>
-                                                                                    </>
-                                                                                ) : (
-                                                                                    <>
-                                                                                        <button
-                                                                                            onClick={() => {
-                                                                                                setEditingIndex(index);
-                                                                                                setEditedDescription(issue.description);
-                                                                                            }}
-                                                                                        >
-                                                                                            Edit
-                                                                                        </button>
-                                                                                    </>
-                                                                                )}
-                                                                            </td> */}
-                                                                            <td> {editingIndex === index ? (<> <textarea value={editedDescription} onChange={(e) => setEditedDescription(e.target.value)} rows={3} style={{ width: '100%' }} /> <button style={{ marginTop: '4px' }} onClick={() => {
-                                                                                const updatedIssues = [...img.security_issues]; updatedIssues[index].description = editedDescription; img.security_issues = updatedIssues; // update in-place or handle via props/state if needed
-                                                                             
-                                                                                setEditingIndex(null); // exit edit mode
-                                                                            }}
-                                                                            >
-                                                                                Save
-                                                                            </button>
-                                                                            </>) : (<> <div style={{ marginBottom: '4px' }}>{issue.description}</div> <button onClick={() => { setEditingIndex(index); setEditedDescription(issue.description); }} > Edit </button> </>)}
-
-                                                                            </td>
+                                                            <div style={{ overflowX: 'auto' }}>
+                                                                <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px', marginTop: '8px' }}>
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>CVE ID</th>
+                                                                            <th>CVSS Score</th>
+                                                                            <th>Severity</th>
+                                                                            <th>Affected Libraries</th>
+                                                                            <th>Library Path</th>
+                                                                            <th>Description</th>
                                                                         </tr>
-                                                                    ))}
-                                                                </tbody>
-                                                            </table>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {img.security_issues.map((issue, index) => (
+                                                                            <tr key={index}>
+                                                                                <td>{issue.cve_id}</td>
+                                                                                <td>{issue.cvss_score}</td>
+                                                                                <td>{issue.severity}</td>
+                                                                                <td>{issue.affected_libraries}</td>
+                                                                                <td>{issue.library_path}</td>
+                                                                                <td>
+                                                                                    {editingIndex === index ? (
+                                                                                        <>
+                                                                                            <textarea
+                                                                                                value={editedDescription}
+                                                                                                onChange={(e) => setEditedDescription(e.target.value)}
+                                                                                                rows={3}
+                                                                                                style={{ width: '100%' }}
+                                                                                            />
+                                                                                            <button
+                                                                                                style={{ marginTop: '4px' }}
+                                                                                                onClick={() => {
+                                                                                                    const updatedIssues = [...img.security_issues];
+                                                                                                    updatedIssues[index].description = editedDescription;
+                                                                                                    img.security_issues = updatedIssues; // update in-place
+                                                                                                    setEditingIndex(null);
+                                                                                                }}
+                                                                                            >
+                                                                                                Save
+                                                                                            </button>
+                                                                                        </>
+                                                                                    ) : (
+                                                                                        <>
+                                                                                            <div style={{ marginBottom: '4px' }}>{issue.description}</div>
+                                                                                            <button
+                                                                                                onClick={() => {
+                                                                                                    setEditingIndex(index);
+                                                                                                    setEditedDescription(issue.description);
+                                                                                                }}
+                                                                                            >
+                                                                                                Edit
+                                                                                            </button>
+                                                                                        </>
+                                                                                    )}
+                                                                                </td>
+                                                                            </tr>
+                                                                        ))}
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
                                                         ) : (
                                                             <p>None</p>
                                                         )}
+
                                                     </div>
                                                 </div>
                                             </td>
