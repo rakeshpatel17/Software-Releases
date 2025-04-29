@@ -143,42 +143,6 @@ function ProductPage({ onLogout }) {
                                                                             <td>{issue.severity}</td>
                                                                             <td>{issue.affected_libraries}</td>
                                                                             <td>{issue.library_path}</td>
-                                                                            {/* <td>{issue.description}</td> */}
-                                                                            {/* <td>
-                                                                                {editingIndex === index ? (
-                                                                                    <>
-                                                                                        <textarea
-                                                                                            value={editedDescription}
-                                                                                            onChange={(e) => setEditedDescription(e.target.value)}
-                                                                                            rows={3}
-                                                                                            style={{ width: '100%' }}
-                                                                                        />
-                                                                                        <button
-                                                                                            style={{ marginTop: '4px' }}
-                                                                                            onClick={() => {
-                                                                                                const updatedIssues = [...img.security_issues];
-                                                                                                updatedIssues[index].description = editedDescription;
-                                                                                                img.security_issues = updatedIssues; // In-place update (adjust if using props/state)
-
-                                                                                                setEditingIndex(null); // Close editing
-                                                                                            }}
-                                                                                        >
-                                                                                            Save
-                                                                                        </button>
-                                                                                    </>
-                                                                                ) : (
-                                                                                    <>
-                                                                                        <button
-                                                                                            onClick={() => {
-                                                                                                setEditingIndex(index);
-                                                                                                setEditedDescription(issue.description);
-                                                                                            }}
-                                                                                        >
-                                                                                            Edit
-                                                                                        </button>
-                                                                                    </>
-                                                                                )}
-                                                                            </td> */}
                                                                             <td> {editingIndex === index ? (<> <textarea value={editedDescription} onChange={(e) => setEditedDescription(e.target.value)} rows={3} style={{ width: '100%' }} /> <button style={{ marginTop: '4px' }} onClick={() => {
                                                                                 const updatedIssues = [...img.security_issues]; updatedIssues[index].description = editedDescription; img.security_issues = updatedIssues; // update in-place or handle via props/state if needed
                                                                              

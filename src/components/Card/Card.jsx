@@ -1,10 +1,20 @@
 import React from 'react';
 import './Card.css';
+import { deletePatch } from '../../api/deletePatch';
 
 const Card = ({ info, className = '', children, ...rest }) => {
   const { title, description, image, badge, footer } = info || {};
   const cardClasses = `enhanced-card float = 'float' ${className}`.trim();
-
+  
+  //function to delete patches
+  // const handleDelete = async (patchName) => {
+  //   try {
+  //     const result = await deletePatch(patchName);
+  //     alert(result.message || 'Patch deleted successfully');
+  //   } catch (err) {
+  //     alert(err.message);
+  //   }
+  // };
   return (
     <div className={cardClasses} {...rest}>
       {image && <img src={image} alt={title} className="card-image" />}
@@ -15,6 +25,9 @@ const Card = ({ info, className = '', children, ...rest }) => {
         <h3 className="card-title">{title}</h3>
         <p className="card-description">{description}</p>
         {children && <div className="card-children">{children}</div>}
+        {/* <button className='patch-btn' onClick={handleDelete}>
+          Delete
+        </button> */}
       </div>
 
       {footer && (

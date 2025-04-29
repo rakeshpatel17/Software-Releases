@@ -6,13 +6,13 @@ import Card from '../components/Card/Card';
 import get_patches from '../api/patches';
 import Form from '../components/Form/Form';
 import './Dashboard.css';
- 
+
 function ReleasePatches({ onLogout }) {
   const { id } = useParams();
   const [patches, setPatches] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
- 
+
   useEffect(() => {
     const fetch = async () => {
       const data = await get_patches(id);
@@ -24,9 +24,9 @@ function ReleasePatches({ onLogout }) {
         footer: patch.release_date || "no release_date",
       }));
       //console.log("fetched patches in dashboard : ", mappedData);
-      setPatches(mappedData); 
+      setPatches(mappedData);
     };
- 
+
     fetch();
   }, [id]);
 
@@ -47,7 +47,7 @@ function ReleasePatches({ onLogout }) {
     { title: 'Verified Patches', items: verified },
     { title: 'Rejected Patches', items: rejected }
   ];
- 
+
   return (
     <div className="dashboard-container">
       <SideNavbar />
@@ -56,16 +56,18 @@ function ReleasePatches({ onLogout }) {
         <div className="dashboard-main">
           <div className="dashboard-header">
             <h2 className="dashboard-title">Patches for {id}</h2>
-            <button
-              className="add-patch-button"
-              onClick={() => setShowForm(true)}
-            >
-              ➕ Add Patch
-            </button>
+            {!showForm && (
+              <button
+                className="add-patch-button"
+                onClick={() => setShowForm(true)}
+              >
+                ➕ Add Patch
+              </button>
+            )}
           </div>
- 
+
           {showForm ? (
-            <Form onCancel={() => setShowForm(false)} lockedRelease={id}/>
+            <Form onCancel={() => setShowForm(false)} lockedRelease={id} />
           ) : (displayGroups.map((group, idx) => (
             group.items.length > 0 && (
               <div key={idx}>
@@ -79,11 +81,11 @@ function ReleasePatches({ onLogout }) {
               </div>
             )
           )))}
- 
+
         </div>
       </div>
     </div>
   );
 }
- 
+
 export default ReleasePatches;

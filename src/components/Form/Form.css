@@ -1,6 +1,7 @@
-.form-container {
+
+   .form-container {
   width: 90%;
-  max-width: 600px;
+  max-width: 700px;
   margin: 2rem auto;
   padding: 2rem;
   background-color: #f9f9f9;
@@ -43,9 +44,9 @@
 }
 
 .submit-button {
-  align-self: flex-start;
+  align-self: auto;
   padding: 10px 18px;
-  background-color: #007bff;
+  background-color: #20338b;
   color: white;
   border: none;
   border-radius: 6px;
@@ -55,13 +56,8 @@
 }
 
 .submit-button:hover {
-  background-color: #0056b3;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 1.5rem;
+  background-color: #f1f1f9;
+  color: #2e2eaa;
 }
 
 .cancel-button {
@@ -79,6 +75,167 @@
   background-color: #a8a8a8;
 }
 
-.submit-button {
-  align-self: auto;
+.form-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
 }
+
+.inline-fields {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.inline-fields .form-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+
+
+.image-list label {
+  margin-bottom: 0.5rem;
+  /* margin-right: 10px; */
+  cursor: pointer;
+}
+
+.product-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.product-item {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  padding: 0.75rem 1rem;
+  transition: box-shadow 0.2s ease;
+}
+
+.product-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.product-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  color: #4a4a8f;
+  gap: 1rem;
+}
+
+.product-title-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+
+.expand-btn {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: #4a4a8f;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.expand-btn:hover {
+  color: #2d2db5;
+  transform: scale(1.1);
+}
+
+.image-list {
+  margin-top: 0.5rem;
+  padding-left: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.image-item {
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.scrollable-product-list {
+  max-height: 200px; 
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0.5rem;
+  background-color: #fff;
+}
+
+
+.jar-search-wrapper {
+  margin-top: 1rem;
+}
+
+.jar-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.search-jar-input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px 0 0 6px;
+  font-size: 1rem;
+}
+/* 
+.search-btn {
+  padding: 10px;
+  background-color: #e0e0f8;
+  border: 1px solid #ccc;
+  border-left: none;
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #20338b;
+} */
+
+.search-btn:hover {
+  background-color: #d4d4f4;
+}
+
+.jar-dropdown {
+  margin-top: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fff;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.jar-dropdown-item {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #fff;
+  cursor: pointer;
+}
+
+.jar-dropdown-item:hover {
+  background-color: #f0f0ff;
+}
+
+.jar-name {
+  font-weight: 500;
+  color: #20338b;
+}
+
+.jar-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+}
+
