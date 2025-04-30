@@ -61,20 +61,9 @@
     font-size: 0.95rem;
   }
   
-  .jar-close-btn {
-    padding: 0 0.5rem;
-    font-size: 1rem;
-    cursor: pointer;
-    background: #eee;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    height: 34px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+
   
-  .jar-selected-row {
+  .jar-selected {
     display: flex;
     align-items: center;
     border: 1px solid #ccc;

@@ -258,16 +258,7 @@ function Form({ onCancel, lockedRelease }) {
 
 
 
-            <div className="form-group">
-                <label className="form-label">Search Product</label>
-                <input
-                    type="text"
-                    placeholder="Search products..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="form-input"
-                />
-            </div>
+          
 
             <ProductImageSelector
                 productData={productData}

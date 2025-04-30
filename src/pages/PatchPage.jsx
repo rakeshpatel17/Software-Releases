@@ -22,27 +22,53 @@ function PatchPage() {
     const productData = [
         {
             name: 'OpenText™ Documentum™ Server',
-            images: [{ image_name: 'docbase.jar' }, { image_name: 'content.jar' }],
+            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
             name: 'OpenText™ Documentum™ Server',
-            images: [{ image_name: 'docbase.jar' }, { image_name: 'content.jar' }],
+            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
             name: 'OpenText™ Documentum™ Server',
-            images: [{ image_name: 'docbase.jar' }, { image_name: 'content.jar' }],
+            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
             name: 'OpenText™ Documentum™ Server',
-            images: [{ image_name: 'docbase.jar' }, { image_name: 'content.jar' }],
+            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
             name: 'OpenText™ Documentum™ Server',
-            images: [{ image_name: 'docbase.jar' }, { image_name: 'content.jar' }]
+            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
         },
         {
-            name: 'D2',
-            images: [{ image_name: 'd2-core.jar' }],
-            name: 'D2',
-            images: [{ image_name: 'd2-core.jar' }],
-            name: 'D2',
-            images: [{ image_name: 'd2-core.jar' }],
-            name: 'D2',
-            images: [{ image_name: 'd2-core.jar' }]
+            name: 'OpenText™ Documentum™ Server',
+            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
+            name: 'OpenText™ Documentum™ Server',
+            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
+            name: 'OpenText™ Documentum™ Server',
+            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
+            name: 'OpenText™ Documentum™ Server',
+            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
+            name: 'OpenText™ Documentum™ Server',
+            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
+        },
+        {
+            name: 'OpenText™ Documentum™ Server',
+            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
+            name: 'OpenText™ Documentum™ Server',
+            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
+            name: 'OpenText™ Documentum™ Server',
+            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
+            name: 'OpenText™ Documentum™ Server',
+            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
+            name: 'OpenText™ Documentum™ Server',
+            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
+        },
+        {
+            name: 'OpenText™ Documentum™ Server',
+            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
+            name: 'OpenText™ Documentum™ Server',
+            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
+            name: 'OpenText™ Documentum™ Server',
+            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
+            name: 'OpenText™ Documentum™ Server',
+            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
+            name: 'OpenText™ Documentum™ Server',
+            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
+        },
 
-        }
     ];
 
     const handleProductSelection = (product, isChecked) => {
@@ -65,10 +91,13 @@ function PatchPage() {
     // States for JarSelector
     const [jarSearchTerm, setJarSearchTerm] = useState('');
     const [expandedJar, setExpandedJar] = useState(null);
-    const [selectedJars, setSelectedJars] = useState(['log4j', 'commons-io']);
+    const [selectedJars, setSelectedJars] = useState(['log4j', 'commons-io', 'guava', 'slf4j', 'guava', 'slf4j', 'log4j', 'commons-io', 'guava', 'slf4j', 'guava', 'slf4j']);
 
     const allJars = [
         { name: 'log4j' },
+        { name: 'commons-io' },
+        { name: 'commons-io' },
+        { name: 'commons-io' },
         { name: 'commons-io' },
         { name: 'guava' },
         { name: 'slf4j' },
@@ -156,13 +185,16 @@ function PatchPage() {
                         <ul>
                             {productData.map((product, index) => (
                                 <li key={index}>
-                                    <strong>{product.name}</strong>:
-                                    {product.images.map((img, idx) => (
-                                        <span key={idx}> {img.image_name}</span>
-                                    ))}
+                                    <strong>{product.name}</strong>
+                                    <div className="product-images">
+                                        {product.images.map((img, idx) => (
+                                            <span key={idx}>{img.image_name}</span>
+                                        ))}
+                                    </div>
                                 </li>
                             ))}
                         </ul>
+
                     </div>
                 ) : (
                     <ProductImageSelector
@@ -179,14 +211,15 @@ function PatchPage() {
 
 
                 {/* Jar Section */}
-                <label>Jars</label>
+
                 {!isEditing ? (
-                    <div className="read-only-jars">
-                        {/* Display selected jars in a read-only format */}
-                        {selectedJars.map(jar => (
-                            <div key={jar}>{jar}</div>
-                        ))}
-                    </div>
+                    <>   <label>Jars</label>
+                        <div className="read-only-jars">
+                            {/* Display selected jars in a read-only format */}
+                            {selectedJars.map(jar => (
+                                <div key={jar}>{jar}</div>
+                            ))}
+                        </div></>
                 ) : (
                     <JarSelector
                         jarSearchTerm={jarSearchTerm}
