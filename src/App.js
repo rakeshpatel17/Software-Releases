@@ -69,6 +69,16 @@ function AppRoutes({ isLoggedIn, handleLoginSuccess, handleLogout }) {
           }
         />
 
+        {/* For patches */}
+      {/* <Route 
+        path="/patches/:id"
+          element={
+            <PrivateRoute isAuthenticated={isLoggedIn}>
+              <PatchPage onLogout={onLogout}/>
+            </PrivateRoute>
+        }
+      /> */}
+
         {/* Redirect any unknown routes */}
         <Route path="*" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
 
