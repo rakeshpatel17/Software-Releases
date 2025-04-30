@@ -5,7 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import ProductPage from "./pages/Productpage";
 import ReleasePatches from "./pages/ReleasePatches";
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import  Form  from "./components/Form/Form";
+import PatchPage from "./pages/PatchPage";
 
 
 // PrivateRoute component: checks if authenticated
@@ -35,36 +35,42 @@ function AppRoutes({ isLoggedIn, handleLoginSuccess, handleLogout }) {
           path="/login"
           element={isLoggedIn ? <Navigate to="/dashboard" /> : <Login onLoginSuccess={onLoginSuccess} />}
         />
+        
+
+        {/* Protected Route */}
         <Route
-          path="/form"
-          element={<Form />}
-        />
-
-      {/* Protected Route */}
-      <Route
-        path="/dashboard"
-        element={
-          <PrivateRoute isAuthenticated={isLoggedIn}>
-            <Dashboard onLogout={onLogout} />
-          </PrivateRoute>
-        }
-      />
-
-      {/* For releases */}
-      <Route 
-        path="/releases/:id"
+          path="/dashboard"
           element={
             <PrivateRoute isAuthenticated={isLoggedIn}>
-              <ReleasePatches onLogout={onLogout}/>
+              <Dashboard onLogout={onLogout} />
             </PrivateRoute>
-        }
-      />
+          }
+        />
+
+        {/* For releases */}
+        <Route
+          path="/releases/:id"
+          element={
+            <PrivateRoute isAuthenticated={isLoggedIn}>
+              <ReleasePatches onLogout={onLogout} />
+            </PrivateRoute>
+          }
+        />
 
         <Route
           path="/products/:productName"  // change productname to productName
           element={
             <PrivateRoute isAuthenticated={isLoggedIn}>
-              <ProductPage onLogout={onLogout}/>
+              <ProductPage onLogout={onLogout} />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/patches/:patchName"
+          element={
+            <PrivateRoute isAuthenticated={isLoggedIn}>
+              <PatchPage onLogout={onLogout} />
             </PrivateRoute>
           }
         />

@@ -161,6 +161,7 @@ function ProductPage({ onLogout }) {
                                                         ) : (
                                                             <p>None</p>
                                                         )}
+
                                                     </div>
                                                 </div>
                                             </td>
