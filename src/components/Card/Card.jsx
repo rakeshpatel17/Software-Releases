@@ -1,6 +1,7 @@
 import React from 'react';
 import './Card.css';
-import { deletePatch } from '../../api/deletePatch';
+import { useNavigate } from 'react-router-dom';
+//import { deletePatch } from '../../api/deletePatch';
 
 const Card = ({ info, className = '', children, ...rest }) => {
   const { title, description, image, badge, footer } = info || {};
@@ -15,8 +16,14 @@ const Card = ({ info, className = '', children, ...rest }) => {
   //     alert(err.message);
   //   }
   // };
+
+  const navigate = useNavigate();
+  const handleClick = () => {
+    // Navigate to the PatchPage with the patch title as the identifier
+    navigate(`/patches/${encodeURIComponent(title)}`);
+  };
   return (
-    <div className={cardClasses} {...rest}>
+    <div className={cardClasses} onClick={handleClick} {...rest}>
       {image && <img src={image} alt={title} className="card-image" />}
 
       <div className="card-body">

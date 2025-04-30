@@ -5,6 +5,7 @@ import './Dashboard.css';
 import Card from '../components/Card/Card';
 import Form from '../components/Form/Form';
 import get_patches from '../api/patches';
+import PatchPage from './PatchPage';
 
 
 // const fetchedPatches = [
@@ -24,6 +25,7 @@ function Dashboard({ onLogout }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [fetchedPatches, setFetchedPatches] = useState([]);
+  const [selectedPatch, setSelectedPatch] = useState(null);
 
   useEffect(() => {
     const fetch = async () => {
@@ -68,7 +70,7 @@ function Dashboard({ onLogout }) {
         <TopNavbar onSearch={setSearchTerm} onLogout={onLogout} />
         <div className="dashboard-main">
         <div className="dashboard-header">
-            <h2 className="dashboard-title">DashBoard</h2>
+            <h2 className="dashboard-title">Overview</h2>
             {!showForm && (
               <button
                 className="add-patch-button"
@@ -79,6 +81,8 @@ function Dashboard({ onLogout }) {
             )}
           </div>          {showForm ? (
             <Form onCancel={() => setShowForm(false)} />
+          ) : selectedPatch ? (
+            <PatchPage patch={selectedPatch} onBack={() => setSelectedPatch(null)} />
           ):
           (displayGroups.map((group, idx) => (
             group.items.length > 0 && (
@@ -86,7 +90,8 @@ function Dashboard({ onLogout }) {
                 <div className="card-scrollable">
                   <div className="card-grid">
                     {group.items.map((patch, index) => (
-                      <Card key={index} info={patch} />
+                      // <Card key={index} info={patch} />
+                      <Card key={index} info={patch} onClick={() => setSelectedPatch(patch)} />
                     ))}
                   </div>
                 </div>

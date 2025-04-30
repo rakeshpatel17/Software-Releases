@@ -6,12 +6,14 @@ import Card from '../components/Card/Card';
 import get_patches from '../api/patches';
 import Form from '../components/Form/Form';
 import './Dashboard.css';
+import PatchPage from './PatchPage';
 
 function ReleasePatches({ onLogout }) {
   const { id } = useParams();
   const [patches, setPatches] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const [selectedPatch, setSelectedPatch] = useState(null);
 
   useEffect(() => {
     const fetch = async () => {
@@ -67,14 +69,16 @@ function ReleasePatches({ onLogout }) {
           </div>
 
           {showForm ? (
-            <Form onCancel={() => setShowForm(false)} lockedRelease={id} />
-          ) : (displayGroups.map((group, idx) => (
+            <Form onCancel={() => setShowForm(false)} />
+          ) : selectedPatch ? (
+            <PatchPage patch={selectedPatch} onBack={() => setSelectedPatch(null)} />
+          ):  (displayGroups.map((group, idx) => (
             group.items.length > 0 && (
               <div key={idx}>
                 <div className="card-scrollable">
                   <div className="card-grid">
                     {group.items.map((patch, index) => (
-                      <Card key={index} info={patch} />
+                       <Card key={index} info={patch} onClick={() => setSelectedPatch(patch)} />
                     ))}
                   </div>
                 </div>

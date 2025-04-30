@@ -16,7 +16,7 @@ function Form({ onCancel, lockedRelease }) {
         release: lockedRelease || '24.2',
         release_date: '',
         description: '',
-        patch_version: '',
+        //patch_version: '',
         patch_state: 'new',
         is_deleted: false,
         //selectedProduct: '',
@@ -243,30 +243,17 @@ function Form({ onCancel, lockedRelease }) {
                 <div className="form-group">
                     <label className="form-label">Patch state</label>
                     <select
-                        name="patchState"
-                        value={formData.patchState}
+                        name="patch_state"
+                        value={formData.patch_state}
                         onChange={handleChange}
                         className="form-select"
                     >
-                        <option value="New">New</option>
-                        <option value="Released">Released</option>
-                        <option value="Verified">Verified</option>
-                        <option value="Rejected">Rejected</option>
+                        <option value="new">New</option>
+                        <option value="released">Released</option>
+                        <option value="verified">Verified</option>
+                        <option value="rejected">Rejected</option>
                     </select>
                 </div>
-            </div>
-
-
-
-            <div className="form-group">
-                <label className="form-label">Search Product</label>
-                <input
-                    type="text"
-                    placeholder="Search products..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="form-input"
-                />
             </div>
 
             <ProductImageSelector
