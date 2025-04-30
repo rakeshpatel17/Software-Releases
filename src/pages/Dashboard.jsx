@@ -67,16 +67,17 @@ function Dashboard({ onLogout }) {
       <div className="dashboard-content">
         <TopNavbar onSearch={setSearchTerm} onLogout={onLogout} />
         <div className="dashboard-main">
-          <div className="dashboard-header">
-            <h2 className="dashboard-title">Dashboard</h2>
-            <button
-              className="add-patch-button"
-              onClick={() => setShowForm(true)}
-            >
-              ➕ Add Patch
-            </button>
-          </div>
-          {showForm ? (
+        <div className="dashboard-header">
+            <h2 className="dashboard-title">DashBoard</h2>
+            {!showForm && (
+              <button
+                className="add-patch-button"
+                onClick={() => setShowForm(true)}
+              >
+                ➕ Add Patch
+              </button>
+            )}
+          </div>          {showForm ? (
             <Form onCancel={() => setShowForm(false)} />
           ):
           (displayGroups.map((group, idx) => (
