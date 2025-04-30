@@ -58,7 +58,7 @@ function ReleasePatches({ onLogout }) {
         <div className="dashboard-main">
           <div className="dashboard-header">
             <h2 className="dashboard-title">Patches for {id}</h2>
-            {!showForm && (
+            {!showForm && !selectedPatch && (
               <button
                 className="add-patch-button"
                 onClick={() => setShowForm(true)}

@@ -2,17 +2,32 @@ import React, { useState } from 'react';
 import ProductImageSelector from '../components/ProductImageSelector';
 import JarSelector from '../components/JarSelector';
 import './PatchPage.css';
+//import { getPatchById } from '../api/getPatchById';
+//import { useParams } from 'react-router-dom';
  
-function PatchPage() {
+function PatchPage({patchName}) {
     const [isEditing, setIsEditing] = useState(false);
- 
     const [patchData, setPatchData] = useState({
-        name: 'Release 1.6',
-        release: 'Release 1',
-        releaseDate: '2025-05-10',
+        name: '24.4.1',
+        release: '24.4',
+        release_date: '2025-05-10',
         description: 'Bug fixes and security patches.',
         state: 'New'
     });
+    // const [patchData, setPatchData] = useState([]);
+    // useEffect(() => {
+    //     const fetchPatch = async () => {
+    //       const data = await getPatchById(patchName);
+    //       console.log("fetched data after clicking card : ",data); 
+    //       if (data && data.length > 0) {
+    //         setPatchData(data);
+    //       } else {
+    //         setPatchData(null); // Handle case when no data is returned
+    //       }
+    //     };
+      
+    //     fetchPatch();
+    // }, [patchName]);
  
     // States for ProductImageSelector
     const [productSearchTerm, setProductSearchTerm] = useState('');
@@ -23,48 +38,16 @@ function PatchPage() {
         {
             name: 'OpenText™ Documentum™ Server',
             images: [{ image_name: 'img1' }, { image_name: 'img12' }],
-            name: 'OpenText™ Documentum™ Server',
-            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
-            name: 'OpenText™ Documentum™ Server',
-            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
-            name: 'OpenText™ Documentum™ Server',
-            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
+        },
+        {
             name: 'OpenText™ Documentum™ Server',
             images: [{ image_name: 'img1' }, { image_name: 'img12' }],
         },
         {
             name: 'OpenText™ Documentum™ Server',
             images: [{ image_name: 'img1' }, { image_name: 'img12' }],
-            name: 'OpenText™ Documentum™ Server',
-            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
-            name: 'OpenText™ Documentum™ Server',
-            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
-            name: 'OpenText™ Documentum™ Server',
-            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
-            name: 'OpenText™ Documentum™ Server',
-            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
         },
         {
-            name: 'OpenText™ Documentum™ Server',
-            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
-            name: 'OpenText™ Documentum™ Server',
-            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
-            name: 'OpenText™ Documentum™ Server',
-            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
-            name: 'OpenText™ Documentum™ Server',
-            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
-            name: 'OpenText™ Documentum™ Server',
-            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
-        },
-        {
-            name: 'OpenText™ Documentum™ Server',
-            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
-            name: 'OpenText™ Documentum™ Server',
-            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
-            name: 'OpenText™ Documentum™ Server',
-            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
-            name: 'OpenText™ Documentum™ Server',
-            images: [{ image_name: 'img1' }, { image_name: 'img12' }],
             name: 'OpenText™ Documentum™ Server',
             images: [{ image_name: 'img1' }, { image_name: 'img12' }],
         },
@@ -150,7 +133,7 @@ function PatchPage() {
                         <label>Release Date</label>
                         <input
                             type="date"
-                            value={patchData.releaseDate}
+                            value={patchData.release_date}
                             disabled={!isEditing}
                             onChange={e => handleFieldChange('releaseDate', e.target.value)}
                         />
@@ -163,8 +146,9 @@ function PatchPage() {
                             onChange={e => handleFieldChange('state', e.target.value)}
                         >
                             <option value="New">New</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Completed">Completed</option>
+                            <option value="Released">Released</option>
+                            <option value="Verified">Verified</option>
+                            <option value="Rejected">Rejected</option>
                         </select>
                     </div>
                 </div>
