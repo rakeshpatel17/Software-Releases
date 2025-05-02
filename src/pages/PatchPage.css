@@ -2,100 +2,163 @@
     max-width: 800px;
     width: 100%; /* Remove fixed width for responsiveness */
     margin: 2rem auto;
+
     padding: 2rem;
+
     background-color: #ffffff;
+
     border-radius: 12px;
+
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
     font-family: 'Segoe UI', sans-serif;
     box-sizing: border-box;
 }
 
 .patch-header {
+
     display: flex;
+
     justify-content: space-between;
+
     align-items: center;
+
     margin-bottom: 1.5rem;
     flex-wrap: wrap;
     gap: 1rem;
 }
 
 .patch-header h2 {
+
     font-size: 1.5rem;
+
     font-weight: 600;
+
     color: #20338b;
+
     margin: 0;
+
 }
 
 .edit-btn {
+
     background-color: #20338b;
+
     color: white;
+
     padding: 8px 14px;
+
     border: none;
+
     border-radius: 6px;
+
     font-size: 0.95rem;
+
     cursor: pointer;
+
     transition: background-color 0.3s ease;
+
 }
 
 .edit-btn:hover {
+
     background-color: #3549c9;
+
 }
 
 .patch-form {
+
     display: flex;
+
     flex-direction: column;
+
     gap: 1rem;
+
 }
 
 .patch-form label {
+
     font-weight: 500;
+
     color: #333;
+
     margin-bottom: 0.25rem;
+
 }
 
 .patch-form input[type="text"],
+
 .patch-form input[type="date"],
+
 .patch-form textarea,
+
 .patch-form select {
+
     padding: 10px;
+
     border: 1px solid #cbd2e1;
+
     border-radius: 6px;
+
     font-size: 1rem;
+
     background-color: #f7f9fc;
     width: 100%;
     box-sizing: border-box;
 }
 
 .patch-form textarea {
+
     min-height: 80px;
+
 }
 
 .save-btn {
+
     background-color: #27a844;
+
     color: white;
+
     border: none;
+
     border-radius: 6px;
+
     padding: 10px 16px;
+
     font-size: 1rem;
+
     margin-top: 1.5rem;
+
     cursor: pointer;
+
     align-self: flex-start;
+
     transition: background-color 0.3s ease;
+
 }
 
 .save-btn:hover {
+
     background-color: #218838;
+
 }
 
 .form-row {
+
     display: flex;
+
     gap: 1rem;
+
     flex-wrap: wrap;
+
 }
 
 .form-group {
+
     flex: 1;
+
     display: flex;
+
     flex-direction: column;
     min-width: 200px;
 }
@@ -103,63 +166,107 @@
 .read-only-products,
 .read-only-jars {
     padding: 1rem;
+
     border: 1px solid #cbd2e1;
+
     background-color: #f7f9fc;
+
     border-radius: 8px;
+
     margin-bottom: 1rem;
+
     max-height: 250px;
+
     overflow-y: auto;
+
 }
 
 .read-only-products ul {
+
     list-style: none;
+
     padding: 0;
+
     margin: 0;
+
 }
 
 .read-only-products li {
+
     background-color: #ffffff;
+
     margin-bottom: 10px;
+
     padding: 10px 12px;
+
     border: 1px solid #dde3f0;
+
     border-radius: 6px;
+
 }
 
 .read-only-products strong {
+
     display: block;
+
     font-weight: 600;
+
     color: #000000;
+
     margin-bottom: 6px;
+
 }
 
 .read-only-products .product-images {
+
     display: flex;
+
     flex-direction: column;
+
     gap: 6px;
+
 }
 
 .read-only-products .product-images span {
+
     background-color: #eef2ff;
+
     color: #070b1d;
+
     font-size: 0.9rem;
+
     padding: 4px 10px;
+
     border-radius: 4px;
+
 }
 
 .read-only-jars {
+
     display: flex;
+
     flex-wrap: wrap;
+
     gap: 8px;
+
 }
 
 .read-only-jars div {
+
     background-color: #eef2ff;
+
     color: #070b1d;
+
     font-weight: 500;
+
     padding: 6px 12px;
+
     border-radius: 20px;
+
     border: 1px solid #bfe2d1;
+
     font-size: 0.95rem;
+
 }
 
 
@@ -173,14 +280,21 @@
 
 /* Responsive tweaks for small screens */
 @media (max-width: 600px) {
+
     .patch-page {
+
         padding: 1rem;
+
     }
 
     .patch-header {
+
         flex-direction: column;
+
         align-items: flex-start;
+
         gap: 0.5rem;
+
     }
 
     .form-row {

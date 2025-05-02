@@ -115,7 +115,7 @@ function Form({ onCancel, lockedRelease }) {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        //e.preventDefault();
 
         const finalData = {
             ...formData,

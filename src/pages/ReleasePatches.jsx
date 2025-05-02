@@ -58,7 +58,7 @@ function ReleasePatches({ onLogout }) {
         <div className="dashboard-main">
           <div className="dashboard-header">
             <h2 className="dashboard-title">Patches for {id}</h2>
-            {!showForm && (
+            {!showForm && !selectedPatch && (
               <button
                 className="add-patch-button"
                 onClick={() => setShowForm(true)}
@@ -71,7 +71,7 @@ function ReleasePatches({ onLogout }) {
           {showForm ? (
             <Form onCancel={() => setShowForm(false)} />
           ) : selectedPatch ? (
-            <PatchPage patch={selectedPatch} onBack={() => setSelectedPatch(null)} />
+            <PatchPage patchName ={selectedPatch.title} patch={selectedPatch} onBack={() => setSelectedPatch(null)} />
           ):  (displayGroups.map((group, idx) => (
             group.items.length > 0 && (
               <div key={idx}>
