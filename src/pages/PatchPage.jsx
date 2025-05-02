@@ -1,34 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ProductImageSelector from '../components/ProductImageSelector';
 import JarSelector from '../components/JarSelector';
 import './PatchPage.css';
-//import { getPatchById } from '../api/getPatchById';
-//import { useParams } from 'react-router-dom';
+import { getPatchById } from '../api/getPatchById';
  
 function PatchPage({patchName}) {
     const [isEditing, setIsEditing] = useState(false);
-    const [patchData, setPatchData] = useState({
-        name: '24.4.1',
-        release: '24.4',
-        release_date: '2025-05-10',
-        description: 'Bug fixes and security patches.',
-        state: 'New'
-    });
-    // const [patchData, setPatchData] = useState([]);
-    // useEffect(() => {
-    //     const fetchPatch = async () => {
-    //       const data = await getPatchById(patchName);
-    //       console.log("fetched data after clicking card : ",data); 
-    //       if (data && data.length > 0) {
-    //         setPatchData(data);
-    //       } else {
-    //         setPatchData(null); // Handle case when no data is returned
-    //       }
-    //     };
+    // const [patchData, setPatchData] = useState({
+    //     name: '24.4.1',
+    //     release: '24.4',
+    //     release_date: '2025-05-10',
+    //     description: 'Bug fixes and security patches.',
+    //     state: 'New'
+    // });
+    const [patchData, setPatchData] = useState([]);
+    useEffect(() => {
+        const fetchPatch = async () => {
+          const data = await getPatchById(patchName);
+          console.log("fetched data after clicking card : ",data); 
+          if (data && data.length > 0) {
+            setPatchData(data[0]);
+          } else {
+            setPatchData([]); // Handle case when no data is returned
+          }
+        };
       
-    //     fetchPatch();
-    // }, [patchName]);
- 
+        fetchPatch();
+    }, [patchName]);
+
     // States for ProductImageSelector
     const [productSearchTerm, setProductSearchTerm] = useState('');
     const [expandedProduct, setExpandedProduct] = useState(null);
@@ -74,7 +73,7 @@ function PatchPage({patchName}) {
     // States for JarSelector
     const [jarSearchTerm, setJarSearchTerm] = useState('');
     const [expandedJar, setExpandedJar] = useState(null);
-    const [selectedJars, setSelectedJars] = useState(['log4j', 'commons-io', 'guava', 'slf4j', 'guava', 'slf4j', 'log4j', 'commons-io', 'guava', 'slf4j', 'guava', 'slf4j']);
+    const [selectedJars, setSelectedJars] = useState(['log4j', 'commons-io', 'guava', 'slf4j']);
  
     const allJars = [
         { name: 'log4j' },
@@ -141,14 +140,14 @@ function PatchPage({patchName}) {
                     <div className="form-group">
                         <label>Patch State</label>
                         <select
-                            value={patchData.state}
+                            value={patchData.patch_state}
                             disabled={!isEditing}
                             onChange={e => handleFieldChange('state', e.target.value)}
                         >
-                            <option value="New">New</option>
-                            <option value="Released">Released</option>
-                            <option value="Verified">Verified</option>
-                            <option value="Rejected">Rejected</option>
+                            <option value="new">New</option>
+                            <option value="released">Released</option>
+                            <option value="verified">Verified</option>
+                            <option value="rejected">Rejected</option>
                         </select>
                     </div>
                 </div>
