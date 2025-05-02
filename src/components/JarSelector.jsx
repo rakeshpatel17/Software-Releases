@@ -1,6 +1,6 @@
 import React from 'react';
 import './JarSelector.css';
-
+ 
 function JarSelector({
     jarSearchTerm,
     setJarSearchTerm,
@@ -27,7 +27,7 @@ function JarSelector({
                         style={{ flex: 1 }}
                     />
                 </div>
-
+ 
                 {jarSearchTerm && filteredJars.length > 0 && !expandedJar && (
                     <div className="jar-dropdown">
                         {filteredJars.map((jar) => (
@@ -44,8 +44,8 @@ function JarSelector({
                         ))}
                     </div>
                 )}
-
-
+ 
+ 
                 {expandedJar && (
                     <div className="jar-selected">
                         <input
@@ -75,10 +75,10 @@ function JarSelector({
                         </button>
                     </div>
                 )}
-
+ 
             </div>
         </div>
     );
 }
-
+ 
 export default JarSelector;

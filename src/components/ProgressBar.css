@@ -1,0 +1,40 @@
+
+.progress-wrapper {
+    margin: 40px auto 20px auto; /* space from header + spacing below */
+    width: 100%;
+    max-width: 850px; /* matches typical centered content card width */
+    padding: 16px 24px;
+    background-color: #fff;
+    /* border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); */
+  }
+  
+  .progress-label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #333;
+  }
+  
+  .progress-bar-background {
+    width: 100%;
+    background-color: #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    height: 12px;
+  }
+  
+  .progress-bar-fill {
+    background-color: #3b82f6; /* blue */
+    height: 100%;
+    transition: width 0.3s ease;
+  }
+  
+  .progress-percent {
+    text-align: right;
+    font-size: 12px;
+    margin-top: 4px;
+    color: #666;
+  }
+  

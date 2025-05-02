@@ -1,111 +1,110 @@
-.jar-search-wrapper {
-    margin-top: 1rem;
-    position: relative;
-  }
-  
-  .jar-search-bar {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  .search-jar-input {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 1rem;
-  }
-  
-  .jar-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    margin-top: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    background-color: #fff;
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: 1000;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .jar-dropdown-item {
-    padding: 0.5rem 1rem;
-    border-bottom: 1px solid #fff;
-    cursor: pointer;
-  }
-  
-  .jar-dropdown-item:hover {
-    background-color: #f0f0ff;
-  }
-  
-  .jar-selected {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-  }
-  
-  .jar-name {
-    font-weight: 500;
-    color: #20338b;
-  }
-  
-  .jar-checkbox {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.95rem;
-  }
-  
+ .jar-search-wrapper {
+  margin-top: 1rem;
+  position: relative;
+}
 
-  
-  .jar-selected {
-    display: flex;
-    align-items: center;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    margin-top: 0.5rem;
-    background-color: #fff;
-    gap: 0.5rem;
-  }
-  
-  .jar-name {
-    flex: 1;
-    font-weight: 500;
-    color: #20338b;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  
-  .jar-version-input {
-    width: 140px;
-    padding: 8px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-  }
-  
-  .jar-close-btn {
-    height: 36px;
-    width: 36px;
-    font-size: 1.25rem;
-    color: #20338b;
-    background: #eee;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s ease;
-  }
-  
-  .jar-close-btn:hover {
-    background-color: #ddd;
-  }
-  
+.jar-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.search-jar-input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.jar-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fff;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.jar-dropdown-item {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #fff;
+  cursor: pointer;
+}
+
+.jar-dropdown-item:hover {
+  background-color: #f0f0ff;
+}
+
+.jar-selected {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.jar-name {
+  font-weight: 500;
+  color: #20338b;
+}
+
+.jar-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+
+
+.jar-selected {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-top: 0.5rem;
+  background-color: #fff;
+  gap: 0.5rem;
+}
+
+.jar-name {
+  flex: 1;
+  font-weight: 500;
+  color: #20338b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.jar-version-input {
+  width: 140px;
+  padding: 8px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.jar-close-btn {
+  height: 36px;
+  width: 36px;
+  font-size: 1.25rem;
+  color: #20338b;
+  background: #eee;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.jar-close-btn:hover {
+  background-color: #ddd;
+} 

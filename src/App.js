@@ -56,7 +56,7 @@ function AppRoutes({ isLoggedIn, handleLoginSuccess, handleLogout }) {
             </PrivateRoute>
           }
         />
-
+      {/* For product page */}
         <Route
           path="/products/:productName"  // change productname to productName
           element={
@@ -66,14 +66,25 @@ function AppRoutes({ isLoggedIn, handleLoginSuccess, handleLogout }) {
           }
         />
 
+      {/* For patch page */}
         <Route
           path="/patches/:patchName"
           element={
             <PrivateRoute isAuthenticated={isLoggedIn}>
-              <PatchPage onLogout={onLogout} />
+              <PatchPage /> 
             </PrivateRoute>
           }
         />
+
+        {/* For patches */}
+      {/* <Route 
+        path="/patches/:id"
+          element={
+            <PrivateRoute isAuthenticated={isLoggedIn}>
+              <PatchPage onLogout={onLogout}/>
+            </PrivateRoute>
+        }
+      /> */}
 
         {/* Redirect any unknown routes */}
         <Route path="*" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />

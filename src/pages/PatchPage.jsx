@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ProductImageSelector from '../components/ProductImageSelector';
 import JarSelector from '../components/JarSelector';
+import ProgressBar from '../components/ProgressBar';
 import './PatchPage.css';
 
 function PatchPage() {
@@ -114,133 +115,162 @@ function PatchPage() {
 
     const toggleEdit = () => setIsEditing(prev => !prev);
 
+    const getProgressValue = (state) => {
+        switch (state) {
+            case 'New':
+                return 10;
+            case 'In Progress':
+                return 50;
+            case 'Completed':
+                return 100;
+            default:
+                return 0;
+        }
+    };
+
+
     return (
-        <div className="patch-page">
-            <div className="patch-header">
-                <h2>Patch Details</h2>
-                <button className="edit-btn" onClick={toggleEdit}>
-                    {isEditing ? 'Cancel' : 'Edit'}
-                </button>
+
+        <>
+            <div className="progress-container">
+                <ProgressBar value={getProgressValue(patchData.state)} label="Patch Progress" />
             </div>
-
-            <form className="patch-form">
-                <div className="form-row">
-                    <div className="form-group">
-                        <label>Name</label>
-                        <input
-                            type="text"
-                            value={patchData.name}
-                            disabled={!isEditing}
-                            onChange={e => handleFieldChange('name', e.target.value)}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Release</label>
-                        <input
-                            type="text"
-                            value={patchData.release}
-                            disabled={!isEditing}
-                            onChange={e => handleFieldChange('release', e.target.value)}
-                        />
-                    </div>
-                </div>
-
-                <div className="form-row">
-                    <div className="form-group">
-                        <label>Release Date</label>
-                        <input
-                            type="date"
-                            value={patchData.releaseDate}
-                            disabled={!isEditing}
-                            onChange={e => handleFieldChange('releaseDate', e.target.value)}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Patch State</label>
-                        <select
-                            value={patchData.state}
-                            disabled={!isEditing}
-                            onChange={e => handleFieldChange('state', e.target.value)}
-                        >
-                            <option value="New">New</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Completed">Completed</option>
-                        </select>
-                    </div>
-                </div>
-
-                <label>Description</label>
-                <textarea
-                    value={patchData.description}
-                    disabled={!isEditing}
-                    onChange={e => handleFieldChange('description', e.target.value)}
-                />
-
-                {/* Product Section */}
-                {/* Product Section */}
-                <label>Products</label>
-                {!isEditing ? (
-                    <div className="read-only-products">
-                        {/* Display selected products in a read-only format */}
-                        <ul>
-                            {productData.map((product, index) => (
-                                <li key={index}>
-                                    <strong>{product.name}</strong>
-                                    <div className="product-images">
-                                        {product.images.map((img, idx) => (
-                                            <span key={idx}>{img.image_name}</span>
-                                        ))}
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-
-                    </div>
-                ) : (
-                    <ProductImageSelector
-                        productData={productData}
-                        selectedImages={selectedImages}
-                        searchTerm={productSearchTerm}
-                        setSearchTerm={setProductSearchTerm}
-                        expandedProduct={expandedProduct}
-                        setExpandedProduct={setExpandedProduct}
-                        handleProductSelection={handleProductSelection}
-                        handleImageToggle={handleImageToggle}
-                    />
-                )}
-
-
-                {/* Jar Section */}
-
-                {!isEditing ? (
-                    <>   <label>Jars</label>
-                        <div className="read-only-jars">
-                            {/* Display selected jars in a read-only format */}
-                            {selectedJars.map(jar => (
-                                <div key={jar}>{jar}</div>
-                            ))}
-                        </div></>
-                ) : (
-                    <JarSelector
-                        jarSearchTerm={jarSearchTerm}
-                        setJarSearchTerm={setJarSearchTerm}
-                        filteredJars={filteredJars}
-                        expandedJar={expandedJar}
-                        setExpandedJar={setExpandedJar}
-                        selectedJars={selectedJars}
-                        setSelectedJars={setSelectedJars}
-                        isEditing={isEditing}
-                    />
-                )}
-
-                {isEditing && (
-                    <button type="submit" className="save-btn">
-                        Save
+            <div className="patch-page">
+                <div className="patch-header">
+                    <h2>Patch Details</h2>
+                    <button className="edit-btn" onClick={toggleEdit}>
+                        {isEditing ? 'Cancel' : 'Edit'}
                     </button>
-                )}
-            </form>
-        </div>
+                </div>
+
+
+
+                <form className="patch-form">
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label>Name</label>
+                            <input
+                                type="text"
+                                value={patchData.name}
+                                disabled={!isEditing}
+                                onChange={e => handleFieldChange('name', e.target.value)}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Release</label>
+                            <input
+                                type="text"
+                                value={patchData.release}
+                                disabled={!isEditing}
+                                onChange={e => handleFieldChange('release', e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label>Release Date</label>
+                            <input
+                                type="date"
+                                value={patchData.releaseDate}
+                                disabled={!isEditing}
+                                onChange={e => handleFieldChange('releaseDate', e.target.value)}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Patch State</label>
+                            <select
+                                value={patchData.state}
+                                disabled={!isEditing}
+                                onChange={e => handleFieldChange('state', e.target.value)}
+                            >
+                                <option value="New">New</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <label>Description</label>
+                    <textarea
+                        value={patchData.description}
+                        disabled={!isEditing}
+                        onChange={e => handleFieldChange('description', e.target.value)}
+                    />
+
+                    {/* Product Section */}
+                    {/* Product Section */}
+                    <label>Products</label>
+                    {!isEditing ? (
+                        <div className="read-only-products">
+                            {/* Display selected products in a read-only format */}
+                            <ul>
+                                {productData.map((product, index) => (
+                                    <li key={index}>
+                                        <strong>{product.name}</strong>
+                                        <div className="product-images">
+                                            {product.images.map((img, idx) => (
+                                                <span key={idx}>{img.image_name}</span>
+                                            ))}
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+
+                        </div>
+                    ) : (
+                        <div className="selector-wrapper">
+                            <ProductImageSelector
+                                productData={productData}
+                                selectedImages={selectedImages}
+                                searchTerm={productSearchTerm}
+                                setSearchTerm={setProductSearchTerm}
+                                expandedProduct={expandedProduct}
+                                setExpandedProduct={setExpandedProduct}
+                                handleProductSelection={handleProductSelection}
+                                handleImageToggle={handleImageToggle}
+                            />
+                        </div>
+
+                    )}
+
+
+                    {/* Jar Section */}
+
+                    {!isEditing ? (
+                        <>   <label>Jars</label>
+                            <div className="read-only-jars">
+                                {/* Display selected jars in a read-only format */}
+                                {selectedJars.map(jar => (
+                                    <div key={jar}>{jar}</div>
+                                ))}
+                            </div></>
+                    ) : (
+                        <div className="selector-wrapper">
+
+                            <JarSelector
+                                jarSearchTerm={jarSearchTerm}
+                                setJarSearchTerm={setJarSearchTerm}
+                                filteredJars={filteredJars}
+                                expandedJar={expandedJar}
+                                setExpandedJar={setExpandedJar}
+                                selectedJars={selectedJars}
+                                setSelectedJars={setSelectedJars}
+                                isEditing={isEditing}
+                            />
+                        </div>
+                    )}
+
+                    {isEditing && (
+                        <button type="submit" className="save-btn">
+                            Save
+                        </button>
+                    )}
+                </form>
+            </div>
+        </>
     );
+
 }
 
 export default PatchPage;
