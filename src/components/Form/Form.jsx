@@ -119,7 +119,7 @@ function Form({ onCancel, lockedRelease }) {
  
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Form Data before validation:", formData);  // Add this log
+        console.log("Form Data before validation:", formData);  
  
         if (!validateForm()) {
             console.warn('Validation failed');
