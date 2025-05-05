@@ -69,7 +69,7 @@ function ReleasePatches({ onLogout }) {
           </div>
 
           {showForm ? (
-            <Form onCancel={() => setShowForm(false)} />
+            <Form lockedRelease={id} onCancel={() => setShowForm(false)} />
           ) : selectedPatch ? (
             <PatchPage patchName ={selectedPatch.title} patch={selectedPatch} onBack={() => setSelectedPatch(null)} />
           ):  (displayGroups.map((group, idx) => (
