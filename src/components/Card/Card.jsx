@@ -1,21 +1,26 @@
 import React from 'react';
 import './Card.css';
 import { useNavigate } from 'react-router-dom';
-//import { deletePatch } from '../../api/deletePatch';
+import { deletePatch } from '../../api/deletePatch';
+import { Trash2 } from 'lucide-react';
+
+
+
+
 
 const Card = ({ info, className = '', children, ...rest }) => {
   const { title, description, image, badge, footer } = info || {};
   const cardClasses = `enhanced-card float = 'float' ${className}`.trim();
-  
+
   //function to delete patches
-  // const handleDelete = async (patchName) => {
-  //   try {
-  //     const result = await deletePatch(patchName);
-  //     alert(result.message || 'Patch deleted successfully');
-  //   } catch (err) {
-  //     alert(err.message);
-  //   }
-  // };
+  const handleDelete = async (patchName) => {
+    try {
+      const result = await deletePatch(patchName);
+      alert(result.message || 'Patch deleted successfully');
+    } catch (err) {
+      alert(err.message);
+    }
+  };
 
   const navigate = useNavigate();
   const handleClick = () => {
@@ -27,25 +32,31 @@ const Card = ({ info, className = '', children, ...rest }) => {
       {image && <img src={image} alt={title} className="card-image" />}
 
       <div className="card-body">
-      {badge && (
-        <span className={`card-badge ${badge.toLowerCase()}`}>{(badge[0].toUpperCase() + badge.slice(1))}</span>)}
+        {badge && (
+          <span className={`card-badge ${badge.toLowerCase()}`}>{(badge[0].toUpperCase() + badge.slice(1))}</span>)}
         <h3 className="card-title">{title}</h3>
         <p className="card-description">{description}</p>
         {children && <div className="card-children">{children}</div>}
         {/* <button className='patch-btn' onClick={handleDelete}>
           Delete
         </button> */}
+       
+
+
       </div>
 
       {footer && (
-  <div className="card-footer">
-    Release Date: {new Date(footer).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })}
-  </div>
-)}
+        <div className="card-footer">
+          <button className='patch-btn' onClick={handleDelete}>
+          <Trash2 size={18} />
+          </button>
+          Release Date: {new Date(footer).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })}
+        </div>
+      )}
     </div>
   );
 };

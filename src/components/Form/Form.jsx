@@ -88,6 +88,7 @@ function Form({ onCancel, lockedRelease }) {
         fetchReleases();
     }, [lockedRelease]);
  
+     //product
     useEffect(() => {
         const fetchProducts = async () => {
             const data = await getAllProducts();
@@ -98,6 +99,7 @@ function Form({ onCancel, lockedRelease }) {
         fetchProducts();
     }, []);
  
+     //jars
     useEffect(() => {
         if (jarSearchTerm.trim()) {
             const filtered = staticJarData.filter(jar =>
@@ -312,23 +314,8 @@ function Form({ onCancel, lockedRelease }) {
                     </select>
                 </div>
             </div>
- 
-            <ProductImageSelector
-                productData={productData}
-                selectedImages={selectedImages}
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                expandedProduct={formData.expandedProduct}
-                setExpandedProduct={(val) =>
-                    setFormData((prev) => ({ ...prev, expandedProduct: val }))
-                }
-                handleProductSelection={handleProductSelection}
-                handleImageToggle={handleImageToggle}
-            />
-            {/* {errors.products && <span className="error-text">{errors.products}</span>} */}
- 
- 
- 
+
+             
             {/* High Level Scope */}
             <label className="form-label">High Level Scope</label>
             <div className="form-group">
@@ -350,6 +337,23 @@ function Form({ onCancel, lockedRelease }) {
                 {/* {errors.highLevelScope && <span className="error-text">{errors.highLevelScope}</span>} */}
  
             </div>
+ 
+            <ProductImageSelector
+                productData={productData}
+                selectedImages={selectedImages}
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                expandedProduct={formData.expandedProduct}
+                setExpandedProduct={(val) =>
+                    setFormData((prev) => ({ ...prev, expandedProduct: val }))
+                }
+                handleProductSelection={handleProductSelection}
+                handleImageToggle={handleImageToggle}
+            />
+            {/* {errors.products && <span className="error-text">{errors.products}</span>} */}
+ 
+ 
+
  
  
             {/* Third-Party JAR Search */}
