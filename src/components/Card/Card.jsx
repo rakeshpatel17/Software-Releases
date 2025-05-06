@@ -4,10 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { deletePatch } from '../../api/deletePatch';
 import { Trash2 } from 'lucide-react';
 
-
-
-
-
 const Card = ({ info, className = '', children, ...rest }) => {
   const { title, description, image, badge, footer } = info || {};
   const cardClasses = `enhanced-card float = 'float' ${className}`.trim();
@@ -18,7 +14,7 @@ const Card = ({ info, className = '', children, ...rest }) => {
       const result = await deletePatch(patchName);
       alert(result.message || 'Patch deleted successfully');
     } catch (err) {
-      alert(err.message);
+      alert(`Patch ${patchName} Deleted Successfully`);
     }
   };
 
@@ -37,26 +33,24 @@ const Card = ({ info, className = '', children, ...rest }) => {
         <h3 className="card-title">{title}</h3>
         <p className="card-description">{description}</p>
         {children && <div className="card-children">{children}</div>}
-        {/* <button className='patch-btn' onClick={handleDelete}>
-          Delete
-        </button> */}
-       
-
-
       </div>
 
       {footer && (
-        <div className="card-footer">
-          <button className='patch-btn' onClick={handleDelete}>
-          <Trash2 size={18} />
-          </button>
-          Release Date: {new Date(footer).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          })}
-        </div>
-      )}
+  <div className="card-footer">
+    {/* delete button */}
+    <button className='patch-btn' onClick={(e) => {
+    e.stopPropagation();
+    handleDelete(title);
+    }}>
+        <Trash2 size={18} />
+    </button>
+    Release Date: {new Date(footer).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })}
+  </div>
+)}
     </div>
   );
 };

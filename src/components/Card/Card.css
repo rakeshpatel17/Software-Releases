@@ -1,97 +1,93 @@
 .enhanced-card {
-    background: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    width: 280px;
-    display: flex;
-    flex-direction: column;
-    margin: 1rem;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
-  
-  .enhanced-card.float:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  }
-  
-  .card-image {
-    width: 100%;
-    height: 160px;
-    object-fit: cover;
-    border-bottom: 1px solid #eee;
-  }  
-  
-  .card-body {
-    padding: 1rem;
-  }
-  
-  .card-title {
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
-    color: #2c3e50;
-  }
-  
-  .card-description {
-    font-size: 0.95rem;
-    color: #555;
-    margin-bottom: 1rem;
-  }
-  
-  .card-badge {
-    display: inline-block;
-    color: #fff;
-    padding: 0.25rem 0.75rem;
-    border-radius: 50px;
-    font-size: 0.75rem;
-    margin-bottom: 0.5rem;
-  }
-  .card-badge.verified {
-    background-color: #2ecc71; /* green */
-  }
-  
-  .card-badge.new {
-    background-color: #3498db; /* blue */
-  }
-  
-  .card-badge.rejected {
-    background-color: #e74c3c; /* red */
-  }
-  .card-badge.released {
-    background-color: #0c7724; /* red */
-  }
-  
-  
-  .card-children {
-    margin-top: 0.5rem;
-  }
-  
-  .card-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    background-color: #f4f4f4;
-    /* text-align: right; */
-    font-size: 0.9rem;
-    color: #666;
-  }
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  margin: 1rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-  .patch-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #000000; /* red for delete */
-    display: flex;
-    align-items: center;
-    padding: 0.25rem;
-  }
-  
-  .patch-btn:hover {
-    color: #af2929;
-  }
-  
-  
+.enhanced-card.float:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
 
-  
+.card-image {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-bottom: 1px solid #eee;
+}  
+
+.card-body {
+  padding: 1rem;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.card-description {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+.card-badge {
+  display: inline-block;
+  color: #fff;
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.card-badge.verified {
+  background-color: #2ecc71; /* green */
+}
+
+.card-badge.new {
+  background-color: #3498db; /* blue */
+}
+
+.card-badge.rejected {
+  background-color: #e74c3c; /* red */
+}
+.card-badge.released {
+  background-color: #0c7724; /* red */
+}
+
+
+.card-children {
+  margin-top: 0.5rem;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background-color: #f4f4f4;
+  /* text-align: right; */
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.patch-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #000000; /* red for delete */
+  display: flex;
+  align-items: center;
+  padding: 0.25rem;
+}
+
+.patch-btn:hover {
+  color: #af2929;
+}

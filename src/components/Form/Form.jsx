@@ -14,6 +14,8 @@ function Form({ onCancel, lockedRelease }) {
         name: '',
         release: lockedRelease || '24.2',
         release_date: '',
+        code_freeze:'',
+        qa_build:'',
         description: '',
         //patch_version: '',
         patch_state: 'new',
@@ -209,9 +211,19 @@ function Form({ onCancel, lockedRelease }) {
     const validateForm = () => {
         const newErrors = {};
  
-        if (!formData.name.trim()) newErrors.name = 'Name is required';
+        if (!formData.name.trim()) newErrors.name = 'Name is required'; 
+        else  if (!formData.name.startsWith(formData.release)) {
+            newErrors.name = `Name must start with release version (${formData.release})`;
+        }
+    
+    
         if (!formData.release_date) newErrors.release_date = 'Release date is required';
         if (!formData.description.trim()) newErrors.description = 'Description is required';
+
+
+        if (!formData.release_date) newErrors.code_freeze = 'Code Freeze date is required';
+        if (!formData.release_date) newErrors.qa_build = 'Platform QA Build Date is required';
+
  
         // const scopeErrors = highLevelScope.map((item) => item.value.trim() === '');
         // if (scopeErrors.includes(true)) {
@@ -225,6 +237,15 @@ function Form({ onCancel, lockedRelease }) {
  
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
+    };
+
+
+    // To get code freeze date
+    const getPreviousDate = (releaseDate, days) => {
+        if (!releaseDate) return '';
+        const date = new Date(releaseDate);
+        date.setDate(date.getDate() - days);
+        return date.toISOString().split('T')[0]; // returns YYYY-MM-DD
     };
  
  
@@ -273,6 +294,35 @@ function Form({ onCancel, lockedRelease }) {
                     {errors.release_date && <span className="error-text">{errors.release_date}</span>}
  
                 </div>
+
+                {/* code freeze date */}
+                <div className="form-group">
+                    <label className="form-label">Code Freeze Date</label>
+                    <input
+                        type="date"
+                        name="code_freeze"
+                        onChange={handleChange}
+                        value={formData.code_freeze || getPreviousDate(formData.release_date, 5)}
+                        className="form-input"
+                        //readOnly
+                    />
+                         {errors.code_freeze && <span className="error-text">{errors.code_freeze}</span>}
+                </div>
+
+                {/* Platform QA Build */}
+                <div className="form-group">
+                    <label className="form-label">Platform QA Build Date</label>
+                    <input
+                        type="date"
+                        name="qa_build"
+                        onChange={handleChange}
+                        value={formData.qa_build || getPreviousDate(formData.release_date, 10)}
+                        className="form-input"
+                        //readOnly
+                    />
+                     {errors.qa_build && <span className="error-text">{errors.qa_build}</span>}
+
+                </div>
             </div>
  
             <div className="form-group">
@@ -314,8 +364,6 @@ function Form({ onCancel, lockedRelease }) {
                     </select>
                 </div>
             </div>
-
-             
             {/* High Level Scope */}
             <label className="form-label">High Level Scope</label>
             <div className="form-group">
@@ -353,9 +401,6 @@ function Form({ onCancel, lockedRelease }) {
             {/* {errors.products && <span className="error-text">{errors.products}</span>} */}
  
  
-
- 
- 
             {/* Third-Party JAR Search */}
             <JarSelector
                 jarSearchTerm={jarSearchTerm}
@@ -366,12 +411,6 @@ function Form({ onCancel, lockedRelease }) {
                 selectedJars={selectedJars}
                 setSelectedJars={setSelectedJars}
             />
- 
- 
- 
- 
- 
- 
  
  
             <div className="form-actions">

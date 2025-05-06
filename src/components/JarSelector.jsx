@@ -13,7 +13,7 @@ function JarSelector({
     return (
         <div className="form-group">
             <label className="form-label">Add Third-Party JAR</label>
-
+ 
             <div className="jar-search-wrapper">
                 <div className="jar-search-bar">
                     <input
@@ -44,7 +44,7 @@ function JarSelector({
                         ))}
                     </div>
                 )}
-
+ 
                 {expandedJar && (
                     <div className="jar-selected">
                         <div className="jar-details-row">
@@ -83,3 +83,4 @@ function JarSelector({
 }
 
 export default JarSelector;
+ 
