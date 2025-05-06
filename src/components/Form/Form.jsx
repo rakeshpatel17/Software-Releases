@@ -90,6 +90,7 @@ function Form({ onCancel, lockedRelease }) {
         fetchReleases();
     }, [lockedRelease]);
  
+     //product
     useEffect(() => {
         const fetchProducts = async () => {
             const data = await getAllProducts();
@@ -100,6 +101,7 @@ function Form({ onCancel, lockedRelease }) {
         fetchProducts();
     }, []);
  
+     //jars
     useEffect(() => {
         if (jarSearchTerm.trim()) {
             const filtered = staticJarData.filter(jar =>

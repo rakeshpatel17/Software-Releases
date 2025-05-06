@@ -1,6 +1,6 @@
 import React from 'react';
 import './JarSelector.css';
- 
+
 function JarSelector({
     jarSearchTerm,
     setJarSearchTerm,
@@ -27,7 +27,7 @@ function JarSelector({
                         className="form-input search-jar-input"
                     />
                 </div>
- 
+
                 {jarSearchTerm && filteredJars.length > 0 && !expandedJar && (
                     <div className="jar-dropdown">
                         {filteredJars.map((jar) => (
@@ -81,6 +81,6 @@ function JarSelector({
         </div>
     );
 }
- 
+
 export default JarSelector;
  
