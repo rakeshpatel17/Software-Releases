@@ -10,13 +10,18 @@ const Card = ({ info, className = '', children, ...rest }) => {
   
   //function to delete patches
   const handleDelete = async (patchName) => {
-    try {
-      const result = await deletePatch(patchName);
-      alert(result.message || 'Patch deleted successfully');
-    } catch (err) {
-      alert(`Patch ${patchName} Deleted Successfully`);
-    }
-  };
+    const userConfirmed = window.confirm(`Are you sure you want to delete the patch: ${patchName}?`);
+        if (userConfirmed) {
+            try {
+                const result = await deletePatch(patchName);
+                alert(result.message || 'Patch deleted successfully');
+            } catch (err) {
+                alert(`Unable to delete Patch ${patchName}`);
+            }
+        } else {
+            alert('Patch deletion cancelled');
+        }
+    };
 
   const navigate = useNavigate();
   const handleClick = () => {

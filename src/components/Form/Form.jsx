@@ -210,8 +210,18 @@ function Form({ onCancel, lockedRelease }) {
         const newErrors = {};
  
         if (!formData.name.trim()) newErrors.name = 'Name is required';
-        if (!formData.release_date) newErrors.release_date = 'Release date is required';
+        else  if (!formData.name.startsWith(formData.release)) {
+            newErrors.name = `Name must start with release version (${formData.release})`;
+        }
+           if (!formData.release_date) newErrors.release_date = 'Release date is required';
         if (!formData.description.trim()) newErrors.description = 'Description is required';
+
+        if (!formData.release_date) newErrors.code_freeze = 'Code Freeze date is required';
+        if (!formData.release_date) newErrors.qa_build = 'Platform QA Build Date is required';
+ 
+        if (!formData.release_date) newErrors.client_build = 'client_build  date is required';
+        if (!formData.release_date) newErrors.kick_off = 'kick_off date is required';
+
  
         // const scopeErrors = highLevelScope.map((item) => item.value.trim() === '');
         // if (scopeErrors.includes(true)) {
@@ -268,7 +278,8 @@ function Form({ onCancel, lockedRelease }) {
                         ))}
                     </select>
                 </div>
- 
+                
+                {/*Release Date */}
                 <div className="form-group">
                     <label className="form-label">Release date</label>
                     <input
@@ -292,8 +303,12 @@ function Form({ onCancel, lockedRelease }) {
                         onChange={handleChange}
                         value={formData.code_freeze || getPreviousDate(formData.release_date, 5)}
                         className="form-input"
+                        min={new Date().toISOString().split("T")[0]}
+                        max={formData.release_date}
                         //readOnly
                     />
+                  {errors.code_freeze && <span className="error-text">{errors.code_freeze}</span>}
+
                 </div>
 
                 {/* Platform QA Build */}
@@ -305,8 +320,44 @@ function Form({ onCancel, lockedRelease }) {
                         onChange={handleChange}
                         value={formData.qa_build || getPreviousDate(formData.release_date, 10)}
                         className="form-input"
+                        min={new Date().toISOString().split("T")[0]}
+                        max={formData.release_date}
+                        //readOnly 	
+                    />
+                        {errors.qa_build && <span className="error-text">{errors.qa_build}</span>}
+
+                </div>
+
+                {/* Client Build date */}
+                <div className="form-group">
+                    <label className="form-label">Client Build Date</label>
+                    <input
+                        type="date"
+                        name="client_build"
+                        onChange={handleChange}
+                        value={formData.client_build || getPreviousDate(formData.release_date, 3)}
+                        className="form-input"
+                        min={new Date().toISOString().split("T")[0]}
+                        max={formData.release_date}
                         //readOnly
                     />
+                    {errors.client_build && <span className="error-text">{errors.client_build}</span>}
+                </div>
+
+                {/* Kick Off date */}
+                <div className="form-group">
+                    <label className="form-label">Kick Off Date</label>
+                    <input
+                        type="date"
+                        name="client_build"
+                        onChange={handleChange}
+                        value={formData.kick_off || getPreviousDate(formData.release_date, 30)}
+                        className="form-input"
+                        min={new Date().toISOString().split("T")[0]}
+                        max={formData.release_date}
+                        //readOnly
+                    />
+                    {errors.kick_off && <span className="error-text">{errors.kick_off}</span>}
                 </div>
             </div>
  
