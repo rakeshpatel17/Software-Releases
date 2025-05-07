@@ -71,7 +71,7 @@ function HighLevelScopeComponent({ highLevelScope, isEditing, onScopeChange }) {
                                             className="scope-action-btn"
                                             onClick={(e) => handleRemoveScope(index, e)}
                                         >
-                                            remove
+                                            Remove
                                         </button>
                                     </td>
                                 </tr>

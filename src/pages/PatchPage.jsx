@@ -146,9 +146,7 @@ function PatchPage({ patchName }) {
 
     return (
         <>
-            <div className="progress-container">
-                <ProgressBar value={getProgressValue(patchData.patch_state)} label="Patch Progress" />
-            </div>
+           
 
             <div className="patch-page">
                 <div className="patch-header">
@@ -223,6 +221,10 @@ function PatchPage({ patchName }) {
                         setSelectedJars={setSelectedJars}
                         isEditing={isEditing}
                     />
+
+<div className="progress-container">
+                <ProgressBar value={getProgressValue(patchData.patch_state)} label="Patch Progress" />
+            </div>
 
 
                     <div className="form-group">

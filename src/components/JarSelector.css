@@ -1,22 +1,22 @@
-.jar-search-wrapper {
+.jar-selector-search .jar-search-wrapper {
   margin-top: 1rem;
   position: relative;
 }
 
-.jar-search-bar {
+.jar-selector-search .jar-search-bar {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.search-jar-input {
+.jar-selector-search .search-jar-input {
   flex: 1;
   padding: 10px !important;
   border: 1px solid #ccc !important;
   font-size: 1rem !important;
 }
 
-.jar-dropdown {
+.jar-selector-search .jar-dropdown {
   position: absolute;
   top: 100%;
   left: 0;
@@ -31,18 +31,17 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.jar-dropdown-item {
+.jar-selector-search .jar-dropdown-item {
   padding: 0.5rem 1rem;
   border-bottom: 1px solid #fff;
   cursor: pointer;
 }
 
-.jar-dropdown-item:hover {
+.jar-selector-search .jar-dropdown-item:hover {
   background-color: #f0f0ff;
 }
 
-/* Selected JAR item layout */
-.jar-selected {
+.jar-selector-search .jar-selected {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -55,18 +54,18 @@
   flex-wrap: nowrap;
 }
 
-.jar-checkbox {
+.jar-selector-search .jar-checkbox {
   display: flex;
   align-items: center;
 }
 
-.jar-name {
+.jar-selector-search .jar-name {
   font-weight: 500;
   color: #20338b;
   white-space: nowrap;
 }
 
-.jar-version-input {
+.jar-selector-search .jar-version-input {
   width: 150px !important;
   padding: 8px;
   font-size: 1rem;
@@ -76,7 +75,7 @@
   margin-left: auto !important;
 }
 
-.jar-close-btn {
+.jar-selector-search .jar-close-btn {
   height: 36px;
   width: 36px;
   font-size: 1.25rem;
@@ -91,11 +90,11 @@
   margin-left: 1rem;
 }
 
-.jar-close-btn:hover {
+.jar-selector-search .jar-close-btn:hover {
   background-color: #ddd;
 }
 
-.jar-details-row {
+.jar-selector-search .jar-details-row {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -103,13 +102,12 @@
   width: 100%;
 }
 
-.jar-remarks-wrapper {
+.jar-selector-search .jar-remarks-wrapper {
   margin-top: 0.5rem;
-  /* padding: 0 0.5rem; */
   padding-left: 2px;
 }
 
-.jar-remarks-input {
+.jar-selector-search .jar-remarks-input {
   width: 100%;
   padding: 8px;
   font-size: 1rem;
@@ -118,8 +116,7 @@
   background-color: #f7f9fc;
 }
 
-/* Remarks toggle button styled  */
-.jar-remarks-toggle {
+.jar-selector-search .jar-remarks-toggle {
   background: none;
   border: none;
   color: #20338b;
@@ -131,6 +128,141 @@
   text-align: left;
 }
 
-.jar-remarks-toggle:hover {
+.jar-selector-search .jar-remarks-toggle:hover {
   text-decoration: underline;
+}
+
+
+/* General Layout and Label Styling */
+.jar-selector-edit label {
+  font-weight: bold;
+  margin-top: 20px;
+  color: #333;
+}
+
+/* Tables */
+.jar-selector-edit-table .read-only-jars-table{
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px !important;
+  table-layout: fixed;
+}
+
+.jar-selector-edit-table th,
+.jar-selector-edit-table td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+/* Editable Table Styles */
+.jar-selector-edit-table th,
+.jar-selector-edit-table td {
+  background-color: #f7f9fc; /* Set header to a light background */
+}
+
+.jar-selector-edit-table td {
+  background-color: #ffffff;
+}
+
+/* Editable Input Fields */
+.jar-selector-edit-input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #cbd2e1;
+  border-radius: 4px;
+  background-color: #f7f9fc;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+/* Buttons */
+.jar-selector-edit-add-btn,
+.jar-selector-edit-remove-btn {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.jar-selector-edit-add-btn {
+  width: 120px;
+  background-color: #20338b;
+  color: white;
+  border: none;
+  margin-top: 15px;
+}
+
+.jar-selector-edit-add-btn:hover {
+  background-color: #3549c9;
+  
+}
+
+.jar-selector-edit-remove-btn {
+  background: transparent;
+  color: #20338b;
+  font-weight: 700;
+  border: none;
+}
+
+.jar-selector-edit-remove-btn:hover {
+  color: #e53935;
+  background: transparent;
+}
+
+/* Read-Only Mode Styles */
+.jar-selector-edit-table.read-only-jars-table td {
+  background-color: #ffffff;
+  color: #333;
+}
+
+.jar-selector-edit-table.read-only-jars-table {
+  padding: 2px;
+  overflow-x: auto;
+}
+
+.jar-selector-edit-table.read-only-jars-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.jar-selector-edit-table.read-only-jars-table th,
+.jar-selector-edit-table.read-only-jars-table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+}
+
+/* Last Child (Remove Button Column) */
+.jar-selector-edit-table td:last-child {
+  width: 120px; 
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.jar-selector-edit-table th:last-child {
+  width: 120px; 
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .jar-selector-edit-table {
+      font-size: 12px;
+  }
+
+  .jar-selector-edit-add-btn,
+  .jar-selector-edit-remove-btn {
+      font-size: 12px;
+      padding: 6px 12px;
+  }
+
+  .jar-selector-edit-input {
+      font-size: 0.9rem;
+      padding: 6px 8px;
+  }
 }
