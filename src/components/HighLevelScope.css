@@ -1,0 +1,142 @@
+/* High Level Scope Component Styles */
+
+/* .high-level-scope {
+    max-width: 800px;
+    width: 100%; 
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); 
+    font-family: 'Segoe UI', sans-serif;
+    box-sizing: border-box;
+} */
+.high-level-scope label {
+    font-weight: bold;
+    margin-top: 20px;
+    color: #333;
+}
+
+/* Tables */
+.high-level-scope table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    table-layout: fixed;
+}
+
+.high-level-scope th,
+.high-level-scope td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+
+
+/* Editable Table Styles */
+.high-level-scope .editable-scope-table th,
+.high-level-scope .read-only-scope-table th {
+    background-color: #f7f9fc; /* Set to pure white */
+}
+
+.high-level-scope .editable-scope-table td {
+    background-color: #ffffff;
+}
+
+.high-level-scope .editable-scope-table input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #cbd2e1;
+    border-radius: 4px;
+    background-color: #f7f9fc;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+}
+
+/* Buttons */
+.high-level-scope .add-scope-btn,
+.high-level-scope .scope-action-btn {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.high-level-scope .add-scope-btn {
+    width: 120px;
+    background-color: #20338b;
+    color: white;
+    border: none;
+}
+
+.high-level-scope .add-scope-btn:hover {
+    background-color: #3549c9;
+}
+
+.high-level-scope .scope-action-btn {
+    background: transparent;
+    color: #20338b;
+    font-weight: 700;
+    border: none;
+}
+
+.high-level-scope .scope-action-btn:hover {
+    color: #e53935;
+    background: transparent;
+}
+
+/* Read-Only Mode Styles */
+.high-level-scope .read-only-scope-table td {
+    background-color: #ffffff;
+    color: #333;
+}
+
+.high-level-scope .read-only-scope {
+    padding: 2px;
+    overflow-x: auto;
+}
+
+.high-level-scope .read-only-scope-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.high-level-scope .read-only-scope-table th,
+.high-level-scope .read-only-scope-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+
+/* last  child */
+.high-level-scope table td:last-child {
+    width: 120px; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center; 
+
+}
+
+.high-level-scope table th:last-child
+{
+    width: 120px; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* Responsive  */
+@media (max-width: 768px) {
+    .high-level-scope table {
+        font-size: 12px;
+    }
+
+    .high-level-scope .add-scope-btn,
+    .high-level-scope .scope-action-btn {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+}

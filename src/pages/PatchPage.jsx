@@ -1,7 +1,10 @@
+
+
 import React, { useState, useEffect } from 'react';
 import ProductImageSelector from '../components/ProductImageSelector';
 import JarSelector from '../components/JarSelector';
 import ProgressBar from '../components/ProgressBar';
+import HighLevelScopeComponent from '../components/HighLevelScope';
 import './PatchPage.css';
 import getAllProducts from '../api/product';
 import { getPatchById } from '../api/getPatchById';
@@ -9,43 +12,24 @@ import { getPatchById } from '../api/getPatchById';
 function PatchPage({ patchName }) {
     const [isEditing, setIsEditing] = useState(false);
     const [patchData, setPatchData] = useState({});
-
-    useEffect(() => {
-        const fetchPatch = async () => {
-            const data = await getPatchById(patchName);
-            if (data && data.length > 0) {
-                setPatchData(data[0]);
-            } else {
-                setPatchData({});
-            }
-        };
-        fetchPatch();
-    }, [patchName]);
-
-    // Jar-related state
-    const [jarSearchTerm, setJarSearchTerm] = useState('');
-    const [filteredJars, setFilteredJars] = useState([]);
-    const [selectedJars, setSelectedJars] = useState([]);
-    const [expandedJar, setExpandedJar] = useState(null);
-    const selectedJarRead = [
+    const [selectedJars, setSelectedJars] = useState([
         { name: 'log4j', version: '2.1', remarks: 'Major upgrade' },
         { name: 'commons-io', version: '2.2', remarks: 'Minor upgrade' },
         { name: 'guava', version: '3.1', remarks: 'Security patch applied' },
         { name: 'slf4j', version: '1.7', remarks: 'No change' }
-    ];
+    ]);
+    const [highLevelScope, setHighLevelScope] = useState([
+        { label: 'Base OS', value: '' },
+        { label: 'Tomcat', value: '' },
+        { label: 'JDK', value: '' },
+        { label: 'OTDS', value: '' },
+        { label: 'New Relic', value: '' }
+    ]);
 
+    const [tempPatchData, setTempPatchData] = useState({});
+    const [tempSelectedJars, setTempSelectedJars] = useState([]);
+    const [tempHighLevelScope, setTempHighLevelScope] = useState([]);
 
-    const allJars = [
-        { name: 'commons-cli' },
-        { name: 'commons-codec' },
-        { name: 'commons-io' },
-        { name: 'log4j' },
-        { name: 'spring-core' },
-        { name: 'spring-security' },
-        { name: 'xmlsec' },
-    ];
-
-    // Product-related state
     const [productSearchTerm, setProductSearchTerm] = useState('');
     const [expandedProduct, setExpandedProduct] = useState(null);
     const [selectedImages, setSelectedImages] = useState([]);
@@ -61,6 +45,7 @@ function PatchPage({ patchName }) {
         };
         fetchProducts();
     }, []);
+
 
     const handleImageToggle = (image) => {
         setSelectedImages((prev) =>
@@ -92,34 +77,56 @@ function PatchPage({ patchName }) {
         product.name.toLowerCase().includes(productSearchTerm.toLowerCase())
     );
 
-    const [highLevelScope, setHighLevelScope] = useState([
-        { label: 'Base OS', value: '' },
-        { label: 'Tomcat', value: '' },
-        { label: 'JDK', value: '' },
-        { label: 'OTDS', value: '' },
-        { label: 'New Relic', value: '' }
-    ]);
-
-    const handleHighLevelScopeChange = (index, newValue) => {
-        setHighLevelScope(prev => {
-            const updated = [...prev];
-            updated[index].value = newValue;
-            return updated;
-        });
-    };
+    useEffect(() => {
+        const fetchPatch = async () => {
+            const data = await getPatchById(patchName);
+            if (data && data.length > 0) {
+                setPatchData(data[0]);
+                setTempPatchData(data[0]);
+            } else {
+                setPatchData({});
+                setTempPatchData({});
+            }
+        };
+        fetchPatch();
+    }, [patchName]);
 
     useEffect(() => {
-        if (jarSearchTerm.trim()) {
-            const filtered = allJars.filter(jar =>
-                jar.name.toLowerCase().includes(jarSearchTerm.toLowerCase())
-            );
-            setFilteredJars(filtered);
-        } else {
-            setFilteredJars([]);
-        }
-    }, [jarSearchTerm]);
+        setTempSelectedJars(selectedJars);
+        setTempHighLevelScope(highLevelScope);
+    }, [selectedJars, highLevelScope]);
 
-    const toggleEdit = () => setIsEditing(prev => !prev);
+    useEffect(() => {
+        const fetchProducts = async () => {
+            const data = await getAllProducts();
+            if (data && data.length > 0) {
+                setProductData(data);
+            }
+        };
+        fetchProducts();
+    }, []);
+
+    const toggleEdit = () => {
+        if (isEditing) {
+            // If exiting edit mode, discard changes and reset to original state
+            setTempPatchData(patchData);
+            setTempSelectedJars(selectedJars);
+            setTempHighLevelScope(highLevelScope);
+        }
+        setIsEditing(!isEditing);
+    };
+
+    const handleScopeChange = (index, newValue) => {
+        const updatedScope = [...tempHighLevelScope];
+        updatedScope[index].value = newValue;
+        setTempHighLevelScope(updatedScope);
+    };
+
+    const handleJarChange = (index, field, value) => {
+        const updatedJars = [...tempSelectedJars];
+        updatedJars[index][field] = value;
+        setTempSelectedJars(updatedJars);
+    };
 
     const getProgressValue = (state) => {
         switch (state) {
@@ -128,6 +135,13 @@ function PatchPage({ patchName }) {
             case 'released': return 100;
             default: return 0;
         }
+    };
+
+    const handleSave = () => {
+        setPatchData(tempPatchData);
+        setSelectedJars(tempSelectedJars);
+        setHighLevelScope(tempHighLevelScope);
+        setIsEditing(false);
     };
 
     return (
@@ -146,25 +160,24 @@ function PatchPage({ patchName }) {
 
                 <form className="patch-form">
                     <div className="form-row">
-                    <div className="form-group">
+                        <div className="form-group">
                             <label>Release</label>
                             <input
                                 type="text"
-                                value={patchData.release || ''}
+                                value={tempPatchData.release || ''}
                                 disabled={!isEditing}
-                                onChange={e => setPatchData({ ...patchData, release: e.target.value })}
+                                onChange={e => setTempPatchData({ ...tempPatchData, release: e.target.value })}
                             />
                         </div>
                         <div className="form-group">
-                            <label>Name</label>
+                            <label>Version</label>
                             <input
                                 type="text"
-                                value={patchData.name || ''}
+                                value={tempPatchData.name || ''}
                                 disabled={!isEditing}
-                                onChange={e => setPatchData({ ...patchData, name: e.target.value })}
+                                onChange={e => setTempPatchData({ ...tempPatchData, name: e.target.value })}
                             />
                         </div>
-
                     </div>
 
                     <div className="form-row">
@@ -172,9 +185,9 @@ function PatchPage({ patchName }) {
                             <label>Release Date</label>
                             <input
                                 type="date"
-                                value={patchData.release_date || ''}
+                                value={tempPatchData.release_date || ''}
                                 disabled={!isEditing}
-                                onChange={e => setPatchData({ ...patchData, release_date: e.target.value })}
+                                onChange={e => setTempPatchData({ ...tempPatchData, release_date: e.target.value })}
                                 min={new Date().toISOString().split("T")[0]}
                             />
                         </div>
@@ -182,113 +195,60 @@ function PatchPage({ patchName }) {
                             <label>Code Freeze Date</label>
                             <input
                                 type="date"
-                                value={patchData.release_date || ''}
+                                value={tempPatchData.release_date || ''}
                                 disabled={!isEditing}
-                                onChange={e => setPatchData({ ...patchData, release_date: e.target.value })}
+                                onChange={e => setTempPatchData({ ...tempPatchData, release_date: e.target.value })}
                             />
                         </div>
                         <div className="form-group">
                             <label>Platform QA Build</label>
                             <input
                                 type="date"
-                                value={patchData.release_date || ''}
+                                value={tempPatchData.release_date || ''}
                                 disabled={!isEditing}
-                                onChange={e => setPatchData({ ...patchData, release_date: e.target.value })}
+                                onChange={e => setTempPatchData({ ...tempPatchData, release_date: e.target.value })}
                             />
                         </div>
-                        </div>
+                    </div>
 
-                        <label>High Level Scope</label>
-                    {!isEditing ? (
-                        <div className="read-only-scope">
-                            <ul>
-                                {highLevelScope.map((item, index) => (
-                                    <li key={index}>
-                                        <strong>{item.label}:</strong> {item.value || <em>Not specified</em>}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ) : (
-                        <div className="env-section">
-                            {highLevelScope.map((item, index) => (
-                                <div className="form-row" key={index}>
-                                    <div className="form-group">
-                                        <label>{item.label}</label>
-                                    </div>
-                                    <div className="form-group">
-                                        <input
-                                            type="text"
-                                            value={item.value}
-                                            onChange={(e) => handleHighLevelScopeChange(index, e.target.value)}
-                                        />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
+                    <HighLevelScopeComponent
+                        highLevelScope={tempHighLevelScope}
+                        onScopeChange={handleScopeChange}
+                        isEditing={isEditing}
+                    />
 
-{!isEditing ? (
-                        <>
+                    <JarSelector
+                        mode="edit"
+                        selectedJars={selectedJars}
+                        setSelectedJars={setSelectedJars}
+                        isEditing={isEditing}
+                    />
 
-                            <label>Jars</label>
-                            <table className="read-only-jars-table">
-                                <thead>
-                                    <tr>
-                                        <th>Third Party Jar</th>
-                                        <th>Version</th>
-                                        <th>Remarks</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {selectedJarRead.map(jar => (
-                                        <tr key={jar.name}>
-                                            <td>{jar.name}</td>
-                                            <td><strong>{jar.version}</strong></td>
-                                            <td>{jar.remarks}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </>
+<div className="progress-container">
+                <ProgressBar value={getProgressValue(patchData.patch_state)} label="Patch Progress" />
+            </div>
 
 
-                    ) : (
-                        <JarSelector
-                            jarSearchTerm={jarSearchTerm}
-                            setJarSearchTerm={setJarSearchTerm}
-                            filteredJars={filteredJars}
-                            expandedJar={expandedJar}
-                            setExpandedJar={setExpandedJar}
-                            selectedJars={selectedJars}
-                            setSelectedJars={setSelectedJars}
-                            isEditing={isEditing}
-                        />
-                    )}
-
-                        <div className="form-group">
-                            <label>Patch State</label>
-                            <select
-                                value={patchData.patch_state || 'New'}
-                                disabled={!isEditing}
-                                onChange={e => setPatchData({ ...patchData, patch_state: e.target.value })}
-                            >
-                                <option value="new">New</option>
-                                <option value="rejected">Rejected</option>
-                                <option value="verified">Verified</option>
-                                <option value="released">Released</option>
-                            </select>
-                        </div>
-                    
+                    <div className="form-group">
+                        <label>Patch State</label>
+                        <select
+                            value={tempPatchData.patch_state || 'New'}
+                            disabled={!isEditing}
+                            onChange={e => setTempPatchData({ ...tempPatchData, patch_state: e.target.value })}
+                        >
+                            <option value="new">New</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="verified">Verified</option>
+                            <option value="released">Released</option>
+                        </select>
+                    </div>
 
                     <label>Description</label>
                     <textarea
-                        value={patchData.description || ''}
+                        value={tempPatchData.description || ''}
                         disabled={!isEditing}
-                        onChange={e => setPatchData({ ...patchData, description: e.target.value })}
+                        onChange={e => setTempPatchData({ ...tempPatchData, description: e.target.value })}
                     />
-
-
 
                     {!isEditing ? (
                         <>
@@ -321,10 +281,8 @@ function PatchPage({ patchName }) {
                         />
                     )}
 
-
-
                     {isEditing && (
-                        <button type="submit" className="save-btn">
+                        <button type="button" className="save-btn" onClick={handleSave}>
                             Save
                         </button>
                     )}

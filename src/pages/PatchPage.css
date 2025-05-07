@@ -297,20 +297,106 @@
         width: 100%;
     }
 }
-
- /* high level scope */
- .env-section .form-row {
-    align-items: center;
-}
- 
-/* high level scope */
 .read-only-scope {
+    padding: 2px;
+    /* background-color: #f7f9fc; */
+    /* border-radius: 6px; */
+    /* border: 1px solid #bfe2d1; */
+    overflow-x: auto;
+}
+
+.read-only-scope-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.read-only-scope-table th,
+.read-only-scope-table td {
+    border: 1px solid #ccc;
     padding: 8px;
+    text-align: left;
+}
+
+.read-only-scope-table th {
     background-color: #f7f9fc;
-    border-radius: 5px;
-    border: 1px solid #bfe2d1;
- 
-  }
-  .read-only-scope li {
-    margin-bottom: 4px;
-  }
+    font-weight: 600;
+    color: #000;
+}
+
+.read-only-scope-table td em {
+    color: #888;
+}
+
+
+
+/* editable */
+/* Editable Scope Table */
+.editable-scope-table,
+.editable-jars-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+}
+
+.editable-scope-table th,
+.editable-scope-table td,
+.editable-jars-table th,
+.editable-jars-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.editable-scope-table th,
+.editable-jars-table th {
+    background-color: #f7f9fc;
+    font-weight: 600;
+    color: #000;
+}
+
+/* Inputs inside table cells */
+.editable-scope-table input[type="text"],
+.editable-jars-table input[type="text"] {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #cbd2e1;
+    border-radius: 4px;
+    background-color: #f7f9fc;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+}
+
+/* Add/Remove buttons inside table */
+.scope-action-btn,
+.jar-action-btn {
+    padding: 6px 10px;
+    font-size: 0.9rem;
+    background-color: #e44d4d;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.scope-action-btn:hover,
+.jar-action-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Add row button */
+.add-scope-btn,
+.add-jar-btn {
+    padding: 6px 12px;
+    background-color: #20338b;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.add-scope-btn:hover,
+.add-jar-btn:hover {
+    background-color: #3549c9;
+}

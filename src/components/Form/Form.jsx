@@ -1,4 +1,4 @@
- 
+
 import React, { useState, useEffect } from 'react';
 import './Form.css';
 import get_release from '../../api/release';
@@ -7,15 +7,15 @@ import post_patches from '../../api/post_patches';
 import get_patches from '../../api/patches';
 import ProductImageSelector from '../ProductImageSelector';
 import JarSelector from '../JarSelector';
- 
- 
+
+
 function Form({ onCancel, lockedRelease }) {
     const [formData, setFormData] = useState({
         name: '',
         release: lockedRelease || '24.2',
         release_date: '',
-        code_freeze:'',
-        qa_build:'',
+        code_freeze: '',
+        qa_build: '',
         description: '',
         //patch_version: '',
         patch_state: 'new',
@@ -29,17 +29,17 @@ function Form({ onCancel, lockedRelease }) {
     const [productData, setProductData] = useState([]);
     const [selectedProducts, setSelectedProducts] = useState([]);
     //const [patchSize, setPatchSize] = useState([]);
- 
+
     // JAR-specific state
     const [jarSearchTerm, setJarSearchTerm] = useState('');
     const [filteredJars, setFilteredJars] = useState([]);
     const [selectedJars, setSelectedJars] = useState([]);
     const [expandedJar, setExpandedJar] = useState(null);
- 
- 
+
+
     //error
     const [errors, setErrors] = useState({});
- 
+
     const staticJarData = [
         { name: 'commons-cli' },
         { name: 'commons-codec' },
@@ -49,16 +49,16 @@ function Form({ onCancel, lockedRelease }) {
         { name: 'spring-security' },
         { name: 'xmlsec' },
     ];
- 
+
     useEffect(() => {
         const fetchPatchSizeAndSetName = async () => {
             try {
                 const patchData = await get_patches(formData.release);
                 console.log("patchdata:", patchData.length);
                 const size = patchData.length;
- 
+
                 //setPatchSize(size);
- 
+
                 setFormData((prev) => ({
                     ...prev,
                     name: formData.release + '.' + (size + 1),
@@ -68,29 +68,29 @@ function Form({ onCancel, lockedRelease }) {
                 console.error("Failed to fetch patches:", error);
             }
         };
- 
+
         if (formData.release) {
             fetchPatchSizeAndSetName();
         }
     }, [formData.release]);
- 
+
     useEffect(() => {
         const fetchReleases = async () => {
             const data = await get_release();
             if (data && data.length > 0) {
                 setReleaseList(data);
- 
+
                 setFormData((prev) => ({
                     ...prev,
                     release: lockedRelease || data[0].id, // use lockedRelease if present
                 }));
             }
         };
- 
+
         fetchReleases();
     }, [lockedRelease]);
- 
-     //product
+
+    //product
     useEffect(() => {
         const fetchProducts = async () => {
             const data = await getAllProducts();
@@ -100,8 +100,8 @@ function Form({ onCancel, lockedRelease }) {
         };
         fetchProducts();
     }, []);
- 
-     //jars
+
+    //jars
     useEffect(() => {
         if (jarSearchTerm.trim()) {
             const filtered = staticJarData.filter(jar =>
@@ -112,7 +112,7 @@ function Form({ onCancel, lockedRelease }) {
             setFilteredJars([]);
         }
     }, [jarSearchTerm]);
- 
+
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData((prevData) => ({
@@ -120,24 +120,24 @@ function Form({ onCancel, lockedRelease }) {
             [name]: type === 'checkbox' ? checked : value,
         }));
     };
- 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Form Data before validation:", formData);  
- 
+        console.log("Form Data before validation:", formData);
+
         if (!validateForm()) {
             console.warn('Validation failed');
             return;
         }
- 
- 
+
+
         const finalData = {
             ...formData,
             products: selectedProducts.map((product) => {
                 const selectedImagesForProduct = (product.images || [])
                     .filter((img) => selectedImages.includes(img.image_name))
                     .map((img) => img.image_name);
- 
+
                 return {
                     productName: product.name,
                     selectedImages: selectedImagesForProduct,
@@ -145,28 +145,28 @@ function Form({ onCancel, lockedRelease }) {
             }),
             thirdPartyJars: selectedJars,
         };
- 
+
         console.log('Final Submitted Data:', formData);
- 
- 
+
+
         try {
             const response = await post_patches(formData);
             console.log('Response from post_patches:', response);
         } catch (error) {
             console.error('Error while posting to database:', error);
         }
- 
+
     };
- 
+
     const handleImageToggle = (image) => {
         setSelectedImages((prev) =>
             prev.includes(image) ? prev.filter((img) => img !== image) : [...prev, image]
         );
     };
- 
+
     const handleProductSelection = (product, isChecked) => {
         const productImages = product.images || [];
- 
+
         setSelectedImages((prev) => {
             if (isChecked) {
                 return [...new Set([...prev, ...productImages.map((img) => img.image_name)])];
@@ -174,7 +174,7 @@ function Form({ onCancel, lockedRelease }) {
                 return prev.filter((img) => !productImages.some((prodImg) => prodImg.image_name === img));
             }
         });
- 
+
         setSelectedProducts((prev) => {
             if (isChecked) {
                 return [...prev, { name: product.name, images: product.images }];
@@ -183,12 +183,12 @@ function Form({ onCancel, lockedRelease }) {
             }
         });
     };
- 
+
     const filteredProducts = productData.filter((product) =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
- 
- 
+
+
     //high level scope
     const [highLevelScope, setHighLevelScope] = useState([
         { label: 'Base OS', value: '' },
@@ -197,8 +197,8 @@ function Form({ onCancel, lockedRelease }) {
         { label: 'OTDS', value: '' },
         { label: 'New Relic', value: '' }
     ]);
- 
- 
+
+
     const handleHighLevelScopeChange = (index, newValue) => {
         setHighLevelScope(prev => {
             const updated = [...prev];
@@ -206,35 +206,35 @@ function Form({ onCancel, lockedRelease }) {
             return updated;
         });
     };
- 
+
     // client side validation
     const validateForm = () => {
         const newErrors = {};
- 
+
         if (!formData.name.trim()) newErrors.name = 'Name is required';
-        else  if (!formData.name.startsWith(formData.release)) {
+        else if (!formData.name.startsWith(formData.release)) {
             newErrors.name = `Name must start with release version (${formData.release})`;
         }
-           if (!formData.release_date) newErrors.release_date = 'Release date is required';
+        if (!formData.release_date) newErrors.release_date = 'Release date is required';
         if (!formData.description.trim()) newErrors.description = 'Description is required';
 
         if (!formData.release_date) newErrors.code_freeze = 'Code Freeze date is required';
         if (!formData.release_date) newErrors.qa_build = 'Platform QA Build Date is required';
- 
+
         if (!formData.release_date) newErrors.client_build = 'client_build  date is required';
         if (!formData.release_date) newErrors.kick_off = 'kick_off date is required';
 
- 
+
         // const scopeErrors = highLevelScope.map((item) => item.value.trim() === '');
         // if (scopeErrors.includes(true)) {
         //     newErrors.highLevelScope = 'high-level scope fields must be filled';
         // }
- 
+
         if (selectedProducts.length === 0) {
             newErrors.products = 'At least one product must be selected';
         }
-   
- 
+
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -247,12 +247,12 @@ function Form({ onCancel, lockedRelease }) {
         date.setDate(date.getDate() - days);
         return date.toISOString().split('T')[0]; // returns YYYY-MM-DD
     };
- 
- 
+
+
     return (
         <form className="form-container" onSubmit={handleSubmit}>
             <div className="inline-fields">
-            <div className="form-group">
+                <div className="form-group">
                     <label className="form-label">Release</label>
                     <select
                         name="release"
@@ -269,7 +269,7 @@ function Form({ onCancel, lockedRelease }) {
                     </select>
                 </div>
                 <div className="form-group">
-                    <label className="form-label">Name</label>
+                    <label className="form-label">Version</label>
                     <input
                         name="name"
                         type="text"
@@ -278,10 +278,10 @@ function Form({ onCancel, lockedRelease }) {
                         className="form-input"
                     />
                     {errors.name && <span className="error-text">{errors.name}</span>}
- 
+
                 </div>
 
-                
+
                 {/*Release Date */}
                 <div className="form-group">
                     <label className="form-label">Release date</label>
@@ -294,7 +294,7 @@ function Form({ onCancel, lockedRelease }) {
                         min={new Date().toISOString().split("T")[0]}
                     />
                     {errors.release_date && <span className="error-text">{errors.release_date}</span>}
- 
+
                 </div>
 
                 {/* code freeze date */}
@@ -308,9 +308,9 @@ function Form({ onCancel, lockedRelease }) {
                         className="form-input"
                         min={new Date().toISOString().split("T")[0]}
                         max={formData.release_date}
-                        //readOnly
+                    //readOnly
                     />
-                  {errors.code_freeze && <span className="error-text">{errors.code_freeze}</span>}
+                    {errors.code_freeze && <span className="error-text">{errors.code_freeze}</span>}
 
                 </div>
 
@@ -325,9 +325,9 @@ function Form({ onCancel, lockedRelease }) {
                         className="form-input"
                         min={new Date().toISOString().split("T")[0]}
                         max={formData.release_date}
-                        //readOnly 	
+                    //readOnly 	
                     />
-                        {errors.qa_build && <span className="error-text">{errors.qa_build}</span>}
+                    {errors.qa_build && <span className="error-text">{errors.qa_build}</span>}
 
                 </div>
 
@@ -342,7 +342,7 @@ function Form({ onCancel, lockedRelease }) {
                         className="form-input"
                         min={new Date().toISOString().split("T")[0]}
                         max={formData.release_date}
-                        //readOnly
+                    //readOnly
                     />
                     {errors.client_build && <span className="error-text">{errors.client_build}</span>}
                 </div>
@@ -358,12 +358,12 @@ function Form({ onCancel, lockedRelease }) {
                         className="form-input"
                         min={new Date().toISOString().split("T")[0]}
                         max={formData.release_date}
-                        //readOnly
+                    //readOnly
                     />
                     {errors.kick_off && <span className="error-text">{errors.kick_off}</span>}
                 </div>
             </div>
- 
+
             <div className="form-group">
                 <label className="form-label">Description</label>
                 <textarea
@@ -374,9 +374,9 @@ function Form({ onCancel, lockedRelease }) {
                     className="form-textarea"
                 />
                 {errors.description && <span className="error-text">{errors.description}</span>}
- 
+
             </div>
- 
+
             <div className="inline-fields">
                 {/* <div className="form-group">
               <label className="form-label">Patch version</label>
@@ -387,7 +387,7 @@ function Form({ onCancel, lockedRelease }) {
                   className="form-input"
               />
           </div> */}
- 
+
                 <div className="form-group">
                     <label className="form-label">Patch state</label>
                     <select
@@ -422,9 +422,9 @@ function Form({ onCancel, lockedRelease }) {
                     </div>
                 ))}
                 {/* {errors.highLevelScope && <span className="error-text">{errors.highLevelScope}</span>} */}
- 
+
             </div>
- 
+
             <ProductImageSelector
                 productData={productData}
                 selectedImages={selectedImages}
@@ -438,10 +438,11 @@ function Form({ onCancel, lockedRelease }) {
                 handleImageToggle={handleImageToggle}
             />
             {/* {errors.products && <span className="error-text">{errors.products}</span>} */}
- 
- 
+
+
             {/* Third-Party JAR Search */}
             <JarSelector
+                mode="search"
                 jarSearchTerm={jarSearchTerm}
                 setJarSearchTerm={setJarSearchTerm}
                 filteredJars={filteredJars}
@@ -450,8 +451,9 @@ function Form({ onCancel, lockedRelease }) {
                 selectedJars={selectedJars}
                 setSelectedJars={setSelectedJars}
             />
- 
- 
+
+
+
             <div className="form-actions">
                 <button type="button" className="cancel-button" onClick={onCancel}>
                     Cancel
@@ -463,7 +465,6 @@ function Form({ onCancel, lockedRelease }) {
         </form>
     );
 }
- 
+
 export default Form;
- 
- 
+
