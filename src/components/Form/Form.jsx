@@ -252,19 +252,7 @@ function Form({ onCancel, lockedRelease }) {
     return (
         <form className="form-container" onSubmit={handleSubmit}>
             <div className="inline-fields">
-                <div className="form-group">
-                    <label className="form-label">Name</label>
-                    <input
-                        name="name"
-                        type="text"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className="form-input"
-                    />
-                    {errors.name && <span className="error-text">{errors.name}</span>}
- 
-                </div>
-                <div className="form-group">
+            <div className="form-group">
                     <label className="form-label">Release</label>
                     <select
                         name="release"
@@ -280,6 +268,19 @@ function Form({ onCancel, lockedRelease }) {
                         ))}
                     </select>
                 </div>
+                <div className="form-group">
+                    <label className="form-label">Name</label>
+                    <input
+                        name="name"
+                        type="text"
+                        value={formData.name}
+                        onChange={handleChange}
+                        className="form-input"
+                    />
+                    {errors.name && <span className="error-text">{errors.name}</span>}
+ 
+                </div>
+
                 
                 {/*Release Date */}
                 <div className="form-group">

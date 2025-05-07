@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './JarSelector.css';
 
 function JarSelector({
@@ -10,10 +10,13 @@ function JarSelector({
     selectedJars,
     setSelectedJars
 }) {
+    const [showRemarksInput, setShowRemarksInput] = useState(false);
+    const [remarks, setRemarks] = useState('');
+
     return (
         <div className="form-group">
             <label className="form-label">Add Third-Party JAR</label>
- 
+
             <div className="jar-search-wrapper">
                 <div className="jar-search-bar">
                     <input
@@ -23,6 +26,8 @@ function JarSelector({
                         onChange={(e) => {
                             setJarSearchTerm(e.target.value);
                             setExpandedJar(null);
+                            setShowRemarksInput(false);
+                            setRemarks('');
                         }}
                         className="form-input search-jar-input"
                     />
@@ -44,38 +49,64 @@ function JarSelector({
                         ))}
                     </div>
                 )}
- 
+
                 {expandedJar && (
-                    <div className="jar-selected">
-                        <div className="jar-details-row">
-                            <input
-                                type="checkbox"
-                                checked={selectedJars.includes(expandedJar)}
-                                onChange={() =>
-                                    setSelectedJars((prev) =>
-                                        prev.includes(expandedJar)
-                                            ? prev.filter((name) => name !== expandedJar)
-                                            : [...prev, expandedJar]
-                                    )
-                                }
-                                className="jar-checkbox"
-                            />
-                            <span className="jar-name">{expandedJar}</span>
-                            <input
-                                type="text"
-                                placeholder="Version"
-                                className="form-input jar-version-input"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setExpandedJar(null)}
-                                className="jar-close-btn"
-                                title="Remove"
-                            >
-                                ×
-                            </button>
+                    <>
+                        <div className="jar-selected">
+                            <div className="jar-details-row">
+                                <input
+                                    type="checkbox"
+                                    checked={selectedJars.includes(expandedJar)}
+                                    onChange={() =>
+                                        setSelectedJars((prev) =>
+                                            prev.includes(expandedJar)
+                                                ? prev.filter((name) => name !== expandedJar)
+                                                : [...prev, expandedJar]
+                                        )
+                                    }
+                                    className="jar-checkbox"
+                                />
+                                <span className="jar-name">{expandedJar}</span>
+                                <input
+                                    type="text"
+                                    placeholder="Version"
+                                    className="form-input jar-version-input"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setExpandedJar(null);
+                                        setShowRemarksInput(false);
+                                        setRemarks('');
+                                    }}
+                                    className="jar-close-btn"
+                                    title="Remove"
+                                >
+                                    ×
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                        <button
+                            type="button"
+                            className="jar-remarks-toggle"
+                            onClick={() => setShowRemarksInput(!showRemarksInput)}
+                        >
+                            {showRemarksInput ? 'Hide Remarks' : 'Add Remarks'}
+                        </button>
+                        {showRemarksInput && (
+                            <div className="jar-remarks-wrapper">
+                                <input
+                                    type="text"
+                                    placeholder="Enter remarks"
+                                    value={remarks}
+                                    onChange={(e) => setRemarks(e.target.value)}
+                                    className="jar-remarks-input"
+                                />
+                            </div>
+                        )}
+
+
+                    </>
                 )}
             </div>
         </div>
@@ -83,4 +114,3 @@ function JarSelector({
 }
 
 export default JarSelector;
- 

@@ -8,18 +8,6 @@ import get_patches from '../api/patches';
 import PatchPage from './PatchPage';
 
 
-// const fetchedPatches = [
-//   { title: 'Patch 1', description: 'Products and images in patch 1', badge: 'new', footer: '2025-04-21' },
-//   { title: 'Patch 2', description: 'Products and images in patch 2', badge: 'verified', footer: '2025-04-16' },
-//   { title: 'Patch 3', description: 'Products and images in patch 3', badge: 'rejected', footer: '2025-04-20' },
-//   { title: 'Patch 4', description: 'Products and images in patch 4', badge: 'new', footer: '2025-04-19' },
-//   { title: 'Patch 5', description: 'Products and images in patch 5', badge: 'new', footer: '2025-04-18' },
-//   { title: 'Patch 6', description: 'Products and images in patch 6', badge: 'new', footer: '2025-04-21' },
-//   { title: 'Patch 7', description: 'Products and images in patch 7', badge: 'verified', footer: '2025-04-16' },
-//   { title: 'Patch 8', description: 'Products and images in patch 8', badge: 'rejected', footer: '2025-04-20' },
-//   { title: 'Patch 9', description: 'Products and images in patch 9', badge: 'new', footer: '2025-04-19' },
-//   { title: 'Patch 10', description: 'Products and images in patch 10', badge: 'released', footer: '2025-04-22' }
-// ];
 
 function Dashboard({ onLogout }) {
   const [searchTerm, setSearchTerm] = useState('');

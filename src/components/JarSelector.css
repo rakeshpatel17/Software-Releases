@@ -2,20 +2,20 @@
   margin-top: 1rem;
   position: relative;
 }
- 
+
 .jar-search-bar {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
- 
+
 .search-jar-input {
   flex: 1;
   padding: 10px !important;
   border: 1px solid #ccc !important;
   font-size: 1rem !important;
 }
- 
+
 .jar-dropdown {
   position: absolute;
   top: 100%;
@@ -30,42 +30,42 @@
   z-index: 1000;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
- 
+
 .jar-dropdown-item {
   padding: 0.5rem 1rem;
   border-bottom: 1px solid #fff;
   cursor: pointer;
 }
- 
+
 .jar-dropdown-item:hover {
   background-color: #f0f0ff;
 }
- 
+
 /* Selected JAR item layout */
 .jar-selected {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Ensures left and right items */
+  justify-content: space-between;
   border: 1px solid #ccc;
   border-radius: 8px;
   padding: 0.75rem 1rem;
-  margin-top: 0.5rem;
+  margin-top: 0.75rem;
   background-color: #fff;
   gap: 1rem;
   flex-wrap: nowrap;
 }
- 
+
 .jar-checkbox {
   display: flex;
   align-items: center;
 }
- 
+
 .jar-name {
   font-weight: 500;
   color: #20338b;
   white-space: nowrap;
 }
- 
+
 .jar-version-input {
   width: 150px !important;
   padding: 8px;
@@ -73,9 +73,9 @@
   border: 1px solid #ccc;
   border-radius: 6px;
   background-color: #f7f9fc;
-  margin-left: auto !important; /* Aligns version input to the right */
+  margin-left: auto !important;
 }
- 
+
 .jar-close-btn {
   height: 36px;
   width: 36px;
@@ -88,17 +88,49 @@
   align-items: center;
   justify-content: center;
   transition: background-color 0.2s ease;
-  margin-left: 1rem; /* Adds space between version input and close button */
+  margin-left: 1rem;
 }
- 
+
 .jar-close-btn:hover {
   background-color: #ddd;
 }
- 
+
 .jar-details-row {
   display: flex;
   align-items: center;
   gap: 1rem;
   flex-wrap: nowrap;
   width: 100%;
+}
+
+.jar-remarks-wrapper {
+  margin-top: 0.5rem;
+  /* padding: 0 0.5rem; */
+  padding-left: 2px;
+}
+
+.jar-remarks-input {
+  width: 100%;
+  padding: 8px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f7f9fc;
+}
+
+/* Remarks toggle button styled  */
+.jar-remarks-toggle {
+  background: none;
+  border: none;
+  color: #20338b;
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 0;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  text-align: left;
+}
+
+.jar-remarks-toggle:hover {
+  text-decoration: underline;
 }

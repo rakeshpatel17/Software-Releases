@@ -5,11 +5,11 @@ import ProgressBar from '../components/ProgressBar';
 import './PatchPage.css';
 import getAllProducts from '../api/product';
 import { getPatchById } from '../api/getPatchById';
- 
+
 function PatchPage({ patchName }) {
     const [isEditing, setIsEditing] = useState(false);
     const [patchData, setPatchData] = useState({});
-   
+
     useEffect(() => {
         const fetchPatch = async () => {
             const data = await getPatchById(patchName);
@@ -21,19 +21,20 @@ function PatchPage({ patchName }) {
         };
         fetchPatch();
     }, [patchName]);
- 
+
     // Jar-related state
     const [jarSearchTerm, setJarSearchTerm] = useState('');
     const [filteredJars, setFilteredJars] = useState([]);
     const [selectedJars, setSelectedJars] = useState([]);
     const [expandedJar, setExpandedJar] = useState(null);
     const selectedJarRead = [
-        { name: 'log4j', version: '2.1' },
-        { name: 'commons-io', version: '2.2' },
-        { name: 'guava', version: '3.1' },
-        { name: 'slf4j', version: '1.7' }
+        { name: 'log4j', version: '2.1', remarks: 'Major upgrade' },
+        { name: 'commons-io', version: '2.2', remarks: 'Minor upgrade' },
+        { name: 'guava', version: '3.1', remarks: 'Security patch applied' },
+        { name: 'slf4j', version: '1.7', remarks: 'No change' }
     ];
- 
+
+
     const allJars = [
         { name: 'commons-cli' },
         { name: 'commons-codec' },
@@ -43,14 +44,14 @@ function PatchPage({ patchName }) {
         { name: 'spring-security' },
         { name: 'xmlsec' },
     ];
- 
+
     // Product-related state
     const [productSearchTerm, setProductSearchTerm] = useState('');
     const [expandedProduct, setExpandedProduct] = useState(null);
     const [selectedImages, setSelectedImages] = useState([]);
     const [productData, setProductData] = useState([]);
     const [selectedProducts, setSelectedProducts] = useState([]);
- 
+
     useEffect(() => {
         const fetchProducts = async () => {
             const data = await getAllProducts();
@@ -60,16 +61,16 @@ function PatchPage({ patchName }) {
         };
         fetchProducts();
     }, []);
- 
+
     const handleImageToggle = (image) => {
         setSelectedImages((prev) =>
             prev.includes(image) ? prev.filter((img) => img !== image) : [...prev, image]
         );
     };
- 
+
     const handleProductSelection = (product, isChecked) => {
         const productImages = product.images || [];
- 
+
         setSelectedImages((prev) => {
             if (isChecked) {
                 return [...new Set([...prev, ...productImages.map((img) => img.image_name)])];
@@ -77,7 +78,7 @@ function PatchPage({ patchName }) {
                 return prev.filter((img) => !productImages.some((prodImg) => prodImg.image_name === img));
             }
         });
- 
+
         setSelectedProducts((prev) => {
             if (isChecked) {
                 return [...prev, { name: product.name, images: product.images }];
@@ -86,11 +87,11 @@ function PatchPage({ patchName }) {
             }
         });
     };
- 
+
     const filteredProducts = productData.filter((product) =>
         product.name.toLowerCase().includes(productSearchTerm.toLowerCase())
     );
- 
+
     const [highLevelScope, setHighLevelScope] = useState([
         { label: 'Base OS', value: '' },
         { label: 'Tomcat', value: '' },
@@ -98,7 +99,7 @@ function PatchPage({ patchName }) {
         { label: 'OTDS', value: '' },
         { label: 'New Relic', value: '' }
     ]);
- 
+
     const handleHighLevelScopeChange = (index, newValue) => {
         setHighLevelScope(prev => {
             const updated = [...prev];
@@ -106,7 +107,7 @@ function PatchPage({ patchName }) {
             return updated;
         });
     };
- 
+
     useEffect(() => {
         if (jarSearchTerm.trim()) {
             const filtered = allJars.filter(jar =>
@@ -117,9 +118,9 @@ function PatchPage({ patchName }) {
             setFilteredJars([]);
         }
     }, [jarSearchTerm]);
- 
+
     const toggleEdit = () => setIsEditing(prev => !prev);
- 
+
     const getProgressValue = (state) => {
         switch (state) {
             case 'New': return 10;
@@ -128,13 +129,13 @@ function PatchPage({ patchName }) {
             default: return 0;
         }
     };
- 
+
     return (
         <>
             <div className="progress-container">
                 <ProgressBar value={getProgressValue(patchData.patch_state)} label="Patch Progress" />
             </div>
- 
+
             <div className="patch-page">
                 <div className="patch-header">
                     <h2>Patch Details</h2>
@@ -142,9 +143,18 @@ function PatchPage({ patchName }) {
                         {isEditing ? 'Cancel' : 'Edit'}
                     </button>
                 </div>
- 
+
                 <form className="patch-form">
                     <div className="form-row">
+                    <div className="form-group">
+                            <label>Release</label>
+                            <input
+                                type="text"
+                                value={patchData.release || ''}
+                                disabled={!isEditing}
+                                onChange={e => setPatchData({ ...patchData, release: e.target.value })}
+                            />
+                        </div>
                         <div className="form-group">
                             <label>Name</label>
                             <input
@@ -154,17 +164,9 @@ function PatchPage({ patchName }) {
                                 onChange={e => setPatchData({ ...patchData, name: e.target.value })}
                             />
                         </div>
-                        <div className="form-group">
-                            <label>Release</label>
-                            <input
-                                type="text"
-                                value={patchData.release || ''}
-                                disabled={!isEditing}
-                                onChange={e => setPatchData({ ...patchData, release: e.target.value })}
-                            />
-                        </div>
+
                     </div>
- 
+
                     <div className="form-row">
                         <div className="form-group">
                             <label>Release Date</label>
@@ -194,29 +196,9 @@ function PatchPage({ patchName }) {
                                 onChange={e => setPatchData({ ...patchData, release_date: e.target.value })}
                             />
                         </div>
-                        <div className="form-group">
-                            <label>Patch State</label>
-                            <select
-                                value={patchData.patch_state || 'New'}
-                                disabled={!isEditing}
-                                onChange={e => setPatchData({ ...patchData, patch_state: e.target.value })}
-                            >
-                                <option value="new">New</option>
-                                <option value="rejected">Rejected</option>
-                                <option value="verified">Verified</option>
-                                <option value="released">Released</option>
-                            </select>
                         </div>
-                    </div>
- 
-                    <label>Description</label>
-                    <textarea
-                        value={patchData.description || ''}
-                        disabled={!isEditing}
-                        onChange={e => setPatchData({ ...patchData, description: e.target.value })}
-                    />
- 
-                    <label>High Level Scope</label>
+
+                        <label>High Level Scope</label>
                     {!isEditing ? (
                         <div className="read-only-scope">
                             <ul>
@@ -245,7 +227,69 @@ function PatchPage({ patchName }) {
                             ))}
                         </div>
                     )}
- 
+
+{!isEditing ? (
+                        <>
+
+                            <label>Jars</label>
+                            <table className="read-only-jars-table">
+                                <thead>
+                                    <tr>
+                                        <th>Third Party Jar</th>
+                                        <th>Version</th>
+                                        <th>Remarks</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {selectedJarRead.map(jar => (
+                                        <tr key={jar.name}>
+                                            <td>{jar.name}</td>
+                                            <td><strong>{jar.version}</strong></td>
+                                            <td>{jar.remarks}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </>
+
+
+                    ) : (
+                        <JarSelector
+                            jarSearchTerm={jarSearchTerm}
+                            setJarSearchTerm={setJarSearchTerm}
+                            filteredJars={filteredJars}
+                            expandedJar={expandedJar}
+                            setExpandedJar={setExpandedJar}
+                            selectedJars={selectedJars}
+                            setSelectedJars={setSelectedJars}
+                            isEditing={isEditing}
+                        />
+                    )}
+
+                        <div className="form-group">
+                            <label>Patch State</label>
+                            <select
+                                value={patchData.patch_state || 'New'}
+                                disabled={!isEditing}
+                                onChange={e => setPatchData({ ...patchData, patch_state: e.target.value })}
+                            >
+                                <option value="new">New</option>
+                                <option value="rejected">Rejected</option>
+                                <option value="verified">Verified</option>
+                                <option value="released">Released</option>
+                            </select>
+                        </div>
+                    
+
+                    <label>Description</label>
+                    <textarea
+                        value={patchData.description || ''}
+                        disabled={!isEditing}
+                        onChange={e => setPatchData({ ...patchData, description: e.target.value })}
+                    />
+
+
+
                     {!isEditing ? (
                         <>
                             <label>Products</label>
@@ -276,31 +320,9 @@ function PatchPage({ patchName }) {
                             handleImageToggle={handleImageToggle}
                         />
                     )}
- 
-                    {!isEditing ? (
-                        <>
-                            <label>Jars</label>
-                            <div className="read-only-jars">
-                                {selectedJarRead.map(jar => (
-                                    <div key={jar.name}>
-                                        {jar.name} - v{jar.version}
-                                    </div>
-                                ))}
-                            </div>
-                        </>
-                    ) : (
-                        <JarSelector
-                            jarSearchTerm={jarSearchTerm}
-                            setJarSearchTerm={setJarSearchTerm}
-                            filteredJars={filteredJars}
-                            expandedJar={expandedJar}
-                            setExpandedJar={setExpandedJar}
-                            selectedJars={selectedJars}
-                            setSelectedJars={setSelectedJars}
-                            isEditing={isEditing}
-                        />
-                    )}
- 
+
+
+
                     {isEditing && (
                         <button type="submit" className="save-btn">
                             Save
@@ -311,5 +333,5 @@ function PatchPage({ patchName }) {
         </>
     );
 }
- 
+
 export default PatchPage;

@@ -241,34 +241,22 @@
 
 }
 
-.read-only-jars {
-
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 8px;
-
-}
-
-.read-only-jars div {
-
-    background-color: #eef2ff;
-
-    color: #070b1d;
-
-    font-weight: 500;
-
-    padding: 6px 12px;
-
-    border-radius: 20px;
-
-    border: 1px solid #bfe2d1;
-
-    font-size: 0.95rem;
-
-}
-
+.read-only-jars-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .read-only-jars-table th,
+  .read-only-jars-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+  }
+  
+  .read-only-jars-table th {
+    background-color: #f7f9fc;
+    text-align: left;
+  }
+  
 
 .progress-container {
     width: 100%;
