@@ -1,13 +1,17 @@
 import React from "react";
 import "./ProgressBar.css";
+import { useNavigate } from "react-router-dom";
 
-function ProgressBar({ value, label }) {
-//   const clampedValue = Math.max(0, Math.min(100, value));
-  const clampedValue = 60
-
-
+function ProgressBar({ value = 0, label, redirectTo = "/dashboard" }) {
+  console.log("redirects to : ", redirectTo);
+   const clampedValue = Math.max(0, Math.min(100, value));
+  //const clampedValue = 60
+  const navigate = useNavigate();
+  const handleClick = () => {
+    navigate(redirectTo);
+  };
   return (
-    <div className="progress-wrapper">
+    <div className="progress-wrapper clickable" onClick={handleClick}>
       {label && <div className="progress-label">{label}</div>}
       <div className="progress-bar-background">
         <div

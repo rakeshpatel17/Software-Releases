@@ -1,0 +1,113 @@
+.dashboard-container {
+    display: flex;
+    height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f6fa;
+  }
+   
+  .dashboard-content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Full screen height */
+    overflow-y: auto; /* Enable vertical scrolling */
+  }
+   
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    margin-bottom: 1rem;
+    padding-top: 10px;
+    padding-right: 20px;
+  
+  }
+  
+
+   
+  .search-input {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 250px;
+    outline: none;
+  }
+   
+  .profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+   
+  .restaurant-name {
+    font-weight: bold;
+    color: #333;
+  }
+   
+  .profile-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+  }
+   
+  .dashboard-main {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+  }
+   
+   
+  
+  
+  .patchProgress .product-table-container {
+    max-width: 1000px; /* Limit table container width */
+    margin: 0 auto 2rem auto; /* Center and add spacing below */
+    background-color: #f9f9fb;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    padding: 1rem;
+  }
+  
+  .patchProgress .product-table-container h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #20338b;
+    font-size: 1.2rem;
+  }
+  
+  .patchProgress .product-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  
+  .patchProgress .product-table th,
+  .patchProgress .product-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .patchProgress .product-table th {
+    background-color: #20338b;
+    color: white;
+  }
+  
+  .patchProgress .product-table tr:hover {
+    background-color: #e8efff;
+  }
+  @media (max-width: 768px) {
+  .patchProgress .product-table-container {
+    padding: 0.5rem;
+  }
+
+  .patchProgress .product-table th,
+  .patchProgress .product-table td {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+}

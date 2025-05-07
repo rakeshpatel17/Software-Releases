@@ -6,6 +6,7 @@ import ProductPage from "./pages/Productpage";
 import ReleasePatches from "./pages/ReleasePatches";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import PatchPage from "./pages/PatchPage";
+import PatchProgressPage from "./pages/PatchProgressPage";
 
 
 // PrivateRoute component: checks if authenticated
@@ -76,15 +77,15 @@ function AppRoutes({ isLoggedIn, handleLoginSuccess, handleLogout }) {
           }
         />
 
-        {/* For patches */}
-      {/* <Route 
-        path="/patches/:id"
+       {/* PatchProgress Route */}
+       <Route
+          path="/progress/:id"
           element={
             <PrivateRoute isAuthenticated={isLoggedIn}>
-              <PatchPage onLogout={onLogout}/>
+              <PatchProgressPage onLogout={onLogout} />
             </PrivateRoute>
-        }
-      /> */}
+          }
+        />
 
         {/* Redirect any unknown routes */}
         <Route path="*" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />

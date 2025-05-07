@@ -71,20 +71,13 @@ function ProductPage({ onLogout }) {
                                 <th>Twist Lock Report</th>
                                 <th>Status</th>
                                 <th>More Details</th> {/* Dropdown toggle column */}
-
                             </tr>
                         </thead>
                         <tbody>
                             {images.map((img, idx) => (
                                 <React.Fragment key={idx}>
                                     <tr>
-
                                         <td>
-                                            {/* <img
-                                                src={img.image_url}
-                                                alt={`Build ${img.build_number}`}
-                                                style={{ width: '80px', height: 'auto', borderRadius: '4px' }}
-                                            /> */}
                                             {img.image_name}
                                         </td>
                                         <td>{highlightMatch(img.build_number, searchTerm)}</td>
@@ -100,7 +93,6 @@ function ProductPage({ onLogout }) {
                                             </a>
                                         </td>
                                         <td> {img.twistlock_report_clean ? (<span style={{ color: 'green', fontWeight: 'bold' }}> ✔ Success </span>) : (<span style={{ color: 'red', fontWeight: 'bold' }}> ✖ Fail </span>)} </td>
-
                                         <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                                             <button onClick={() => toggleRow(idx)}>
                                                 {expandedRows[idx] ? '▲' : '▼'}
@@ -119,8 +111,6 @@ function ProductPage({ onLogout }) {
                                                             <strong>Created At:</strong> {new Date(img.created_at).toLocaleString()}
                                                         </span>
                                                     </p>
-                                                    {/* <p><strong>Security Issues:</strong> {img.security_issues.length > 0 ? img.security_issues.join(', ') : 'None'}</p> */}
-
                                                     <div style={{ marginTop: '12px' }}>
                                                         <strong>Security Issues:</strong>
                                                         {img.security_issues.length > 0 ? (
@@ -145,14 +135,12 @@ function ProductPage({ onLogout }) {
                                                                             <td>{issue.library_path}</td>
                                                                             <td> {editingIndex === index ? (<> <textarea value={editedDescription} onChange={(e) => setEditedDescription(e.target.value)} rows={3} style={{ width: '100%' }} /> <button style={{ marginTop: '4px' }} onClick={() => {
                                                                                 const updatedIssues = [...img.security_issues]; updatedIssues[index].description = editedDescription; img.security_issues = updatedIssues; // update in-place or handle via props/state if needed
-                                                                             
                                                                                 setEditingIndex(null); // exit edit mode
                                                                             }}
                                                                             >
                                                                                 Save
                                                                             </button>
                                                                             </>) : (<> <div style={{ marginBottom: '4px' }}>{issue.description}</div> <button onClick={() => { setEditingIndex(index); setEditedDescription(issue.description); }} > Edit </button> </>)}
-
                                                                             </td>
                                                                         </tr>
                                                                     ))}
@@ -161,7 +149,6 @@ function ProductPage({ onLogout }) {
                                                         ) : (
                                                             <p>None</p>
                                                         )}
-
                                                     </div>
                                                 </div>
                                             </td>
@@ -178,7 +165,6 @@ function ProductPage({ onLogout }) {
                             )}
                         </tbody>
                     </table>
-
                 </div>
             </div>
         </div>

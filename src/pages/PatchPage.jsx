@@ -123,9 +123,9 @@ function PatchPage({ patchName }) {
 
     const getProgressValue = (state) => {
         switch (state) {
-            case 'New': return 10;
-            case 'In Progress': return 50;
-            case 'Completed': return 100;
+            case 'new': return 30;
+            case 'verified': return 50;
+            case 'released': return 100;
             default: return 0;
         }
     };
@@ -133,7 +133,7 @@ function PatchPage({ patchName }) {
     return (
         <>
             <div className="progress-container">
-                <ProgressBar value={getProgressValue(patchData.patch_state)} label="Patch Progress" />
+                <ProgressBar value={getProgressValue(patchData.patch_state)} label="Patch Progress" redirectTo={`/progress/${patchName}`} />
             </div>
 
             <div className="patch-page">
