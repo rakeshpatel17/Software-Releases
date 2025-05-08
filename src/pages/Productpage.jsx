@@ -4,6 +4,8 @@ import SideNavbar from '../components/Side-nav/SideNavbar';
 import TopNavbar from '../components/Top-nav/TopNavbar';
 import getProductDetails from '../api/image';
 import './ProductPage.css';
+import EditableFieldComponent from '../components/EditableFieldComponent';
+
 
 function highlightMatch(text, term) {
     if (!term) return text;
@@ -125,6 +127,7 @@ function ProductPage({ onLogout }) {
                                                                         <th>Description</th>
                                                                     </tr>
                                                                 </thead>
+
                                                                 <tbody>
                                                                     {img.security_issues.map((issue, index) => (
                                                                         <tr key={index}>
@@ -133,18 +136,20 @@ function ProductPage({ onLogout }) {
                                                                             <td>{issue.severity}</td>
                                                                             <td>{issue.affected_libraries}</td>
                                                                             <td>{issue.library_path}</td>
-                                                                            <td> {editingIndex === index ? (<> <textarea value={editedDescription} onChange={(e) => setEditedDescription(e.target.value)} rows={3} style={{ width: '100%' }} /> <button style={{ marginTop: '4px' }} onClick={() => {
-                                                                                const updatedIssues = [...img.security_issues]; updatedIssues[index].description = editedDescription; img.security_issues = updatedIssues; // update in-place or handle via props/state if needed
-                                                                                setEditingIndex(null); // exit edit mode
-                                                                            }}
-                                                                            >
-                                                                                Save
-                                                                            </button>
-                                                                            </>) : (<> <div style={{ marginBottom: '4px' }}>{issue.description}</div> <button onClick={() => { setEditingIndex(index); setEditedDescription(issue.description); }} > Edit </button> </>)}
+                                                                            <td>
+                                                                                <EditableFieldComponent
+                                                                                    value={issue.description}
+                                                                                    onSave={(newValue) => {
+                                                                                        const updatedIssues = [...img.security_issues];
+                                                                                        updatedIssues[index].description = newValue;
+                                                                                        img.security_issues = updatedIssues;
+                                                                                    }}
+                                                                                />
                                                                             </td>
                                                                         </tr>
                                                                     ))}
                                                                 </tbody>
+
                                                             </table>
                                                         ) : (
                                                             <p>None</p>
