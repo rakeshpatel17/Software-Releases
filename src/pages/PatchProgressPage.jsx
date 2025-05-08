@@ -5,6 +5,9 @@ import ImageTable from '../components/ProductTable/ImageTable';
 import './PatchProgressPage.css';
 import getProductDetails from '../api/image';
 import { useParams } from 'react-router-dom';
+import EditableFieldComponent from '../components/EditableFieldComponent';
+import ToggleButtonComponent from '../components/ToggleButtonComponent';
+import BackButtonComponent from '../components/BackButtonComponent';
 
 function PatchProgressPage({ onLogout }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -79,51 +82,69 @@ function PatchProgressPage({ onLogout }) {
   
 
   return (
+
     <div className="dashboard-container">
       <SideNavbar />
       <div className="dashboard-content">
         <TopNavbar onSearch={setSearchTerm} onLogout={onLogout} />
         <div className="dashboard-main">
-            <div className="dashboard-header">
-                <h2 className="dashboard-title">{id} Progress</h2>
-            </div>
-            <div className="table-scroll-wrapper">
-                {Object.entries(productJars).map(([product, jars]) => (
-                    <div className='patchProgress'>
-                      <div className="product-table-container" key={product}>
-                          <h2>{product.toUpperCase()}</h2>
-                          <table className="product-table">
-                          <thead>
-                              <tr>
-                              <th>Jar</th>
-                              <th>Version</th>
-                              <th>Remarks</th>
-                              <th>Updated</th>
-                              </tr>
-                          </thead>
-                          <tbody>
-                              {jars.map((entry, index) => (
-                              <tr key={index}>
-                                  <td>{entry.jar}</td>
-                                  <td>{entry.version}</td>
-                                  <td>{entry.remarks || '—'}</td>
-                                  <td>{entry.updated}</td>
-                              </tr>
-                              ))}
-                          </tbody>
-                          </table>
-                           {/* Rendering ImageTable  */}
-                          <div className="image-table-wrapper">
-                            <ImageTable images={images} searchTerm={searchTerm} />
-                          </div>
-                      </div>
-                    </div>
-                  ))}
-            </div>       
+          <div className="dashboard-header">
+             <BackButtonComponent fallback={-1}/>
+            <h2 className="dashboard-title">{id} Progress</h2>
           </div>
+          <div className="table-scroll-wrapper">
+            {Object.entries(productJars).map(([product, jars]) => (
+              <div className='patchProgress'>
+                <div className="product-table-container" key={product}>
+                  <h2>{product.toUpperCase()}</h2>
+                  <table className="product-table">
+                    <thead>
+                      <tr>
+                        <th>Jar</th>
+                        <th>Version</th>
+                        <th>Remarks</th>
+                        <th>Updated</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {jars.map((entry, index) => (
+                        <tr key={index}>
+                          <td>{entry.jar}</td>
+                          <td>{entry.version}</td>
+                          <td>
+                            <EditableFieldComponent
+                              value={entry.remarks || '—'}
+                              onSave={(newValue) => {
+                                entry.remarks = newValue;
+                              }}
+                            />
+                          </td>
+                          <td>
+                          <ToggleButtonComponent
+                            value={entry.updated}
+                            onToggle={(newValue) => {
+                              entry.updated = newValue;
+                              // Optionally update state
+                            }}
+                          />
+                       </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {/* Rendering ImageTable  */}
+                  <div className="image-table-wrapper">
+                            <ImageTable images={images} searchTerm={searchTerm} />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
 export default PatchProgressPage;
+

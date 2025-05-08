@@ -1,6 +1,7 @@
 // components/ProductTable.js
 import React, { useState } from 'react';
 import './ImageTable.css'; // optional if you want separate styling
+import EditableFieldComponent from '../EditableFieldComponent';
 
 function highlightMatch(text, term) {
     if (!term) return text;
@@ -96,37 +97,14 @@ function ImageTable({ images, searchTerm }) {
                                                                 <td>{issue.affected_libraries}</td>
                                                                 <td>{issue.library_path}</td>
                                                                 <td>
-                                                                    {editingIndex === index ? (
-                                                                        <>
-                                                                            <textarea
-                                                                                value={editedDescription}
-                                                                                onChange={(e) => setEditedDescription(e.target.value)}
-                                                                                rows={3}
-                                                                                style={{ width: '100%' }}
-                                                                            />
-                                                                            <button
-                                                                                style={{ marginTop: '4px' }}
-                                                                                onClick={() => {
-                                                                                    const updatedIssues = [...img.security_issues];
-                                                                                    updatedIssues[index].description = editedDescription;
-                                                                                    img.security_issues = updatedIssues;
-                                                                                    setEditingIndex(null);
-                                                                                }}
-                                                                            >
-                                                                                Save
-                                                                            </button>
-                                                                        </>
-                                                                    ) : (
-                                                                        <>
-                                                                            <div style={{ marginBottom: '4px' }}>{issue.description}</div>
-                                                                            <button onClick={() => {
-                                                                                setEditingIndex(index);
-                                                                                setEditedDescription(issue.description);
-                                                                            }}>
-                                                                                Edit
-                                                                            </button>
-                                                                        </>
-                                                                    )}
+                                                                    <EditableFieldComponent
+                                                                        value={issue.description}
+                                                                        onSave={(newValue) => {
+                                                                            const updatedIssues = [...img.security_issues];
+                                                                            updatedIssues[index].description = newValue;
+                                                                            img.security_issues = updatedIssues;
+                                                                        }}
+                                                                    />
                                                                 </td>
                                                             </tr>
                                                         ))}

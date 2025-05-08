@@ -8,6 +8,7 @@ import HighLevelScopeComponent from '../components/HighLevelScope';
 import './PatchPage.css';
 import getAllProducts from '../api/product';
 import { getPatchById } from '../api/getPatchById';
+import BackButtonComponent from '../components/BackButtonComponent';
 
 function PatchPage({ patchName }) {
     const [isEditing, setIsEditing] = useState(false);
@@ -98,6 +99,7 @@ function PatchPage({ patchName }) {
 
     useEffect(() => {
         const fetchProducts = async () => {
+
             const data = await getAllProducts();
             if (data && data.length > 0) {
                 setProductData(data);
@@ -145,10 +147,14 @@ function PatchPage({ patchName }) {
     };
 
     return (
-        <>
+        <> 
+        <div className='back_button'>
+        <BackButtonComponent  fallback={0}/>
+        </div>
             <div className="patch-page">
                 <div className="patch-header">
                     <h2>Patch Details</h2>
+
                     <button className="edit-btn" onClick={toggleEdit}>
                         {isEditing ? 'Cancel' : 'Edit'}
                     </button>
@@ -284,6 +290,10 @@ function PatchPage({ patchName }) {
             </div>
         </>
     );
+
+    
 }
 
 export default PatchPage;
+
+

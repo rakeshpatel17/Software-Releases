@@ -5,6 +5,21 @@ import TopNavbar from '../components/Top-nav/TopNavbar';
 import getProductDetails from '../api/image';
 import ImageTable from '../components/ProductTable/ImageTable';
 import './ProductPage.css';
+import EditableFieldComponent from '../components/EditableFieldComponent';
+
+
+function highlightMatch(text, term) {
+    if (!term) return text;
+    const regex = new RegExp(`(${term})`, 'gi');
+    return text.split(regex).map((part, i) =>
+        part.toLowerCase() === term.toLowerCase() ? (
+            <span key={i} className="highlight">{part}</span>
+        ) : (
+            part
+        )
+    );
+}
+
 
 function ProductPage({ onLogout }) {
     const { productName } = useParams();

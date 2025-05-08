@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './HighLevelScope.css';
+import { Trash2 } from 'lucide-react';
+
 
 function HighLevelScopeComponent({ highLevelScope, isEditing, onScopeChange }) {
     const [tempHighLevelScope, setTempHighLevelScope] = useState([...highLevelScope]);
@@ -21,8 +23,8 @@ function HighLevelScopeComponent({ highLevelScope, isEditing, onScopeChange }) {
         const updatedScope = [...tempHighLevelScope];
         updatedScope[index].label = newLabel;
         setTempHighLevelScope(updatedScope);
-      };
-      
+    };
+
 
     const handleAddScope = () => {
         const updatedScope = [...tempHighLevelScope, { label: '', value: '' }];
@@ -71,7 +73,8 @@ function HighLevelScopeComponent({ highLevelScope, isEditing, onScopeChange }) {
                                             className="scope-action-btn"
                                             onClick={(e) => handleRemoveScope(index, e)}
                                         >
-                                            Remove
+                                            <Trash2 size={18} />
+
                                         </button>
                                     </td>
                                 </tr>

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './JarSelector.css';
+import { Trash2 } from 'lucide-react';
+
 
 function JarSelector({
     mode = 'edit', // 'edit' or 'search'
@@ -209,7 +211,7 @@ function JarSelector({
                                                     onClick={() => handleRemoveJar(index)}
                                                     className="jar-selector-edit-remove-btn"
                                                 >
-                                                    Remove
+                                                    <Trash2 size={18} />
                                                 </button>
                                             </td>
                                         </tr>

@@ -6,6 +6,8 @@ import Card from '../components/Card/Card';
 import Form from '../components/Form/Form';
 import get_patches from '../api/patches';
 import PatchPage from './PatchPage';
+import { useNavigate } from 'react-router-dom'; 
+
 
 
 
@@ -51,6 +53,9 @@ function Dashboard({ onLogout }) {
     { title: 'Rejected Patches', items: rejected }
   ];
 
+  const navigate = useNavigate(); 
+
+
   return (
     <div className="dashboard-container">
       <SideNavbar />
@@ -79,8 +84,11 @@ function Dashboard({ onLogout }) {
                   <div className="card-grid">
                     {group.items.map((patch, index) => (
                       // <Card key={index} info={patch} />
-                      <Card key={index} info={patch} onClick={() => setSelectedPatch(patch)} />
+                       <Card key={index} info={patch} onClick={() => setSelectedPatch(patch) } />
+                      // <Card key={index} info={patch} onClick={() => navigate(`/patches/${patch}`)   } />
+
                     ))}
+                    
                   </div>
                 </div>
               </div>
