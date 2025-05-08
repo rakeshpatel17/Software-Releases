@@ -73,12 +73,36 @@ function PatchProgressPage({ onLogout }) {
   }]
 
   
-  // useEffect(() => {
-  //   const fetch = async () => {
-  //     console.log("In patch progress page"); 
-  //   };
-  //   fetch();
-  // }, []);
+  const [filteredProducts, setFilteredProducts] = useState(productJars);
+
+  useEffect(() => {
+    if (searchTerm.trim() === '') {
+      setFilteredProducts(productJars); // show all if search is empty
+    } else {
+      const lowerSearch = searchTerm.toLowerCase();
+      const filtered = Object.fromEntries(
+        Object.entries(productJars).filter(([product]) =>
+          product.toLowerCase().includes(lowerSearch)
+        )
+      );
+      setFilteredProducts(filtered);
+    }
+  }, [searchTerm]);
+
+  const highlightText = (text, highlight) => {
+    if (!highlight) return text;
+  
+    const regex = new RegExp(`(${highlight})`, 'gi');
+    const parts = text.split(regex);
+  
+    return parts.map((part, i) =>
+      part.toLowerCase() === highlight.toLowerCase() ? (
+        <mark key={i} style={{ backgroundColor: 'yellow' }}>{part}</mark>
+      ) : (
+        part
+      )
+    );
+  };
   
 
   return (
@@ -93,10 +117,10 @@ function PatchProgressPage({ onLogout }) {
             <h2 className="dashboard-title">{id} Progress</h2>
           </div>
           <div className="table-scroll-wrapper">
-            {Object.entries(productJars).map(([product, jars]) => (
+            {Object.entries(filteredProducts).map(([product, jars]) => (
               <div className='patchProgress'>
                 <div className="product-table-container" key={product}>
-                  <h2>{product.toUpperCase()}</h2>
+                  <h2>{/*product.toUpperCase()*/highlightText(product.toUpperCase(), searchTerm)}</h2>
                   <table className="product-table">
                     <thead>
                       <tr>
@@ -134,7 +158,7 @@ function PatchProgressPage({ onLogout }) {
                   </table>
                   {/* Rendering ImageTable  */}
                   <div className="image-table-wrapper">
-                            <ImageTable images={images} searchTerm={searchTerm} />
+                          <ImageTable images={images} /*searchTerm={searchTerm}*/ />
                   </div>
                 </div>
               </div>
