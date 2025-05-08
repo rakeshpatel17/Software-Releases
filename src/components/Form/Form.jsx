@@ -54,7 +54,7 @@ function Form({ onCancel, lockedRelease }) {
         const fetchPatchSizeAndSetName = async () => {
             try {
                 const patchData = await get_patches(formData.release);
-                console.log("patchdata:", patchData.length);
+                // console.log("patchdata:", patchData.length);
                 const size = patchData.length;
 
                 //setPatchSize(size);

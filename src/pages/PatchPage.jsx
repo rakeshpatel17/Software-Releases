@@ -146,10 +146,6 @@ function PatchPage({ patchName }) {
 
     return (
         <>
-            <div className="progress-container">
-                <ProgressBar value={getProgressValue(patchData.patch_state)} label="Patch Progress" redirectTo={`/progress/${patchName}`} />
-            </div>
-
             <div className="patch-page">
                 <div className="patch-header">
                     <h2>Patch Details</h2>
@@ -224,11 +220,9 @@ function PatchPage({ patchName }) {
                         isEditing={isEditing}
                     />
 
-<div className="progress-container">
-                <ProgressBar value={getProgressValue(patchData.patch_state)} label="Patch Progress" />
-            </div>
-
-
+                <div className="progress-container">
+                            <ProgressBar value={getProgressValue(patchData.patch_state)} label="Patch Progress" redirectTo={`/progress/${patchName}`} />
+                        </div>
                     <div className="form-group">
                         <label>Patch State</label>
                         <select

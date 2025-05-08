@@ -24,7 +24,7 @@ const get_patches = async (releaseId = null) => {
         ? data.filter(patch => String(patch.release) === String(releaseId))
         : data;
 
-    console.log("filtered Patch Data:", filteredData);
+    // console.log("filtered Patch Data:", filteredData);
     return filteredData;
   } catch (error) {
     console.error("Error in get_patches:", error);

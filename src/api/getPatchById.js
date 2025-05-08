@@ -21,7 +21,7 @@ const getPatchById = async (patchName) => {
         patch => patch.name && patch.name.toLowerCase() === patchName.toLowerCase()
       );
   
-      console.log("Filtered Patch by Name:", filteredData);
+      // console.log("Filtered Patch by Name:", filteredData);
       return filteredData;
     } catch (error) {
       console.error("Error in getPatchesById:", error);

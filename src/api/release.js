@@ -19,7 +19,7 @@ const get_release = async () => {
     if (!response.ok) throw new Error("Failed to fetch releases");
 
     const data = await response.json();
-    console.log("Release Data:", data);
+    // console.log("Release Data:", data);
     return data;
   } catch (error) {
     console.error("Error in get_release:", error);
