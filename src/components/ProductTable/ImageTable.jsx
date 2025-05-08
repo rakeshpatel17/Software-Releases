@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import './ImageTable.css'; // optional if you want separate styling
 import EditableFieldComponent from '../EditableFieldComponent';
+import ToggleButtonComponent from '../ToggleButtonComponent';
 
 function highlightMatch(text, term) {
     if (!term) return text;
@@ -17,8 +18,10 @@ function highlightMatch(text, term) {
 
 function ImageTable({ images, searchTerm }) {
     const [expandedRows, setExpandedRows] = useState({});
-    const [editingIndex, setEditingIndex] = useState(null);
-    const [editedDescription, setEditedDescription] = useState('');
+    // const [editingIndex, setEditingIndex] = useState(null);
+    // const [editedDescription, setEditedDescription] = useState('');
+
+  
 
     const toggleRow = (idx) => {
         setExpandedRows((prev) => ({
@@ -27,15 +30,44 @@ function ImageTable({ images, searchTerm }) {
         }));
     };
 
+    const [toggleRegisteryValues, setToggleRegisteryValues] = useState(() =>
+        images.map(() => 'Released')
+    );
+    const handleRegisteryToggle = (idx, newValue) => {
+        const updatedValues = [...toggleRegisteryValues];
+        updatedValues[idx] = newValue;
+        setToggleRegisteryValues(updatedValues);
+    };
+
+    const [toggleOT2Values, setToggleOT2Values] = useState(() =>
+        images.map(() => 'Released')
+    );
+    const handleOT2Toggle = (idx, newValue) => {
+        const updatedValues = [...toggleOT2Values];
+        updatedValues[idx] = newValue;
+        setToggleOT2Values(updatedValues);
+    };
+
+    const [toggleHelmValues, setToggleHelmValues] = useState(() =>
+        images.map(() => 'Released')
+    );
+    const handleHelmToggle = (idx, newValue) => {
+        const updatedValues = [...toggleHelmValues];
+        updatedValues[idx] = newValue;
+        setToggleHelmValues(updatedValues);
+    };
+
+
+
     return (
         <table className="product-table">
             <thead>
                 <tr>
                     <th>Image</th>
                     <th>Build Number</th>
-                    <th>Release Date</th>
+                    <th>Registery</th>
                     <th>OT2 Pass</th>
-                    <th>Twist Lock Report</th>
+                    <th>Helm Charts</th>
                     <th>Status</th>
                     <th>More Details</th>
                 </tr>
@@ -46,12 +78,25 @@ function ImageTable({ images, searchTerm }) {
                         <tr>
                             <td>{img.image_name}</td>
                             <td>{highlightMatch(img.build_number, searchTerm)}</td>
-                            <td>{new Date(img.release_date).toLocaleDateString()}</td>
-                            <td>{highlightMatch(img.ot2_pass, searchTerm)}</td>
                             <td>
-                                <a href={img.twistlock_report_url} target="_blank" rel="noopener noreferrer">
-                                    View Report
-                                </a>
+                                <ToggleButtonComponent
+                                    options={['Released', 'Not Released', 'Not Applicable']}
+                                    value={toggleRegisteryValues[idx]}
+                                    onToggle={(newValue) => handleRegisteryToggle(idx, newValue)}
+                                />
+
+                            </td>
+                            <td>   <ToggleButtonComponent
+                                options={['Released', 'Not Released', 'Not Applicable']}
+                                value={toggleOT2Values[idx]}
+                                onToggle={(newValue) => handleOT2Toggle(idx, newValue)}
+                            /></td>
+                            <td>
+                                <ToggleButtonComponent
+                                    options={['Released', 'Not Released', 'Not Applicable']}
+                                    value={toggleHelmValues[idx]}
+                                    onToggle={(newValue) => handleHelmToggle(idx, newValue)}
+                                />
                             </td>
                             <td>
                                 {img.twistlock_report_clean ? (
@@ -70,7 +115,11 @@ function ImageTable({ images, searchTerm }) {
                             <tr>
                                 <td colSpan="7">
                                     <div className="expanded-content">
+
                                         <p style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                                            <span ><strong>Twist Lock Report: </strong><a href={img.twistlock_report_url} target="_blank" rel="noopener noreferrer">
+                                                View Report
+                                            </a></span>
                                             <span><strong>Twistlock Report Clean:</strong> {img.twistlock_report_clean ? 'Yes' : 'No'}</span>
                                             <span><strong>Created At:</strong> {new Date(img.created_at).toLocaleString()}</span>
                                         </p>

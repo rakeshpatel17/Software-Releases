@@ -1,30 +1,35 @@
-import React, { useState } from 'react';
+import React from 'react';
+import './ToggleButtonComponent.css'; // Import the CSS
 
-const ToggleButtonComponent = ({ value = false, onToggle }) => {
-  const [toggled, setToggled] = useState(value);
+const ToggleButtonComponent = ({ options, value, onToggle }) => {
+  if (!Array.isArray(options) || options.length === 0) {
+    return null;
+  }
+
+  const currentIndex = options.indexOf(value);
+  const nextIndex = (currentIndex + 1) % options.length;
 
   const handleToggle = () => {
-    const newValue = !toggled;
-    setToggled(newValue);
-    onToggle(newValue);
+    const nextValue = options[nextIndex];
+    onToggle(nextValue);
   };
 
+  // Determine style class based on value
+  let styleClass = 'toggle-grey';
+  if (['Yes', 'Released'].includes(value)) {
+    styleClass = 'toggle-green';
+  } else if (['No', 'Not Released'].includes(value)) {
+    styleClass = 'toggle-red';
+  }
+
   return (
-    <div style={{textAlign:'center'}}>
-    <button
-      onClick={handleToggle}
-      style={{
-        padding: '6px 12px',
-        borderRadius: '5px',
-        backgroundColor: toggled ? '#d4edda' : '#f8d7da',
-        color: toggled ? '#155724' : '#721c24',
-        border: '1px solid',
-        borderColor: toggled ? '#c3e6cb' : '#f5c6cb',
-        cursor: 'pointer',
-      }}
-    >
-      {toggled ? 'Yes' : 'No'}
-    </button>
+    <div style={{ textAlign: 'center' }}>
+      <button
+        onClick={handleToggle}
+        className={`toggle-button ${styleClass}`}
+      >
+        {value}
+      </button>
     </div>
   );
 };

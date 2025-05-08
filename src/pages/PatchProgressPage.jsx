@@ -12,74 +12,74 @@ import BackButtonComponent from '../components/BackButtonComponent';
 function PatchProgressPage({ onLogout }) {
   const [searchTerm, setSearchTerm] = useState('');
   const { id } = useParams();
-  const productJars = {
+  const [productJars, setProductJars] = useState({
     Server: [
-      { jar: 'reactor-netty-http', version: '1.2.4', remarks: 'Major version upgrade',updated: 'yes' },
-      { jar: 'reactor-netty-core', version: '1.2.4', remarks: 'Major version upgrade',updated: 'yes' },
-      { jar: 'libraries-bom', version: '26.56.0', remarks: '',updated: 'yes' },
-      { jar: 'httpcore5', version: '5.3.4', remarks: '' ,updated: 'yes'},
-      { jar: 'guava', version: '33.4.5-jre', remarks: 'Major version upgrade',updated: 'yes' }
+      { jar: 'reactor-netty-http', version: '1.2.4', remarks: 'Major version upgrade', updated: 'Yes' },
+      { jar: 'reactor-netty-core', version: '1.2.4', remarks: 'Major version upgrade', updated: 'Yes' },
+      { jar: 'libraries-bom', version: '26.56.0', remarks: '', updated: 'Yes' },
+      { jar: 'httpcore5', version: '5.3.4', remarks: '', updated: 'Yes' },
+      { jar: 'guava', version: '33.4.5-jre', remarks: 'Major version upgrade', updated: 'Yes' }
     ],
     ijms: [
-      { jar: 'jakarta.servlet-api', version: '6.1.0', remarks: 'Major version upgrade',updated: 'yes' },
-      { jar: 'jakarta.annotation-api', version: '3.0.0', remarks: 'Major version upgrade' ,updated: 'yes'},
-      { jar: 'org.glassfish.jaxb_jaxb-xjc', version: '4.0.5', remarks: 'Major version upgrade',updated: 'yes' },
-      { jar: 'org.glassfish.jaxb_jaxb-jxc', version: '4.0.5', remarks: 'Major version upgrade' ,updated: 'yes'},
-      { jar: 'spring framework (spring-core)', version: '6.2.5', remarks: 'Major upgrade done in 25.2',updated: 'yes' }
+      { jar: 'jakarta.servlet-api', version: '6.1.0', remarks: 'Major version upgrade', updated: 'Yes' },
+      { jar: 'jakarta.annotation-api', version: '3.0.0', remarks: 'Major version upgrade', updated: 'Yes' },
+      { jar: 'org.glassfish.jaxb_jaxb-xjc', version: '4.0.5', remarks: 'Major version upgrade', updated: 'Yes' },
+      { jar: 'org.glassfish.jaxb_jaxb-jxc', version: '4.0.5', remarks: 'Major version upgrade', updated: 'Yes' },
+      { jar: 'spring framework (spring-core)', version: '6.2.5', remarks: 'Major upgrade done in 25.2', updated: 'Yes' }
     ],
     D2: [
-      { jar: 'spring security', version: '6.4.4', remarks: 'Major upgrade done in 25.2' ,updated: 'yes'},
-      { jar: 'spring-boot-starter-parent', version: '3.4.4', remarks: 'Major upgrade done in 25.2' ,updated: 'yes'},
-      { jar: 'ActiveMQ (activemq-broker)', version: '6.1.6', remarks: 'Major version upgraded in 25.2',updated: 'yes' },
-      { jar: 'jakarta.jms-api', version: '3.1.0', remarks: 'Major upgrade' ,updated: 'yes'},
-      { jar: 'Bouncy Castle', version: '1.80', remarks: 'Major upgrade',updated: 'yes' }
+      { jar: 'spring security', version: '6.4.4', remarks: 'Major upgrade done in 25.2', updated: 'Yes' },
+      { jar: 'spring-boot-starter-parent', version: '3.4.4', remarks: 'Major upgrade done in 25.2', updated: 'Yes' },
+      { jar: 'ActiveMQ (activemq-broker)', version: '6.1.6', remarks: 'Major version upgraded in 25.2', updated: 'Yes' },
+      { jar: 'jakarta.jms-api', version: '3.1.0', remarks: 'Major upgrade', updated: 'Yes' },
+      { jar: 'Bouncy Castle', version: '1.80', remarks: 'Major upgrade', updated: 'Yes' }
     ]
-  };
-  const images =[{
-          "image_name": "ot-dctm-ijms",
-          "build_number": "24.2.0002.0137",
-          "release_date": "2025-05-28T10:18:00Z",
-          "ot2_pass": "Yes",
-          "twistlock_report_url": "http://example.com/report",
-          "twistlock_report_clean": false,
-          "is_deleted": false,
-          "product": "Ijms",
-          "created_at": "2025-05-06T04:48:31.954493Z",
-          "updated_at": "2025-05-06T04:48:31.954630Z",
-          "security_issues": [
-              {
-                  "cve_id": "CVE-2024-22262",
-                  "cvss_score": 4,
-                  "severity": "Critical",
-                  "affected_libraries": "org.springframework:spring-web",
-                  "library_path": "/bin",
-                  "description": "Coming from the base OS in sysdig scan and twistlock scan",
-                  "created_at": "2025-05-06T04:54:00.776950Z",
-                  "updated_at": "2025-05-06T04:54:00.777178Z",
-                  "is_deleted": false
-              },
-              {
-                  "cve_id": "CVE-2024-22243",
-                  "cvss_score": 4,
-                  "severity": "Critical",
-                  "affected_libraries": "org.springframework:spring-web",
-                  "library_path": "/bin",
-                  "description": "Coming from the base OS in sysdig scan and twistlock scan",
-                  "created_at": "2025-05-06T04:54:10.243657Z",
-                  "updated_at": "2025-05-06T04:54:10.243879Z",
-                  "is_deleted": false
-              }
-          ]
+  });
+  const images = [{
+    "image_name": "ot-dctm-ijms",
+    "build_number": "24.2.0002.0137",
+    "release_date": "2025-05-28T10:18:00Z",
+    "ot2_pass": "Yes",
+    "twistlock_report_url": "http://example.com/report",
+    "twistlock_report_clean": false,
+    "is_deleted": false,
+    "product": "Ijms",
+    "created_at": "2025-05-06T04:48:31.954493Z",
+    "updated_at": "2025-05-06T04:48:31.954630Z",
+    "security_issues": [
+      {
+        "cve_id": "CVE-2024-22262",
+        "cvss_score": 4,
+        "severity": "Critical",
+        "affected_libraries": "org.springframework:spring-web",
+        "library_path": "/bin",
+        "description": "Coming from the base OS in sysdig scan and twistlock scan",
+        "created_at": "2025-05-06T04:54:00.776950Z",
+        "updated_at": "2025-05-06T04:54:00.777178Z",
+        "is_deleted": false
+      },
+      {
+        "cve_id": "CVE-2024-22243",
+        "cvss_score": 4,
+        "severity": "Critical",
+        "affected_libraries": "org.springframework:spring-web",
+        "library_path": "/bin",
+        "description": "Coming from the base OS in sysdig scan and twistlock scan",
+        "created_at": "2025-05-06T04:54:10.243657Z",
+        "updated_at": "2025-05-06T04:54:10.243879Z",
+        "is_deleted": false
+      }
+    ]
   }]
 
-  
+
   // useEffect(() => {
   //   const fetch = async () => {
   //     console.log("In patch progress page"); 
   //   };
   //   fetch();
   // }, []);
-  
+
 
   return (
 
@@ -89,7 +89,7 @@ function PatchProgressPage({ onLogout }) {
         <TopNavbar onSearch={setSearchTerm} onLogout={onLogout} />
         <div className="dashboard-main">
           <div className="dashboard-header">
-             <BackButtonComponent fallback={-1}/>
+            <BackButtonComponent fallback={-1} />
             <h2 className="dashboard-title">{id} Progress</h2>
           </div>
           <div className="table-scroll-wrapper">
@@ -120,21 +120,24 @@ function PatchProgressPage({ onLogout }) {
                             />
                           </td>
                           <td>
-                          <ToggleButtonComponent
-                            value={entry.updated}
-                            onToggle={(newValue) => {
-                              entry.updated = newValue;
-                              // Optionally update state
-                            }}
-                          />
-                       </td>
+
+                            <ToggleButtonComponent
+                              options={['Yes', 'No']}
+                              value={entry.updated}  
+                              onToggle={(newValue) => {
+                                const updatedJars = { ...productJars };
+                                updatedJars[product][index].updated = newValue;
+                                setProductJars(updatedJars); 
+                              }}
+                            />
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                   {/* Rendering ImageTable  */}
                   <div className="image-table-wrapper">
-                            <ImageTable images={images} searchTerm={searchTerm} />
+                    <ImageTable images={images} searchTerm={searchTerm} />
                   </div>
                 </div>
               </div>

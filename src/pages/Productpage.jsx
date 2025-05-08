@@ -25,11 +25,21 @@ function ProductPage({ onLogout }) {
     const { productName } = useParams();
     const [images, setImages] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [expandedRows, setExpandedRows] = useState({});
+    /*text area */
+    // const [editingIndex, setEditingIndex] = useState(null);
+    // const [editedDescription, setEditedDescription] = useState('');
 
+    const toggleRow = (idx) => {
+        setExpandedRows((prev) => ({
+            ...prev,
+            [idx]: !prev[idx],
+        }));
+    };
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const data = await getProductDetails(`${productName}`);
+                const data = await getProductDetails(`products/${productName}`);
                 if (data && Array.isArray(data.images)) {
                     const filteredImages = data.images.filter((img) =>
                         img.build_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -54,8 +64,113 @@ function ProductPage({ onLogout }) {
                 <TopNavbar onSearch={setSearchTerm} onLogout={onLogout} />
                 <div className="dashboard-main">
                     <h2>Images for Product: {productName}</h2>
-                    {/* {console.log("prop images : ",images)}; */}
-                    <ImageTable images={images} searchTerm={searchTerm} />
+                    <table className="product-table">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Build Number</th>
+                                <th>Release Date</th>
+                                <th>OT2 Pass</th>
+                                <th>Twist Lock Report</th>
+                                <th>Status</th>
+                                <th>More Details</th> {/* Dropdown toggle column */}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {images.map((img, idx) => (
+                                <React.Fragment key={idx}>
+                                    <tr>
+                                        <td>
+                                            {img.image_name}
+                                        </td>
+                                        <td>{highlightMatch(img.build_number, searchTerm)}</td>
+                                        <td>{new Date(img.release_date).toLocaleDateString()}</td>
+                                        <td>{highlightMatch(img.ot2_pass, searchTerm)}</td>
+                                        <td>
+                                            <a
+                                                href={img.twistlock_report_url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                View Report
+                                            </a>
+                                        </td>
+                                        <td> {img.twistlock_report_clean ? (<span style={{ color: 'green', fontWeight: 'bold' }}> ✔ Success </span>) : (<span style={{ color: 'red', fontWeight: 'bold' }}> ✖ Fail </span>)} </td>
+                                        <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                                            <button onClick={() => toggleRow(idx)}>
+                                                {expandedRows[idx] ? '▲' : '▼'}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {expandedRows[idx] && (
+                                        <tr>
+                                            <td colSpan="7">
+                                                <div className="expanded-content">
+                                                    <p style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                                                        <span>
+                                                            <strong>Twistlock Report Clean:</strong> {img.twistlock_report_clean ? 'Yes' : 'No'}
+                                                        </span>
+                                                        <span>
+                                                            <strong>Created At:</strong> {new Date(img.created_at).toLocaleString()}
+                                                        </span>
+                                                    </p>
+                                                    <div style={{ marginTop: '12px' }}>
+                                                        <strong>Security Issues:</strong>
+                                                        {img.security_issues.length > 0 ? (
+                                                            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '8px' }}>
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>CVE ID</th>
+                                                                        <th>CVSS Score</th>
+                                                                        <th>Severity</th>
+                                                                        <th>Affected Libraries</th>
+                                                                        <th>Library Path</th>
+                                                                        <th>Description</th>
+                                                                    </tr>
+                                                                </thead>
+
+                                                                <tbody>
+                                                                    {img.security_issues.map((issue, index) => (
+                                                                        <tr key={index}>
+                                                                            <td>{issue.cve_id}</td>
+                                                                            <td>{issue.cvss_score}</td>
+                                                                            <td>{issue.severity}</td>
+                                                                            <td>{issue.affected_libraries}</td>
+                                                                            <td>{issue.library_path}</td>
+                                                                            <td>
+                                                                                <EditableFieldComponent
+                                                                                    value={issue.description}
+                                                                                    onSave={(newValue) => {
+                                                                                        const updatedIssues = [...img.security_issues];
+                                                                                        updatedIssues[index].description = newValue;
+                                                                                        img.security_issues = updatedIssues;
+                                                                                    }}
+                                                                                />
+                                                                            </td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+
+                                                            </table>
+                                                        ) : (
+                                                            <p>None</p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )}
+                                </React.Fragment>
+                            ))}
+                            {images.length === 0 && (
+                                <tr>
+                                    <td colSpan="7" style={{ textAlign: 'center', padding: '1rem' }}>
+                                        No images found for this product.
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
