@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import './MenuItem.css';
 import DropdownItem from './DropdownItem';
+import { Link } from 'react-router-dom';
  
 function MenuItem({ iconClass, name, hyperlink, data }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,10 +14,10 @@ function MenuItem({ iconClass, name, hyperlink, data }) {
   return (
     <div className="menu-item-container">
       {!data && hyperlink ? (
-        <a href={hyperlink} className="menu-item no-dropdown">
+        <Link to={hyperlink} className="menu-item no-dropdown">
           <i className={`menu-item-icon ${iconClass}`}></i>
           <span className="menu-item-name">{name}</span>
-        </a>
+        </Link>
       ) : (
         <div className="menu-item" onClick={handleToggle}>
           {data && (

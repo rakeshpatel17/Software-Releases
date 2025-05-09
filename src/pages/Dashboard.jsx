@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import SideNavbar from '../components/Side-nav/SideNavbar';
-import TopNavbar from '../components/Top-nav/TopNavbar';
 import './Dashboard.css';
 import Card from '../components/Card/Card';
 import Form from '../components/Form/Form';
 import get_patches from '../api/patches';
 import PatchPage from './PatchPage';
 import { useNavigate } from 'react-router-dom'; 
+import { useOutletContext } from "react-router-dom";
 
 
 
 
-function Dashboard({ onLogout }) {
-  const [searchTerm, setSearchTerm] = useState('');
+function Dashboard() {
+  const { searchTerm } = useOutletContext();
   const [showForm, setShowForm] = useState(false);
   const [fetchedPatches, setFetchedPatches] = useState([]);
   const [selectedPatch, setSelectedPatch] = useState(null);
@@ -57,10 +56,6 @@ function Dashboard({ onLogout }) {
 
 
   return (
-    <div className="dashboard-container">
-      <SideNavbar />
-      <div className="dashboard-content">
-        <TopNavbar onSearch={setSearchTerm} onLogout={onLogout} />
         <div className="dashboard-main">
         <div className="dashboard-header">
             <h2 className="dashboard-title">Overview</h2>
@@ -95,8 +90,6 @@ function Dashboard({ onLogout }) {
             )
           )))}
         </div>
-      </div>
-    </div>
   );
 }
 

@@ -1,31 +1,40 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import SideNavbar from '../components/Side-nav/SideNavbar';
-import TopNavbar from '../components/Top-nav/TopNavbar';
 import getProductDetails from '../api/image';
 import ImageTable from '../components/ProductTable/ImageTable';
 import './ProductPage.css';
-import EditableFieldComponent from '../components/EditableFieldComponent';
+import { useOutletContext } from 'react-router-dom';
 
 
-function highlightMatch(text, term) {
-    if (!term) return text;
-    const regex = new RegExp(`(${term})`, 'gi');
-    return text.split(regex).map((part, i) =>
-        part.toLowerCase() === term.toLowerCase() ? (
-            <span key={i} className="highlight">{part}</span>
-        ) : (
-            part
-        )
-    );
-}
+// function highlightMatch(text, term) {
+//     if (!term) return text;
+//     const regex = new RegExp(`(${term})`, 'gi');
+//     return text.split(regex).map((part, i) =>
+//         part.toLowerCase() === term.toLowerCase() ? (
+//             <span key={i} className="highlight">{part}</span>
+//         ) : (
+//             part
+//         )
+//     );
+// }
 
 
-function ProductPage({ onLogout }) {
+function ProductPage() {
     const { productName } = useParams();
     const [images, setImages] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
+    // const [searchTerm, setSearchTerm] = useState('');
+    const { searchTerm } = useOutletContext();
+    const [expandedRows, setExpandedRows] = useState({});
+    /*text area */
+    // const [editingIndex, setEditingIndex] = useState(null);
+    // const [editedDescription, setEditedDescription] = useState('');
 
+    const toggleRow = (idx) => {
+        setExpandedRows((prev) => ({
+            ...prev,
+            [idx]: !prev[idx],
+        }));
+    };
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -48,17 +57,11 @@ function ProductPage({ onLogout }) {
     }, [productName, searchTerm]);
 
     return (
-        <div className="dashboard-container">
-            <SideNavbar />
-            <div className="dashboard-content">
-                <TopNavbar onSearch={setSearchTerm} onLogout={onLogout} />
+
                 <div className="dashboard-main">
                     <h2>Images for Product: {productName}</h2>
-                    {/* {console.log("prop images : ",images)}; */}
                     <ImageTable images={images} searchTerm={searchTerm} />
                 </div>
-            </div>
-        </div>
     );
 }
 

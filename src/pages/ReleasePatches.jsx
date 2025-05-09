@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import SideNavbar from '../components/Side-nav/SideNavbar';
-import TopNavbar from '../components/Top-nav/TopNavbar';
 import Card from '../components/Card/Card';
 import get_patches from '../api/patches';
 import Form from '../components/Form/Form';
 import './Dashboard.css';
 import PatchPage from './PatchPage';
+import { useOutletContext } from 'react-router-dom';
 
-function ReleasePatches({ onLogout }) {
+function ReleasePatches() {
   const { id } = useParams();
+  const { searchTerm } = useOutletContext();
   const [patches, setPatches] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [selectedPatch, setSelectedPatch] = useState(null);
 
@@ -51,10 +50,6 @@ function ReleasePatches({ onLogout }) {
   ];
 
   return (
-    <div className="dashboard-container">
-      <SideNavbar />
-      <div className="dashboard-content">
-        <TopNavbar onSearch={setSearchTerm} onLogout={onLogout} />
         <div className="dashboard-main">
           <div className="dashboard-header">
             <h2 className="dashboard-title">Patches for {id}</h2>
@@ -87,8 +82,6 @@ function ReleasePatches({ onLogout }) {
           )))}
 
         </div>
-      </div>
-    </div>
   );
 }
 
