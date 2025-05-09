@@ -5,8 +5,8 @@ import get_release from '../../api/release';
 import getAllProducts from '../../api/product';
 import post_patches from '../../api/post_patches';
 import get_patches from '../../api/patches';
-import ProductImageSelector from '../ProductImageSelector';
-import JarSelector from '../JarSelector';
+import ProductImageSelector from '../ProductImageSelector/ProductImageSelector';
+import JarSelector from '../JarSelector/JarSelector';
 import BackButtonComponent from '../BackButtonComponent'; 
 
 

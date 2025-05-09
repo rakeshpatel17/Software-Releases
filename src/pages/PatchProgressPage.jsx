@@ -4,7 +4,7 @@ import './PatchProgressPage.css';
 import getProductDetails from '../api/image';
 import { useParams } from 'react-router-dom';
 import EditableFieldComponent from '../components/EditableFieldComponent';
-import ToggleButtonComponent from '../components/ToggleButtonComponent';
+import ToggleButtonComponent from '../components/ToggleButton/ToggleButton';
 import BackButtonComponent from '../components/BackButtonComponent';
 import { useOutletContext } from 'react-router-dom';
 

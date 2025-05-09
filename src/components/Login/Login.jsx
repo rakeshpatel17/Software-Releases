@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import './Login.css';
-import companyImage from '../assets/company_name.png'; 
+import companyImage from '../../assets/company_name.png'; 
 
 export default function Login({ onLoginSuccess }) {
   const [email, setEmail] = useState("");

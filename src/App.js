@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import Login from "./components/Login";
+import Login from "./components/Login/Login";
 import Dashboard from "./pages/Dashboard";
 import ProductPage from "./pages/Productpage";
 import ReleasePatches from "./pages/ReleasePatches";

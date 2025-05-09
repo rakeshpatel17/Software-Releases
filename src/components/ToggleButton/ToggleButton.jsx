@@ -1,7 +1,7 @@
 import React from 'react';
-import './ToggleButtonComponent.css'; // Import the CSS
+import './ToggleButton.css'; // Import the CSS
 
-const ToggleButtonComponent = ({ options, value, onToggle }) => {
+const ToggleButton = ({ options, value, onToggle }) => {
   if (!Array.isArray(options) || options.length === 0) {
     return null;
   }
@@ -34,4 +34,4 @@ const ToggleButtonComponent = ({ options, value, onToggle }) => {
   );
 };
 
-export default ToggleButtonComponent;
+export default ToggleButton;
