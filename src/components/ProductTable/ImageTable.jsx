@@ -1,5 +1,4 @@
-// components/ProductTable.js
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import './ImageTable.css'; // optional if you want separate styling
 import EditableFieldComponent from '../EditableFieldComponent';
 import ToggleButtonComponent from '../ToggleButtonComponent';
@@ -33,6 +32,8 @@ function ImageTable({ images, searchTerm }) {
     const [toggleRegisteryValues, setToggleRegisteryValues] = useState(() =>
         images.map(() => 'Released')
     );
+    
+
     const handleRegisteryToggle = (idx, newValue) => {
         const updatedValues = [...toggleRegisteryValues];
         updatedValues[idx] = newValue;
@@ -57,6 +58,13 @@ function ImageTable({ images, searchTerm }) {
         setToggleHelmValues(updatedValues);
     };
 
+    useEffect(() => {
+        if (images.length > 0) {
+          setToggleRegisteryValues(images.map(() => 'Released'));
+          setToggleOT2Values(images.map(() => 'Released'));
+          setToggleHelmValues(images.map(() => 'Released'));
+        }
+      }, [images]);
 
 
     return (

@@ -1,4 +1,3 @@
-
 .top-navbar {
   display: flex;
   justify-content: space-between;
@@ -11,17 +10,17 @@
   z-index: 999;
 }
 
-.top-navbar input {
-  padding: 8px 12px;
-  border-radius: 20px;
-  border: 1px solid #20338b;
-  width: 50%;
-  max-width: 500px;
-  outline: none;
-  transition: 0.2s ease;
-  background-color: #f2f6fc;
-  color: #20338b;
-  margin-top: -8px;
+/* Group for left buttons */
+.left-controls {
+  display: flex;
+  gap: 0; /* No space between buttons */
+}
+
+/* Group for right side (search + profile) */
+.right-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px; /* Add space between search and profile */
 }
 
 .profile-container {
@@ -71,18 +70,4 @@
   cursor: pointer;
   width: 100%;
   margin-top: 8px;
-}
-
-@media (max-width: 768px) {
-  .top-navbar input {
-    width: 60%;
-    margin-top: -4px;
-  }
-}
-
-@media (max-width: 480px) {
-  .top-navbar input {
-    width: 80%;
-    margin-top: -4px;
-  }
 }

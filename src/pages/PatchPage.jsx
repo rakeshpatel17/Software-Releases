@@ -8,7 +8,7 @@ import HighLevelScopeComponent from '../components/HighLevelScope';
 import './PatchPage.css';
 import getAllProducts from '../api/product';
 import { getPatchById } from '../api/getPatchById';
-import BackButtonComponent from '../components/BackButtonComponent';
+import BackButtonComponent from '../components/Button/BackButtonComponent';
 
 function PatchPage({ patchName }) {
     const [isEditing, setIsEditing] = useState(false);
@@ -148,9 +148,7 @@ function PatchPage({ patchName }) {
 
     return (
         <> 
-        <div className='back_button'>
-        <BackButtonComponent  fallback={0}/>
-        </div>
+        
             <div className="patch-page">
                 <div className="patch-header">
                     <h2>Patch Details</h2>

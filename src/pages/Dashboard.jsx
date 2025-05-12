@@ -84,7 +84,7 @@ function Dashboard({ onLogout }) {
                   <div className="card-grid">
                     {group.items.map((patch, index) => (
                       // <Card key={index} info={patch} />
-                       <Card key={index} info={patch} onClick={() => setSelectedPatch(patch) } />
+                      <Card key={index} info={patch} onClick={() => setSelectedPatch(patch) } />
                       // <Card key={index} info={patch} onClick={() => navigate(`/patches/${patch}`)   } />
 
                     ))}

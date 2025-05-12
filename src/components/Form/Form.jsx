@@ -7,7 +7,7 @@ import post_patches from '../../api/post_patches';
 import get_patches from '../../api/patches';
 import ProductImageSelector from '../ProductImageSelector';
 import JarSelector from '../JarSelector';
-import BackButtonComponent from '../BackButtonComponent'; 
+import BackButtonComponent from '../Button/BackButtonComponent'; 
 
 
 
@@ -253,9 +253,7 @@ function Form({ onCancel, lockedRelease }) {
 
     return (
         <>
-        <div className='back_button'>
-        <BackButtonComponent fallback={0} />
-        </div>
+      
         <form className="form-container" onSubmit={handleSubmit}>
             <div className="inline-fields">
                 <div className="form-group">

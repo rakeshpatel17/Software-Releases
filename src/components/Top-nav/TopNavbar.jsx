@@ -1,8 +1,12 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import './TopNavbar.css';
+import SearchBar from '../Search/SearchBar';
+import BackButtonComponent from '../Button/BackButtonComponent';
+import ForwardButtonComponent from '../Button/ForwardButtonComponent';
+import Heading from '../Side-nav/Heading/Heading';
 
-function TopNavbar({ onSearch, onLogout }) {
+function TopNavbar({ onSearch, onLogout,title}) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef();
 
@@ -23,12 +27,19 @@ function TopNavbar({ onSearch, onLogout }) {
 
   return (
     <div className="top-navbar">
-      <input
-        type="text"
-        placeholder="Search..."
-        onChange={(e) => onSearch(e.target.value)}
-      />
-
+    <div className="left-controls">
+      <BackButtonComponent />
+      <ForwardButtonComponent />
+    </div>
+    <div className="center-heading">
+        {/* Use Heading component to display the title */}
+        <Heading
+          icon="https://cdn-icons-png.flaticon.com/512/1055/1055687.png" // You can change the icon based on your requirements
+          name={title} // Dynamic title coming from the parent
+        />
+      </div>
+    <div className="right-controls">
+    <SearchBar onSearch={onSearch} />
       <div ref={dropdownRef} className="profile-container">
         <div onClick={toggleDropdown} className="profile-toggle">
           <span>Profile</span>
@@ -37,7 +48,7 @@ function TopNavbar({ onSearch, onLogout }) {
             alt="Profile"
           />
         </div>
-
+  
         {dropdownOpen && (
           <div className="dropdown">
             <p>Welcome, rakesh!</p>
@@ -48,6 +59,8 @@ function TopNavbar({ onSearch, onLogout }) {
         )}
       </div>
     </div>
+  </div>
+  
   );
 }
 

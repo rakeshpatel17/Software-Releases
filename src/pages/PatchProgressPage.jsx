@@ -7,7 +7,7 @@ import getProductDetails from '../api/image';
 import { useParams } from 'react-router-dom';
 import EditableFieldComponent from '../components/EditableFieldComponent';
 import ToggleButtonComponent from '../components/ToggleButtonComponent';
-import BackButtonComponent from '../components/BackButtonComponent';
+import BackButtonComponent from '../components/Button/BackButtonComponent';
 
 function PatchProgressPage({ onLogout }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -89,7 +89,6 @@ function PatchProgressPage({ onLogout }) {
         <TopNavbar onSearch={setSearchTerm} onLogout={onLogout} />
         <div className="dashboard-main">
           <div className="dashboard-header">
-            <BackButtonComponent fallback={-1} />
             <h2 className="dashboard-title">{id} Progress</h2>
           </div>
           <div className="table-scroll-wrapper">

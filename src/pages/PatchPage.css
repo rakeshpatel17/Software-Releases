@@ -1,6 +1,6 @@
 .patch-page {
-    max-width: 800px;
-    width: 100%; /* Remove fixed width for responsiveness */
+    max-width: 1050px;
+    width: 100%; 
     margin: 2rem auto;
 
     padding: 2rem;

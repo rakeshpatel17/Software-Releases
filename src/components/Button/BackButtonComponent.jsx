@@ -15,10 +15,10 @@ const BackButtonComponent = ({ fallback = '/' }) => {
   const handleBack = () => {
     if (location.pathname === prevLocation.current) {
       console.log('URL did not change, navigating to reload page');
-      navigate(fallback); 
+      navigate(0); 
     } else {
     //   console.log('URL changed, navigating back...');
-      navigate(fallback); 
+      navigate(-1); 
     }
   };
 
@@ -32,9 +32,11 @@ const BackButtonComponent = ({ fallback = '/' }) => {
         backgroundColor: '#e2e8f0',
         border: '1px solid #cbd5e0',
         cursor: 'pointer',
+        marginTop:'-20px'
+
       }}
     >
-      ← Back
+      ← 
     </button>
   );
 };
