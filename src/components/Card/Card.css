@@ -91,3 +91,11 @@
 .patch-btn:hover {
   color: #af2929;
 }
+
+.kba-link {
+  color: #007bff;
+  text-decoration: underline;
+}
+.kba-link:hover {
+  text-decoration: none;
+}
