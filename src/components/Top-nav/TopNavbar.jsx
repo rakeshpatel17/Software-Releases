@@ -33,10 +33,10 @@ function TopNavbar({ onSearch, onLogout,title}) {
     </div>
     <div className="center-heading">
         {/* Use Heading component to display the title */}
-        <Heading
+        {/* <Heading
           icon="https://cdn-icons-png.flaticon.com/512/1055/1055687.png" // You can change the icon based on your requirements
           name={title} // Dynamic title coming from the parent
-        />
+        /> */}
       </div>
     <div className="right-controls">
     <SearchBar onSearch={onSearch} />

@@ -36,7 +36,18 @@ const Card = ({ info, className = '', children, ...rest }) => {
         {badge && (
           <span className={`card-badge ${badge.toLowerCase()}`}>{(badge[0].toUpperCase() + badge.slice(1))}</span>)}
         <h3 className="card-title">{title}</h3>
-        <p className="card-description">{description}</p>
+        {/* <p className="card-description">{description}</p> */}
+        <p className="card-description">
+          {badge?.toLowerCase() === 'released' ? (
+            <a href={description} target="_blank" rel="noopener noreferrer" className="kba-link" 
+                onClick={(e) => e.stopPropagation()} // Prevent card click
+            >
+              KBA
+            </a>
+          ) : (
+            description
+          )}
+        </p>
         {children && <div className="card-children">{children}</div>}
       </div>
 

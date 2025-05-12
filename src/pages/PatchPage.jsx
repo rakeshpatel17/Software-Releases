@@ -146,6 +146,32 @@ function PatchPage({ patchName }) {
         setIsEditing(false);
     };
 
+    /* asks for qba while changing state to released */
+    const handleStateChange = (e) => {
+            const newState = e.target.value;
+
+            // If changing to "released" from a different state
+            if (newState === 'released' && tempPatchData.patch_state !== 'released') {
+            const desc = window.prompt('Enter a description for the released patch:');
+            if (desc !== null && desc.trim() !== '') {
+                setTempPatchData({
+                ...tempPatchData,
+                patch_state: newState,
+                description: desc.trim(),
+                });
+            } else {
+                // Cancel the selection back to original state
+                alert('Release description is required.');
+            }
+            } else {
+            // For other state transitions
+            setTempPatchData({
+                ...tempPatchData,
+                patch_state: newState,
+            });
+            }
+    };
+
     return (
         <> 
         
@@ -231,8 +257,9 @@ function PatchPage({ patchName }) {
                         <label>Patch State</label>
                         <select
                             value={tempPatchData.patch_state || 'New'}
-                            disabled={!isEditing}
-                            onChange={e => setTempPatchData({ ...tempPatchData, patch_state: e.target.value })}
+                            disabled={!isEditing || tempPatchData.patch_state === 'released'}
+                            // onChange={e => setTempPatchData({ ...tempPatchData, patch_state: e.target.value })}
+                            onChange={handleStateChange}
                         >
                             <option value="new">New</option>
                             <option value="rejected">Rejected</option>
@@ -244,7 +271,7 @@ function PatchPage({ patchName }) {
                     <label>Description</label>
                     <textarea
                         value={tempPatchData.description || ''}
-                        disabled={!isEditing}
+                        disabled={!isEditing || tempPatchData.patch_state === 'released'}
                         onChange={e => setTempPatchData({ ...tempPatchData, description: e.target.value })}
                     />
 
