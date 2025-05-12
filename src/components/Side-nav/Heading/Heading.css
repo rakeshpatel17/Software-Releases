@@ -6,6 +6,21 @@
   /* margin-bottom: 10px; */
 }
 
+.heading-placeholder {
+  display: flex;
+  align-items: center;
+ 
+}
+
+.heading-text_main {
+  padding-top: 5px;
+  font-size: 34px; /* Increased font size */
+  font-weight: 600; /* Made the font bolder */
+  color: #2c2c2c;
+  margin-top: -24px;
+  margin-bottom: -4px;
+}
+
 .heading-image {
   width: 42px;
   height: 42px;
@@ -22,3 +37,4 @@
   font-weight: 600;
   color: #2c2c2c;
 }
+

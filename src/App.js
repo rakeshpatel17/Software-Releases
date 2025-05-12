@@ -8,6 +8,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import PatchPage from "./pages/PatchPage";
 import PatchProgressPage from "./pages/PatchProgressPage";
 import MainLayout from "./Layouts/MainLayout";
+import Form from "./components/Form/Form";
 
 
 // PrivateRoute component: checks if authenticated
@@ -48,6 +49,7 @@ function AppRoutes({ isLoggedIn, handleLoginSuccess, handleLogout }) {
           >
             <Route index element={<Navigate to="dashboard" />} />
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path="addpatch" element={<Form />} />
             <Route path="releases/:id" element={<ReleasePatches />} />
             <Route path="products/:productName" element={<ProductPage />} />
             <Route path="patches/:patchName" element={<PatchPage />} />

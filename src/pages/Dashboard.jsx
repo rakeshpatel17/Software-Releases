@@ -11,10 +11,18 @@ import { useOutletContext } from "react-router-dom";
 
 
 function Dashboard() {
-  const { searchTerm } = useOutletContext();
   const [showForm, setShowForm] = useState(false);
   const [fetchedPatches, setFetchedPatches] = useState([]);
   const [selectedPatch, setSelectedPatch] = useState(null);
+
+  const navigate = useNavigate(); 
+
+  const { searchTerm, setTitle } = useOutletContext(); // <-- move this up
+
+  useEffect(() => {
+    setTitle("Overview");
+  }, [setTitle]);
+
 
   useEffect(() => {
     const fetch = async () => {
@@ -52,43 +60,48 @@ function Dashboard() {
     { title: 'Rejected Patches', items: rejected }
   ];
 
-  const navigate = useNavigate(); 
+  
+
 
 
   return (
         <div className="dashboard-main">
         <div className="dashboard-header">
-            <h2 className="dashboard-title">Overview</h2>
+            {/* <h2 className="dashboard-title">Overview</h2> */}
             {!showForm && !selectedPatch && (
               <button
-                className="add-patch-button"
-                onClick={() => setShowForm(true)}
-              >
-                ➕ Add Patch
-              </button>
+              className="add-patch-button"
+              onClick={() => navigate('/addpatch')}
+            >
+              ➕ Add Patch
+            </button>
             )}
-          </div>          {showForm ? (
-            <Form onCancel={() => setShowForm(false)} />
-          ) : selectedPatch ? (
-            <PatchPage patchName ={selectedPatch.title} patch={selectedPatch} onBack={() => setSelectedPatch(null)} />
-          ):
-          (displayGroups.map((group, idx) => (
-            group.items.length > 0 && (
-              <div key={idx}>
-                <div className="card-scrollable">
-                  <div className="card-grid">
-                    {group.items.map((patch, index) => (
-                      // <Card key={index} info={patch} />
-                      <Card key={index} info={patch} onClick={() => setSelectedPatch(patch) } />
-                      // <Card key={index} info={patch} onClick={() => navigate(`/patches/${patch}`)   } />
-
-                    ))}
-                    
-                  </div>
+          </div>     
+          
+          {showForm ? (
+        <Form onCancel={() => setShowForm(false)} />
+      ) : (
+        displayGroups.map((group, idx) => (
+          group.items.length > 0 && (
+            <div key={idx}>
+              {/* <h3>{group.title}</h3> */}
+              <div className="card-scrollable">
+                <div className="card-grid">
+                  {group.items.map((patch, index) => (
+                    <Card
+                      key={index}
+                      info={patch}
+                      onClick={() => navigate(`/patches/${encodeURIComponent(patch.title)}`, {
+                        state: { patch }
+                      })}
+                    />
+                  ))}
                 </div>
               </div>
-            )
-          )))}
+            </div>
+          )
+        ))
+      )}
         </div>
   );
 }

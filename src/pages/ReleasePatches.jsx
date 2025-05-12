@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Card from '../components/Card/Card';
 import get_patches from '../api/patches';
 import Form from '../components/Form/Form';
@@ -9,10 +9,16 @@ import { useOutletContext } from 'react-router-dom';
 
 function ReleasePatches() {
   const { id } = useParams();
-  const { searchTerm } = useOutletContext();
   const [patches, setPatches] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [selectedPatch, setSelectedPatch] = useState(null);
+
+  const { searchTerm, setTitle } = useOutletContext();
+
+  useEffect(() => {
+    setTitle(`Patches for ${id}`);
+  }, [id, setTitle]);
+
 
   useEffect(() => {
     const fetch = async () => {
@@ -49,39 +55,51 @@ function ReleasePatches() {
     { title: 'Rejected Patches', items: rejected }
   ];
 
-  return (
-        <div className="dashboard-main">
-          <div className="dashboard-header">
-            <h2 className="dashboard-title">Patches for {id}</h2>
-            {!showForm && !selectedPatch && (
-              <button
-                className="add-patch-button"
-                onClick={() => setShowForm(true)}
-              >
-                ➕ Add Patch
-              </button>
-            )}
-          </div>
+  const navigate = useNavigate();
 
-          {showForm ? (
-            <Form lockedRelease={id} onCancel={() => setShowForm(false)} />
-          ) : selectedPatch ? (
-            <PatchPage patchName ={selectedPatch.title} patch={selectedPatch} onBack={() => setSelectedPatch(null)} />
-          ):  (displayGroups.map((group, idx) => (
-            group.items.length > 0 && (
-              <div key={idx}>
-                <div className="card-scrollable">
-                  <div className="card-grid">
-                    {group.items.map((patch, index) => (
-                       <Card key={index} info={patch} onClick={() => setSelectedPatch(patch)} />
-                    ))}
-                  </div>
+
+  return (
+    <div className="dashboard-main">
+      <div className="dashboard-header">
+        {/* <h2 className="dashboard-title">Patches for {id}</h2> */}
+        {!showForm && !selectedPatch && (
+          <button
+            className="add-patch-button"
+            onClick={() => navigate('/addpatch')}
+          >
+            ➕ Add Patch
+          </button>
+        )}
+      </div>
+
+      {showForm ? (
+        <Form lockedRelease={id} onCancel={() => setShowForm(false)} />
+      ) : (
+        displayGroups.map((group, idx) => (
+          group.items.length > 0 && (
+            <div key={idx}>
+              {/* <h3>{group.title}</h3> */}
+              <div className="card-scrollable">
+                <div className="card-grid">
+                  {group.items.map((patch, index) => (
+                    <Card
+                      key={index}
+                      info={patch}
+                      onClick={() =>
+                        navigate(`/patches/${encodeURIComponent(patch.title)}`, {
+                          state: { patch }
+                        })
+                      }
+                    />
+                  ))}
                 </div>
               </div>
-            )
-          )))}
+            </div>
+          )
+        ))
+      )}
 
-        </div>
+    </div>
   );
 }
 
