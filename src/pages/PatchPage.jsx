@@ -9,8 +9,10 @@ import './PatchPage.css';
 import getAllProducts from '../api/product';
 import { getPatchById } from '../api/getPatchById';
 import BackButtonComponent from '../components/Button/BackButtonComponent';
+import { useParams } from 'react-router-dom';
 
-function PatchPage({ patchName }) {
+function PatchPage() {
+    const { patchName } = useParams();
     const [isEditing, setIsEditing] = useState(false);
     const [patchData, setPatchData] = useState({});
     const [selectedJars, setSelectedJars] = useState([
@@ -37,16 +39,28 @@ function PatchPage({ patchName }) {
     const [productData, setProductData] = useState([]);
     const [selectedProducts, setSelectedProducts] = useState([]);
 
+    // useEffect(() => {
+    //     const fetchProducts = async () => {
+    //         const data = await getAllProducts();
+    //         if (data && data.length > 0) {
+    //             setProductData(data);
+    //         }
+    //     };
+    //     fetchProducts();
+    // }, []);
     useEffect(() => {
-        const fetchProducts = async () => {
-            const data = await getAllProducts();
-            if (data && data.length > 0) {
-                setProductData(data);
-            }
+        const fetchPatch = async () => {
+          const data = await getPatchById(patchName);
+          if (data && data.length > 0) {
+            setPatchData(data[0]);
+            setTempPatchData(data[0]);
+             // setSelectedJars(data[0].jars || []);
+            //setHighLevelScope(data[0].scope || []);
+          }
         };
-        fetchProducts();
-    }, []);
-
+        fetchPatch();
+      }, [patchName]);
+      
 
     const handleImageToggle = (image) => {
         setSelectedImages((prev) =>
@@ -78,19 +92,7 @@ function PatchPage({ patchName }) {
         product.name.toLowerCase().includes(productSearchTerm.toLowerCase())
     );
 
-    useEffect(() => {
-        const fetchPatch = async () => {
-            const data = await getPatchById(patchName);
-            if (data && data.length > 0) {
-                setPatchData(data[0]);
-                setTempPatchData(data[0]);
-            } else {
-                setPatchData({});
-                setTempPatchData({});
-            }
-        };
-        fetchPatch();
-    }, [patchName]);
+    
 
     useEffect(() => {
         setTempSelectedJars(selectedJars);

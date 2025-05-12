@@ -20,14 +20,18 @@ import { useOutletContext } from 'react-router-dom';
 
 
 function ProductPage() {
+
+    const { searchTerm, setTitle } = useOutletContext(); 
     const { productName } = useParams();
     const [images, setImages] = useState([]);
     // const [searchTerm, setSearchTerm] = useState('');
-    const { searchTerm } = useOutletContext();
     const [expandedRows, setExpandedRows] = useState({});
     /*text area */
     // const [editingIndex, setEditingIndex] = useState(null);
     // const [editedDescription, setEditedDescription] = useState('');
+    useEffect(() => {
+        setTitle(`Images for ${productName}`);  
+    }, [productName, setTitle]);
 
     const toggleRow = (idx) => {
         setExpandedRows((prev) => ({
@@ -58,10 +62,10 @@ function ProductPage() {
 
     return (
 
-                <div className="dashboard-main">
-                    <h2>Images for Product: {productName}</h2>
-                    <ImageTable images={images} searchTerm={searchTerm} />
-                </div>
+        <div className="dashboard-main">
+            {/* <h2>Images for Product: {productName}</h2> */}
+            <ImageTable images={images} searchTerm={searchTerm} />
+        </div>
     );
 }
 

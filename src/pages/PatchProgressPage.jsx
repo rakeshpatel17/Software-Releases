@@ -5,11 +5,10 @@ import getProductDetails from '../api/image';
 import { useParams } from 'react-router-dom';
 import EditableFieldComponent from '../components/EditableFieldComponent';
 import ToggleButtonComponent from '../components/ToggleButton/ToggleButton';
-import BackButtonComponent from '../components/BackButtonComponent';
 import { useOutletContext } from 'react-router-dom';
 
 function PatchProgressPage() {
-  const { searchTerm } = useOutletContext();
+  const { searchTerm, setTitle } = useOutletContext(); 
   const { id } = useParams();
   const [productJars, setProductJars] = useState({
     Server: [
@@ -104,11 +103,15 @@ function PatchProgressPage() {
   };
   
 
+  useEffect(() => {
+    setTitle(`${id} Progress`);  
+  }, [id, setTitle]);
+
   return (
 
         <div className="dashboard-main">
           <div className="dashboard-header">
-            <h2 className="dashboard-title">{id} Progress</h2>
+            {/* <h2 className="dashboard-title">{id} Progress</h2> */}
           </div>
           <div className="table-scroll-wrapper">
             {Object.entries(filteredProducts).map(([product, jars]) => (

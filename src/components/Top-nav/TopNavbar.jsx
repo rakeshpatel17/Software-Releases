@@ -31,11 +31,11 @@ function TopNavbar({ onSearch, onLogout,title}) {
       <BackButtonComponent />
       <ForwardButtonComponent />
     </div>
-    <div className="center-heading">
         {/* Use Heading component to display the title */}
+        <div className="center-heading">
         <Heading
-          icon="https://cdn-icons-png.flaticon.com/512/1055/1055687.png" // You can change the icon based on your requirements
-          name={title} // Dynamic title coming from the parent
+          //link="https://cdn-icons-png.flaticon.com/512/1055/1055687.png"
+          name={title}
         />
       </div>
     <div className="right-controls">

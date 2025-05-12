@@ -7,7 +7,7 @@ import post_patches from '../../api/post_patches';
 import get_patches from '../../api/patches';
 import ProductImageSelector from '../ProductImageSelector/ProductImageSelector';
 import JarSelector from '../JarSelector/JarSelector';
-import BackButtonComponent from '../BackButtonComponent'; 
+import BackButtonComponent from '../Button/BackButtonComponent';
 
 
 
