@@ -3,7 +3,7 @@ import './HighLevelScope.css';
 import { Trash2 } from 'lucide-react';
 
 
-function HighLevelScopeComponent({ highLevelScope, isEditing, onScopeChange }) {
+function HighLevelScope({ highLevelScope, isEditing, onScopeChange }) {
     const [tempHighLevelScope, setTempHighLevelScope] = useState([...highLevelScope]);
 
     // To reset the temp state when exiting edit mode
@@ -110,4 +110,4 @@ function HighLevelScopeComponent({ highLevelScope, isEditing, onScopeChange }) {
     );
 }
 
-export default HighLevelScopeComponent;
+export default HighLevelScope;

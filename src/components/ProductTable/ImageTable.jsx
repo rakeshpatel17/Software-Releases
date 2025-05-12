@@ -1,7 +1,8 @@
-import React, { useState,useEffect } from 'react';
+// components/ProductTable.js
+import React, { useState ,useEffect} from 'react';
 import './ImageTable.css'; // optional if you want separate styling
 import EditableFieldComponent from '../EditableFieldComponent';
-import ToggleButtonComponent from '../ToggleButtonComponent';
+import ToggleButtonComponent from '../ToggleButton/ToggleButton';
 
 function highlightMatch(text, term) {
     if (!term) return text;
@@ -57,7 +58,6 @@ function ImageTable({ images, searchTerm }) {
         updatedValues[idx] = newValue;
         setToggleHelmValues(updatedValues);
     };
-
     useEffect(() => {
         if (images.length > 0) {
           setToggleRegisteryValues(images.map(() => 'Released'));
@@ -65,6 +65,7 @@ function ImageTable({ images, searchTerm }) {
           setToggleHelmValues(images.map(() => 'Released'));
         }
       }, [images]);
+
 
 
     return (

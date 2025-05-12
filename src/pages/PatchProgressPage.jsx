@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import SideNavbar from '../components/Side-nav/SideNavbar';
-import TopNavbar from '../components/Top-nav/TopNavbar';
 import ImageTable from '../components/ProductTable/ImageTable';
 import './PatchProgressPage.css';
 import getProductDetails from '../api/image';
 import { useParams } from 'react-router-dom';
 import EditableFieldComponent from '../components/EditableFieldComponent';
-import ToggleButtonComponent from '../components/ToggleButtonComponent';
-import BackButtonComponent from '../components/Button/BackButtonComponent';
+import ToggleButtonComponent from '../components/ToggleButton/ToggleButton';
+import BackButtonComponent from '../components/BackButtonComponent';
+import { useOutletContext } from 'react-router-dom';
 
-function PatchProgressPage({ onLogout }) {
-  const [searchTerm, setSearchTerm] = useState('');
+function PatchProgressPage() {
+  const { searchTerm } = useOutletContext();
   const { id } = useParams();
   const [productJars, setProductJars] = useState({
     Server: [
@@ -72,30 +71,50 @@ function PatchProgressPage({ onLogout }) {
     ]
   }]
 
+  
+  const [filteredProducts, setFilteredProducts] = useState(productJars);
 
-  // useEffect(() => {
-  //   const fetch = async () => {
-  //     console.log("In patch progress page"); 
-  //   };
-  //   fetch();
-  // }, []);
+  useEffect(() => {
+    if (searchTerm.trim() === '') {
+      setFilteredProducts(productJars); // show all if search is empty
+    } else {
+      const lowerSearch = searchTerm.toLowerCase();
+      const filtered = Object.fromEntries(
+        Object.entries(productJars).filter(([product]) =>
+          product.toLowerCase().includes(lowerSearch)
+        )
+      );
+      setFilteredProducts(filtered);
+    }
+  }, [searchTerm]);
 
+  const highlightText = (text, highlight) => {
+    if (!highlight) return text;
+  
+    const regex = new RegExp(`(${highlight})`, 'gi');
+    const parts = text.split(regex);
+  
+    return parts.map((part, i) =>
+      part.toLowerCase() === highlight.toLowerCase() ? (
+        <mark key={i} style={{ backgroundColor: 'yellow' }}>{part}</mark>
+      ) : (
+        part
+      )
+    );
+  };
+  
 
   return (
 
-    <div className="dashboard-container">
-      <SideNavbar />
-      <div className="dashboard-content">
-        <TopNavbar onSearch={setSearchTerm} onLogout={onLogout} />
         <div className="dashboard-main">
           <div className="dashboard-header">
             <h2 className="dashboard-title">{id} Progress</h2>
           </div>
           <div className="table-scroll-wrapper">
-            {Object.entries(productJars).map(([product, jars]) => (
+            {Object.entries(filteredProducts).map(([product, jars]) => (
               <div className='patchProgress'>
                 <div className="product-table-container" key={product}>
-                  <h2>{product.toUpperCase()}</h2>
+                  <h2>{/*product.toUpperCase()*/highlightText(product.toUpperCase(), searchTerm)}</h2>
                   <table className="product-table">
                     <thead>
                       <tr>
@@ -136,15 +155,13 @@ function PatchProgressPage({ onLogout }) {
                   </table>
                   {/* Rendering ImageTable  */}
                   <div className="image-table-wrapper">
-                    <ImageTable images={images} searchTerm={searchTerm} />
+                          <ImageTable images={images} /*searchTerm={searchTerm}*/ />
                   </div>
                 </div>
               </div>
             ))}
           </div>
         </div>
-      </div>
-    </div>
   );
 }
 

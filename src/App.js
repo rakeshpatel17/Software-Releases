@@ -1,12 +1,13 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import Login from "./components/Login";
+import Login from "./components/Login/Login";
 import Dashboard from "./pages/Dashboard";
 import ProductPage from "./pages/Productpage";
 import ReleasePatches from "./pages/ReleasePatches";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import PatchPage from "./pages/PatchPage";
 import PatchProgressPage from "./pages/PatchProgressPage";
+import MainLayout from "./Layouts/MainLayout";
 
 
 // PrivateRoute component: checks if authenticated
@@ -36,61 +37,25 @@ function AppRoutes({ isLoggedIn, handleLoginSuccess, handleLogout }) {
           path="/login"
           element={isLoggedIn ? <Navigate to="/dashboard" /> : <Login onLoginSuccess={onLoginSuccess} />}
         />
-        
 
-        {/* Protected Route */}
         <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute isAuthenticated={isLoggedIn}>
-              <Dashboard onLogout={onLogout} />
-            </PrivateRoute>
-          }
-        />
+            path="/"
+            element={
+              <PrivateRoute isAuthenticated={isLoggedIn}>
+                <MainLayout onLogout={onLogout} />
+              </PrivateRoute>
+            }
+          >
+            <Route index element={<Navigate to="dashboard" />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="releases/:id" element={<ReleasePatches />} />
+            <Route path="products/:productName" element={<ProductPage />} />
+            <Route path="patches/:patchName" element={<PatchPage />} />
+            <Route path="progress/:id" element={<PatchProgressPage />} />
+          </Route>
 
-        {/* For releases */}
-        <Route
-          path="/releases/:id"
-          element={
-            <PrivateRoute isAuthenticated={isLoggedIn}>
-              <ReleasePatches onLogout={onLogout} />
-            </PrivateRoute>
-          }
-        />
-      {/* For product page */}
-        <Route
-          path="/products/:productName"  // change productname to productName
-          element={
-            <PrivateRoute isAuthenticated={isLoggedIn}>
-              <ProductPage onLogout={onLogout} />
-            </PrivateRoute>
-          }
-        />
-
-      {/* For patch page */}
-        <Route
-          path="/patches/:patchName"
-          element={
-            <PrivateRoute isAuthenticated={isLoggedIn}>
-              <PatchPage /> 
-            </PrivateRoute>
-          }
-        />
-
-       {/* PatchProgress Route */}
-       <Route
-          path="/progress/:id"
-          element={
-            <PrivateRoute isAuthenticated={isLoggedIn}>
-              <PatchProgressPage onLogout={onLogout} />
-            </PrivateRoute>
-          }
-        />
-
-        {/* Redirect any unknown routes */}
-        <Route path="*" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
-
-
+         {/* Redirect any unknown routes */}
+         <Route path="*" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
       </Routes>
     </>
   );
