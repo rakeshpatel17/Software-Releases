@@ -50,17 +50,17 @@ function PatchPage() {
     // }, []);
     useEffect(() => {
         const fetchPatch = async () => {
-          const data = await getPatchById(patchName);
-          if (data && data.length > 0) {
-            setPatchData(data[0]);
-            setTempPatchData(data[0]);
-             // setSelectedJars(data[0].jars || []);
-            //setHighLevelScope(data[0].scope || []);
-          }
+            const data = await getPatchById(patchName);
+            if (data && data.length > 0) {
+                setPatchData(data[0]);
+                setTempPatchData(data[0]);
+                // setSelectedJars(data[0].jars || []);
+                //setHighLevelScope(data[0].scope || []);
+            }
         };
         fetchPatch();
-      }, [patchName]);
-      
+    }, [patchName]);
+
 
     const handleImageToggle = (image) => {
         setSelectedImages((prev) =>
@@ -92,7 +92,7 @@ function PatchPage() {
         product.name.toLowerCase().includes(productSearchTerm.toLowerCase())
     );
 
-    
+
 
     useEffect(() => {
         setTempSelectedJars(selectedJars);
@@ -150,40 +150,41 @@ function PatchPage() {
 
     /* asks for qba while changing state to released */
     const handleStateChange = (e) => {
-            const newState = e.target.value;
+        const newState = e.target.value;
 
-            // If changing to "released" from a different state
-            if (newState === 'released' && tempPatchData.patch_state !== 'released') {
+        // If changing to "released" from a different state
+        if (newState === 'released' && tempPatchData.patch_state !== 'released') {
             const desc = window.prompt('Enter a description for the released patch:');
             if (desc !== null && desc.trim() !== '') {
                 setTempPatchData({
-                ...tempPatchData,
-                patch_state: newState,
-                description: desc.trim(),
+                    ...tempPatchData,
+                    patch_state: newState,
+                    description: desc.trim(),
                 });
             } else {
                 // Cancel the selection back to original state
                 alert('Release description is required.');
             }
-            } else {
+        } else {
             // For other state transitions
             setTempPatchData({
                 ...tempPatchData,
                 patch_state: newState,
             });
-            }
+        }
     };
 
     return (
-        <> 
-        
+        <>
+
             <div className="patch-page">
                 <div className="patch-header">
                     <h2>Patch Details</h2>
-
-                    <button className="edit-btn" onClick={toggleEdit}>
-                        {isEditing ? 'Cancel' : 'Edit'}
-                    </button>
+                    {patchData.patch_state !== 'released' && (
+                        <button className="edit-btn" onClick={toggleEdit}>
+                            {isEditing ? 'Cancel' : 'Edit'}
+                        </button>
+                    )}
                 </div>
 
                 <form className="patch-form">
@@ -252,9 +253,9 @@ function PatchPage() {
                         isEditing={isEditing}
                     />
 
-                <div className="progress-container">
-                            <ProgressBar value={getProgressValue(patchData.patch_state)} label="Patch Progress" redirectTo={`/progress/${patchName}`} />
-                        </div>
+                    <div className="progress-container">
+                        <ProgressBar value={getProgressValue(patchData.patch_state)} label="Patch Progress" redirectTo={`/progress/${patchName}`} />
+                    </div>
                     <div className="form-group">
                         <label>Patch State</label>
                         <select
@@ -318,7 +319,7 @@ function PatchPage() {
         </>
     );
 
-    
+
 }
 
 export default PatchPage;

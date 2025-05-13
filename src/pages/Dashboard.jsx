@@ -17,11 +17,12 @@ function Dashboard() {
 
   const navigate = useNavigate(); 
 
-  const { searchTerm, setTitle } = useOutletContext(); // <-- move this up
+  const { searchTerm, setTitle,setPatchVersion } = useOutletContext(); // <-- move this up
 
   useEffect(() => {
     setTitle("Overview");
-  }, [setTitle]);
+    setPatchVersion("")
+  }, [setTitle,setPatchVersion]);
 
 
   useEffect(() => {
@@ -66,17 +67,17 @@ function Dashboard() {
 
   return (
         <div className="dashboard-main">
-        <div className="dashboard-header">
+        {/* <div className="dashboard-header"> */}
             {/* <h2 className="dashboard-title">Overview</h2> */}
-            {!showForm && !selectedPatch && (
+            {/* {!showForm && !selectedPatch && (
               <button
               className="add-patch-button"
               onClick={() => navigate('/addpatch')}
             >
               ➕ Add Patch
             </button>
-            )}
-          </div>     
+            )} */}
+          {/* </div>      */}
           
           {showForm ? (
         <Form onCancel={() => setShowForm(false)} />

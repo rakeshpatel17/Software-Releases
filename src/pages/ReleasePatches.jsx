@@ -13,11 +13,12 @@ function ReleasePatches() {
   const [showForm, setShowForm] = useState(false);
   const [selectedPatch, setSelectedPatch] = useState(null);
 
-  const { searchTerm, setTitle } = useOutletContext();
+  const { searchTerm, setTitle,setPatchVersion  } = useOutletContext();
 
   useEffect(() => {
     setTitle(`Patches for ${id}`);
-  }, [id, setTitle]);
+    setPatchVersion(id);
+  }, [id, setTitle,setPatchVersion ]);
 
 
   useEffect(() => {
@@ -60,17 +61,17 @@ function ReleasePatches() {
 
   return (
     <div className="dashboard-main">
-      <div className="dashboard-header">
+      {/* <div className="dashboard-header"> */}
         {/* <h2 className="dashboard-title">Patches for {id}</h2> */}
-        {!showForm && !selectedPatch && (
+        {/* {!showForm && !selectedPatch && (
           <button
             className="add-patch-button"
             onClick={() => navigate('/addpatch')}
           >
             ➕ Add Patch
           </button>
-        )}
-      </div>
+        )} */}
+      {/* </div> */}
 
       {showForm ? (
         <Form lockedRelease={id} onCancel={() => setShowForm(false)} />
@@ -82,15 +83,15 @@ function ReleasePatches() {
               <div className="card-scrollable">
                 <div className="card-grid">
                   {group.items.map((patch, index) => (
-                    <Card
-                      key={index}
-                      info={patch}
-                      onClick={() =>
-                        navigate(`/patches/${encodeURIComponent(patch.title)}`, {
-                          state: { patch }
-                        })
-                      }
-                    />
+                   <Card
+                   key={index}
+                   info={patch}
+                   onClick={() =>
+                     navigate(`/patches/${encodeURIComponent(patch.title)}`, {
+                       state: { patch, lockedRelease: id } 
+                     })
+                   }
+                 />                 
                   ))}
                 </div>
               </div>

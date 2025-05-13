@@ -8,10 +8,14 @@ import get_patches from '../../api/patches';
 import ProductImageSelector from '../ProductImageSelector/ProductImageSelector';
 import JarSelector from '../JarSelector/JarSelector';
 import BackButtonComponent from '../Button/BackButtonComponent'
+import { useLocation } from 'react-router-dom';
 
 
 
-function Form({ onCancel, lockedRelease }) {
+
+function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
+    const location = useLocation();
+    const lockedRelease = lockedReleaseProp || location.state?.lockedRelease;
     const [formData, setFormData] = useState({
         name: '',
         release: lockedRelease || '24.2',
