@@ -1,12 +1,13 @@
-
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import './TopNavbar.css';
 import SearchBar from '../Search/SearchBar';
 import BackButtonComponent from '../Button/BackButtonComponent';
 import ForwardButtonComponent from '../Button/ForwardButtonComponent';
 import Heading from '../Side-nav/Heading/Heading';
+import AddPatchButton from '../Button/AddPatchButton';
 
-function TopNavbar({ onSearch, onLogout,title}) {
+
+function TopNavbar({ onSearch, onLogout,title,  patchVersion}) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef();
 
@@ -19,11 +20,13 @@ function TopNavbar({ onSearch, onLogout,title}) {
       setDropdownOpen(false);
     }
   };
-
+  
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  
 
   return (
     <div className="top-navbar">
@@ -31,15 +34,14 @@ function TopNavbar({ onSearch, onLogout,title}) {
       <BackButtonComponent />
       <ForwardButtonComponent />
     </div>
-        {/* Use Heading component to display the title */}
-        <div className="center-heading">
-        <Heading
-          //link="https://cdn-icons-png.flaticon.com/512/1055/1055687.png"
-          name={title}
-        />
-      </div>
+  
+    <div className="center-controls">
+      <Heading name={title} />
+    </div>
+  
     <div className="right-controls">
-    <SearchBar onSearch={onSearch} />
+      <AddPatchButton className="add-patch-button" release={patchVersion} />
+      <SearchBar onSearch={onSearch} />
       <div ref={dropdownRef} className="profile-container">
         <div onClick={toggleDropdown} className="profile-toggle">
           <span>Profile</span>
@@ -60,6 +62,7 @@ function TopNavbar({ onSearch, onLogout,title}) {
       </div>
     </div>
   </div>
+  
   
   );
 }

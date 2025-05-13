@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './Form.css';
 import get_release from '../../api/release';
 import getAllProducts from '../../api/product';
@@ -7,11 +7,14 @@ import post_patches from '../../api/post_patches';
 import get_patches from '../../api/patches';
 import ProductImageSelector from '../ProductImageSelector/ProductImageSelector';
 import JarSelector from '../JarSelector/JarSelector';
-import BackButtonComponent from '../Button/BackButtonComponent'
+import { useLocation } from 'react-router-dom';
 
 
 
-function Form({ onCancel, lockedRelease }) {
+
+function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
+    const location = useLocation();
+    const lockedRelease = lockedReleaseProp || location.state?.lockedRelease;
     const [formData, setFormData] = useState({
         name: '',
         release: lockedRelease || '24.2',
@@ -148,12 +151,9 @@ function Form({ onCancel, lockedRelease }) {
             thirdPartyJars: selectedJars,
         };
 
-        console.log('Final Submitted Data:', formData);
-
 
         try {
             const response = await post_patches(formData);
-            console.log('Response from post_patches:', response);
         } catch (error) {
             console.error('Error while posting to database:', error);
         }
@@ -186,9 +186,9 @@ function Form({ onCancel, lockedRelease }) {
         });
     };
 
-    const filteredProducts = productData.filter((product) =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // const filteredProducts = productData.filter((product) =>
+    //     product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    // );
 
 
     //high level scope

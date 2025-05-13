@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './JarSelector.css';
 import { Trash2 } from 'lucide-react';
 

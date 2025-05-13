@@ -1,29 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Card from '../components/Card/Card';
 import get_patches from '../api/patches';
 import Form from '../components/Form/Form';
-import './Dashboard.css';
-import PatchPage from './PatchPage';
+import './Dashboard/Dashboard.css';
+// import PatchPage from './PatchPage/PatchPage';
 import { useOutletContext } from 'react-router-dom';
 
 function ReleasePatches() {
   const { id } = useParams();
   const [patches, setPatches] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [selectedPatch, setSelectedPatch] = useState(null);
+  // const [selectedPatch, setSelectedPatch] = useState(null);
 
-  const { searchTerm, setTitle } = useOutletContext();
+  const { searchTerm, setTitle,setPatchVersion  } = useOutletContext();
 
   useEffect(() => {
     setTitle(`Patches for ${id}`);
-  }, [id, setTitle]);
+    setPatchVersion(id);
+  }, [id, setTitle,setPatchVersion ]);
 
 
   useEffect(() => {
     const fetch = async () => {
       const data = await get_patches(id);
-      console.log("fetched raw data : ", data);
+      // console.log("fetched raw data : ", data);
       const mappedData = (data || []).map((patch) => ({
         title: patch.name || "Untitled Patch",
         description: patch.description || "No description available",
@@ -60,17 +61,17 @@ function ReleasePatches() {
 
   return (
     <div className="dashboard-main">
-      <div className="dashboard-header">
+      {/* <div className="dashboard-header"> */}
         {/* <h2 className="dashboard-title">Patches for {id}</h2> */}
-        {!showForm && !selectedPatch && (
+        {/* {!showForm && !selectedPatch && (
           <button
             className="add-patch-button"
             onClick={() => navigate('/addpatch')}
           >
             ➕ Add Patch
           </button>
-        )}
-      </div>
+        )} */}
+      {/* </div> */}
 
       {showForm ? (
         <Form lockedRelease={id} onCancel={() => setShowForm(false)} />
@@ -82,15 +83,15 @@ function ReleasePatches() {
               <div className="card-scrollable">
                 <div className="card-grid">
                   {group.items.map((patch, index) => (
-                    <Card
-                      key={index}
-                      info={patch}
-                      onClick={() =>
-                        navigate(`/patches/${encodeURIComponent(patch.title)}`, {
-                          state: { patch }
-                        })
-                      }
-                    />
+                   <Card
+                   key={index}
+                   info={patch}
+                   onClick={() =>
+                     navigate(`/patches/${encodeURIComponent(patch.title)}`, {
+                       state: { patch, lockedRelease: id } 
+                     })
+                   }
+                 />                 
                   ))}
                 </div>
               </div>

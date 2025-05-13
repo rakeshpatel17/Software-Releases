@@ -1,6 +1,6 @@
 // components/ProductTable.js
 import React, { useState ,useEffect} from 'react';
-import './ImageTable.css'; // optional if you want separate styling
+import './ImageTable.css'; // separate styling
 import EditableFieldComponent from '../EditableFieldComponent';
 import ToggleButtonComponent from '../ToggleButton/ToggleButton';
 

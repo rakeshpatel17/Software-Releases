@@ -1,9 +1,7 @@
-import React from "react";
 import "./ProgressBar.css";
 import { useNavigate } from "react-router-dom";
 
 function ProgressBar({ value = 0, label, redirectTo = "/dashboard" }) {
-  console.log("redirects to : ", redirectTo);
    const clampedValue = Math.max(0, Math.min(100, value));
   //const clampedValue = 60
   const navigate = useNavigate();

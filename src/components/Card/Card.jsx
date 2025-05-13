@@ -1,4 +1,3 @@
-import React from 'react';
 import './Card.css';
 import { useNavigate } from 'react-router-dom';
 import { deletePatch } from '../../api/deletePatch';

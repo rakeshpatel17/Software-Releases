@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import ImageTable from '../components/ProductTable/ImageTable';
+import { useState, useEffect } from 'react';
+import ImageTable from '../../components/ProductTable/ImageTable';
 import './PatchProgressPage.css';
-import getProductDetails from '../api/image';
 import { useParams } from 'react-router-dom';
-import EditableFieldComponent from '../components/EditableFieldComponent';
-import ToggleButtonComponent from '../components/ToggleButton/ToggleButton';
-import BackButtonComponent from '../components/Button/BackButtonComponent';
+import EditableFieldComponent from '../../components/EditableFieldComponent';
+import ToggleButtonComponent from '../../components/ToggleButton/ToggleButton';
 import { useOutletContext } from 'react-router-dom';
 
 function PatchProgressPage() {
