@@ -3,12 +3,11 @@ import SideNavbar from "../components/Side-nav/SideNavbar";
 import TopNavbar from "../components/Top-nav/TopNavbar";
 import "./MainLayout.css";
 import { useState } from "react";
-import Form from "../components/Form/Form";
 
 
 const MainLayout = ({ onLogout }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [title, setTitle] = useState('Dashboard');
+  const [title, setTitle] = useState('');
   const [patchVersion, setPatchVersion] = useState('');
   // const [showForm, setShowForm] = useState(false);
 

@@ -62,7 +62,7 @@ function ProductPage() {
 
     return (
 
-        <div className="dashboard-main">
+        <div className="dashboard-main" >
             {/* <h2>Images for Product: {productName}</h2> */}
             <ImageTable images={images} searchTerm={searchTerm} />
         </div>

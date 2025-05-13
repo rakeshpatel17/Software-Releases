@@ -8,7 +8,7 @@ import HighLevelScopeComponent from '../components/HighLevelScope/HighLevelScope
 import './PatchPage.css';
 import getAllProducts from '../api/product';
 import { getPatchById } from '../api/getPatchById';
-import BackButtonComponent from '../components/Button/BackButtonComponent';
+import { useOutletContext } from "react-router-dom";
 import { useParams } from 'react-router-dom';
 
 function PatchPage() {
@@ -38,6 +38,7 @@ function PatchPage() {
     const [selectedImages, setSelectedImages] = useState([]);
     const [productData, setProductData] = useState([]);
     const [selectedProducts, setSelectedProducts] = useState([]);
+  
 
     // useEffect(() => {
     //     const fetchProducts = async () => {
@@ -173,6 +174,15 @@ function PatchPage() {
             });
         }
     };
+
+    const {  setTitle } = useOutletContext(); 
+
+    useEffect(() => {
+        if (tempPatchData.name) {
+          setTitle(`Patch Details Of ${tempPatchData.name}`);
+        }
+      }, [tempPatchData.name, setTitle]);
+      
 
     return (
         <>
