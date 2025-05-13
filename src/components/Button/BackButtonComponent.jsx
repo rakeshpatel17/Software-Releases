@@ -6,21 +6,7 @@ function BackButtonComponent() {
   const location = useLocation();
 
   const handleBack = () => {
-    const currentPath = location.pathname;
-
-    const isDashboard = currentPath === '/dashboard';
-    const isReleaseId = /^\/releases\/\d+(\.\d+)?$/.test(currentPath);
-    const isSpecificProduct = currentPath.startsWith('/products/'); // handles any /products/* path
-
-    if (isDashboard || isReleaseId || isSpecificProduct) {
-      return; // prevent back navigation
-    }
-
-    if (window.history.length > 1) {
       navigate(-1);
-    } else {
-      navigate('/dashboard'); // fallback
-    }
   };
 
   return (

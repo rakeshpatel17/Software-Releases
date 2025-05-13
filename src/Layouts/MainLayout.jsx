@@ -6,7 +6,7 @@ import { useState } from "react";
 
 const MainLayout = ({ onLogout }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [title, setTitle] = useState('Dashboard');
+  const [title, setTitle] = useState('');
 
   return (
     <div className="dashboard-container">
@@ -14,7 +14,7 @@ const MainLayout = ({ onLogout }) => {
       <div className="dashboard-content">
       <TopNavbar onSearch={setSearchTerm} onLogout={onLogout} title={title} />
         <div className="dashboard-main">
-          <Outlet context={{ searchTerm,setTitle  }} />
+          <Outlet context={{ searchTerm, setTitle}} />
         </div>
       </div>
     </div>

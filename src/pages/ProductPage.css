@@ -4,7 +4,7 @@ Container for horizontal scrolling on small screens
   height: 100vh;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f5f6fa;
-}
+} 
  
 .dashboard-content {
   flex-grow: 1;
@@ -45,6 +45,11 @@ Container for horizontal scrolling on small screens
 }
  
 .dashboard-main {
+  /* display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto; */
+  margin-top: 10px;
   display: flex;
   flex-direction: column;
   height: 100%;
