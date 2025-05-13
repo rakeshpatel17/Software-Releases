@@ -9,11 +9,6 @@ const MainLayout = ({ onLogout }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [title, setTitle] = useState('');
   const [patchVersion, setPatchVersion] = useState('');
-  // const [showForm, setShowForm] = useState(false);
-
-  // const onAddPatch = () => {
-  //   setShowForm(true); // This opens the form
-  // };
 
   return (
     <div className="dashboard-container">

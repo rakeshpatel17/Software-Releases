@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import{ useState, useEffect } from 'react';
 import Heading from './Heading/Heading';
 import Subheading from './Menu/SubHeading';
 import MenuItem from './Menu/MenuItem';
@@ -9,7 +9,7 @@ import logo from '../../assets/logo.png';
 // API calls
 import get_release from '../../api/release';
 import get_products from '../../api/product'; 
-import DropdownItem from './Menu/DropdownItem';
+// import DropdownItem from './Menu/DropdownItem';
 
 function SideNavbar() {
   const [isOpen, setIsOpen] = useState(false);

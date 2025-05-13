@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import getProductDetails from '../api/image';
-import ImageTable from '../components/ProductTable/ImageTable';
+import getProductDetails from '../../api/image';
+import ImageTable from '../../components/ProductTable/ImageTable';
 import './ProductPage.css';
 import { useOutletContext } from 'react-router-dom';
 

@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Card from '../components/Card/Card';
 import get_patches from '../api/patches';
 import Form from '../components/Form/Form';
-import './Dashboard.css';
-import PatchPage from './PatchPage';
+import './Dashboard/Dashboard.css';
+// import PatchPage from './PatchPage/PatchPage';
 import { useOutletContext } from 'react-router-dom';
 
 function ReleasePatches() {
   const { id } = useParams();
   const [patches, setPatches] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [selectedPatch, setSelectedPatch] = useState(null);
+  // const [selectedPatch, setSelectedPatch] = useState(null);
 
   const { searchTerm, setTitle,setPatchVersion  } = useOutletContext();
 
@@ -24,7 +24,7 @@ function ReleasePatches() {
   useEffect(() => {
     const fetch = async () => {
       const data = await get_patches(id);
-      console.log("fetched raw data : ", data);
+      // console.log("fetched raw data : ", data);
       const mappedData = (data || []).map((patch) => ({
         title: patch.name || "Untitled Patch",
         description: patch.description || "No description available",

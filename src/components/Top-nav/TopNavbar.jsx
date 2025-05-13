@@ -1,5 +1,4 @@
-
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import './TopNavbar.css';
 import SearchBar from '../Search/SearchBar';
 import BackButtonComponent from '../Button/BackButtonComponent';
@@ -8,7 +7,7 @@ import Heading from '../Side-nav/Heading/Heading';
 import AddPatchButton from '../Button/AddPatchButton';
 
 
-function TopNavbar({ onSearch, onLogout,title,  patchVersion,onAddPatch}) {
+function TopNavbar({ onSearch, onLogout,title,  patchVersion}) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef();
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import './ToggleButton.css'; // Import the CSS
 
 const ToggleButton = ({ options, value, onToggle }) => {

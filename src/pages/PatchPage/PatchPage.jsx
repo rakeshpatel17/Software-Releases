@@ -1,13 +1,13 @@
 
 
 import React, { useState, useEffect } from 'react';
-import ProductImageSelector from '../components/ProductImageSelector/ProductImageSelector';
-import JarSelector from '../components/JarSelector/JarSelector';
-import ProgressBar from '../components/ProgressBar/ProgressBar';
-import HighLevelScopeComponent from '../components/HighLevelScope/HighLevelScope';
+import ProductImageSelector from '../../components/ProductImageSelector/ProductImageSelector';
+import JarSelector from '../../components/JarSelector/JarSelector';
+import ProgressBar from '../../components/ProgressBar/ProgressBar';
+import HighLevelScopeComponent from '../../components/HighLevelScope/HighLevelScope';
 import './PatchPage.css';
-import getAllProducts from '../api/product';
-import { getPatchById } from '../api/getPatchById';
+import getAllProducts from '../../api/product';
+import { getPatchById } from '../../api/getPatchById';
 import { useOutletContext } from "react-router-dom";
 import { useParams } from 'react-router-dom';
 

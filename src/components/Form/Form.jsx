@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './Form.css';
 import get_release from '../../api/release';
 import getAllProducts from '../../api/product';
@@ -7,7 +7,6 @@ import post_patches from '../../api/post_patches';
 import get_patches from '../../api/patches';
 import ProductImageSelector from '../ProductImageSelector/ProductImageSelector';
 import JarSelector from '../JarSelector/JarSelector';
-import BackButtonComponent from '../Button/BackButtonComponent'
 import { useLocation } from 'react-router-dom';
 
 
@@ -152,12 +151,9 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
             thirdPartyJars: selectedJars,
         };
 
-        console.log('Final Submitted Data:', formData);
-
 
         try {
             const response = await post_patches(formData);
-            console.log('Response from post_patches:', response);
         } catch (error) {
             console.error('Error while posting to database:', error);
         }
@@ -190,9 +186,9 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
         });
     };
 
-    const filteredProducts = productData.filter((product) =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // const filteredProducts = productData.filter((product) =>
+    //     product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    // );
 
 
     //high level scope

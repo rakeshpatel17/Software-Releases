@@ -1,5 +1,3 @@
-
-import React from 'react';
 import PropTypes from 'prop-types';
 import './DropdownItem.css';
 import { Link } from 'react-router-dom';

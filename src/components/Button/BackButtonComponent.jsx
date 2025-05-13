@@ -1,9 +1,7 @@
-import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 function BackButtonComponent() {
   const navigate = useNavigate();
-  const location = useLocation();
 
   // const handleBack = () => {
   //   const currentPath = location.pathname;

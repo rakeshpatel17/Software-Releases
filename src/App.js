@@ -1,12 +1,12 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Login from "./components/Login/Login";
-import Dashboard from "./pages/Dashboard";
-import ProductPage from "./pages/Productpage";
+import Dashboard from './pages/Dashboard/Dashboard'
+import ProductPage from "./pages/ProductPage/Productpage";
 import ReleasePatches from "./pages/ReleasePatches";
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import PatchPage from "./pages/PatchPage";
-import PatchProgressPage from "./pages/PatchProgressPage";
+import PatchPage from "./pages/PatchPage/PatchPage";
+import PatchProgressPage from "./pages/PatchProgressPage/PatchProgressPage";
 import MainLayout from "./Layouts/MainLayout";
 import Form from "./components/Form/Form";
 

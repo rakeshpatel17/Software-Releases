@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './Dashboard.css';
-import Card from '../components/Card/Card';
-import Form from '../components/Form/Form';
-import get_patches from '../api/patches';
-import PatchPage from './PatchPage/PatchPage';
+import Card from '../../components/Card/Card';
+import Form from '../../components/Form/Form';
+import get_patches from '../../api/patches';
 import { useNavigate } from 'react-router-dom'; 
 import { useOutletContext } from "react-router-dom";
 
@@ -13,7 +12,7 @@ import { useOutletContext } from "react-router-dom";
 function Dashboard() {
   const [showForm, setShowForm] = useState(false);
   const [fetchedPatches, setFetchedPatches] = useState([]);
-  const [selectedPatch, setSelectedPatch] = useState(null);
+  // const [selectedPatch, setSelectedPatch] = useState(null);
 
   const navigate = useNavigate(); 
 
@@ -28,14 +27,14 @@ function Dashboard() {
   useEffect(() => {
     const fetch = async () => {
       const data = await get_patches();
-      console.log("fetched raw data : ", data);
+      //console.log("fetched raw data : ", data);
       const mappedData = (data || []).map((patch) => ({
         title: patch.name || "Untitled Patch",
         description: patch.description || "No description available",
         badge: patch.patch_state || "no patche state",
         footer: patch.release_date || "no release_date",
       }));
-      console.log("fetched patches in dashboard : ", mappedData);
+      //console.log("fetched patches in dashboard : ", mappedData);
       setFetchedPatches(mappedData); 
     };
  
