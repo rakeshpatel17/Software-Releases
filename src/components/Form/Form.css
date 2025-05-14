@@ -22,7 +22,7 @@
   margin-bottom: 6px;
   font-weight: 600;
   font-size: 0.95rem;
-  color: #20338b;
+  color: #000000;
 }
 
 .form-input,
@@ -49,40 +49,11 @@
   flex-wrap: wrap;
 }
 
-.submit-button {
-  align-self: auto;
-  padding: 10px 18px;
-  background-color: #27a844;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
 
-.submit-button:hover {
-  background-color: #1f8635;
-}
-
-.cancel-button {
-  padding: 10px 18px;
-  background-color: #dfe4f7;
-  color: #20338b;
-  border: none;
-  border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.cancel-button:hover {
-  background-color: #c2cbee;
-}
 
 .form-actions {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 1rem;
   margin-top: 2rem;
   flex-wrap: wrap;

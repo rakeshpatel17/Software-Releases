@@ -11,11 +11,11 @@ const MainLayout = ({ onLogout }) => {
   const [patchVersion, setPatchVersion] = useState('');
 
   return (
-    <div className="dashboard-container">
+    <div className="mainlayout-container">
       <SideNavbar />
-      <div className="dashboard-content">
+      <div className="mainlayout-content">
       <TopNavbar onSearch={setSearchTerm} onLogout={onLogout} title={title} patchVersion={patchVersion} />
-        <div className="dashboard-main">
+        <div className="mainlayout-main">
    
           <Outlet context={{ searchTerm,setTitle,setPatchVersion  }} />
         </div>

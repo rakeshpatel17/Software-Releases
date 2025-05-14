@@ -1,9 +1,22 @@
-import  { useState, useEffect } from 'react';
 import './HighLevelScope.css';
 import { Trash2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 
 
-function HighLevelScope({ highLevelScope, isEditing, onScopeChange }) {
+const staticLabelData = [
+    { label: 'Base OS' },
+    { label: 'Base OS1' },
+    { label: 'Base OS2' },
+    { label: 'Base OS3' },
+    { label: 'Base OS4' },
+    { label: 'Base OS5' },
+    { label: 'Tomcat' },
+    { label: 'JDK' },
+    { label: 'OTDS' },
+    { label: 'New Relic' },
+];
+
+function HighLevelScope({ highLevelScope, isEditing }) {
     const [tempHighLevelScope, setTempHighLevelScope] = useState([...highLevelScope]);
 
     // To reset the temp state when exiting edit mode
@@ -19,11 +32,6 @@ function HighLevelScope({ highLevelScope, isEditing, onScopeChange }) {
         setTempHighLevelScope(updatedScope);
     };
 
-    const handleLabelChange = (index, newLabel) => {
-        const updatedScope = [...tempHighLevelScope];
-        updatedScope[index].label = newLabel;
-        setTempHighLevelScope(updatedScope);
-    };
 
 
     const handleAddScope = () => {
@@ -36,6 +44,51 @@ function HighLevelScope({ highLevelScope, isEditing, onScopeChange }) {
         const updatedScope = tempHighLevelScope.filter((_, i) => i !== index);
         setTempHighLevelScope(updatedScope);
     };
+    //search 
+    const labelRefs = useRef([]);
+    const [labelSuggestions, setLabelSuggestions] = useState([]); // array of arrays for each row
+    const handleLabelChange = (index, newLabel) => {
+        const updatedScope = [...tempHighLevelScope];
+        updatedScope[index].label = newLabel;
+        setTempHighLevelScope(updatedScope);
+
+        const filteredSuggestions = newLabel.trim()
+            ? staticLabelData.filter(s =>
+                s.label.toLowerCase().includes(newLabel.toLowerCase())
+            )
+            : [];
+        const updatedSuggestions = [...labelSuggestions];
+        updatedSuggestions[index] = filteredSuggestions;
+        setLabelSuggestions(updatedSuggestions);
+    };
+
+    const handleSuggestionClick = (index, suggestion) => {
+        const updatedScope = [...tempHighLevelScope];
+        updatedScope[index].label = suggestion.label;
+        setTempHighLevelScope(updatedScope);
+
+        const updatedSuggestions = [...labelSuggestions];
+        updatedSuggestions[index] = [];
+        setLabelSuggestions(updatedSuggestions);
+    };
+    useEffect(() => {
+  const handleClickOutside = (event) => {
+    const updatedSuggestions = labelSuggestions.map((sugList, i) => {
+      const refEl = labelRefs.current[i];
+      if (refEl && !refEl.contains(event.target)) {
+        return [];
+      }
+      return sugList;
+    });
+    setLabelSuggestions(updatedSuggestions);
+  };
+
+  document.addEventListener('mousedown', handleClickOutside);
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+  };
+}, [labelSuggestions]);
+
 
     return (
         <div className="high-level-scope">
@@ -45,8 +98,8 @@ function HighLevelScope({ highLevelScope, isEditing, onScopeChange }) {
                     <table className="editable-scope-table">
                         <thead>
                             <tr>
-                                <th>Label</th>
-                                <th>Value</th>
+                                <th>Name</th>
+                                <th>Version</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -54,11 +107,29 @@ function HighLevelScope({ highLevelScope, isEditing, onScopeChange }) {
                             {tempHighLevelScope.map((item, index) => (
                                 <tr key={index}>
                                     <td>
-                                        <input
-                                            type="text"
-                                            value={item.label}
-                                            onChange={(e) => handleLabelChange(index, e.target.value)}
-                                        />
+                                        <div style={{ position: 'relative' }} ref={(el) => (labelRefs.current[index] = el)}
+                                        >
+                                            <input
+                                                type="text"
+                                                value={item.label}
+                                                onChange={(e) => handleLabelChange(index, e.target.value)}
+                                                autoComplete="off"
+                                            />
+                                            {labelSuggestions[index] && labelSuggestions[index].length > 0 && (
+                                                <div className="scope-dropdown">
+                                                    {labelSuggestions[index].map((s, i) => (
+                                                        <div
+                                                            key={i}
+                                                            className="scope-dropdown-item"
+                                                            onClick={() => handleSuggestionClick(index, s)}
+                                                        >
+                                                            {s.label}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+
                                     </td>
                                     <td>
                                         <input
@@ -91,8 +162,8 @@ function HighLevelScope({ highLevelScope, isEditing, onScopeChange }) {
                     <table className="read-only-scope-table">
                         <thead>
                             <tr>
-                                <th>Label</th>
-                                <th>Value</th>
+                                <th>Name</th>
+                                <th>Version</th>
                             </tr>
                         </thead>
                         <tbody>
