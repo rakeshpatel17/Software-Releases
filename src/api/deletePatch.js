@@ -1,3 +1,14 @@
+const username = process.env.REACT_APP_USERNAME;
+const password = process.env.REACT_APP_PASSWORD;
+const authHeader = 'Basic ' + btoa(`${username}:${password}`);
+
+const common_headers = {
+  "Content-Type": "application/json",
+  'Authorization': authHeader,
+  // Add Authorization or other headers if needed
+
+};
+
 export const deletePatch = async (patchName) => {
   const base_url = process.env.REACT_APP_BACKEND_URL; // Backend URL
   const username = process.env.REACT_APP_USERNAME;

@@ -7,7 +7,7 @@ import { useState } from "react";
 
 const MainLayout = ({ onLogout }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [title, setTitle] = useState('Dashboard');
+  const [title, setTitle] = useState('');
   const [patchVersion, setPatchVersion] = useState('');
 
   return (

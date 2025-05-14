@@ -36,4 +36,4 @@ const get_patches = async (releaseId = null) => {
   }
 };
 
-export default get_patches ;
+export default get_patches;

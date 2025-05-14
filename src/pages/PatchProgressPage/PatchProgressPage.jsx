@@ -113,8 +113,8 @@ function PatchProgressPage() {
             {/* <h2 className="dashboard-title">{id} Progress</h2> */}
           </div>
           <div className="table-scroll-wrapper">
-            {Object.entries(filteredProducts).map(([product, jars]) => (
-              <div className='patchProgress'>
+            {Object.entries(filteredProducts).map(([product, jars],index) => (
+              <div className='patchProgress' key={index}>
                 <div className="product-table-container" key={product}>
                   <h2>{/*product.toUpperCase()*/highlightText(product.toUpperCase(), searchTerm)}</h2>
                   <table className="product-table">

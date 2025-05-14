@@ -8,8 +8,9 @@ import get_patches from '../../api/patches';
 import ProductImageSelector from '../ProductImageSelector/ProductImageSelector';
 import JarSelector from '../JarSelector/JarSelector';
 import { useLocation } from 'react-router-dom';
-
-
+import HighLevelScopeComponent from '../HighLevelScope/HighLevelScope';
+import CancelButton from '../Button/CancelButton';
+import SaveButton from '../Button/SaveButton';
 
 
 function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
@@ -38,8 +39,14 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
     // JAR-specific state
     const [jarSearchTerm, setJarSearchTerm] = useState('');
     const [filteredJars, setFilteredJars] = useState([]);
-    const [selectedJars, setSelectedJars] = useState([]);
+    const [selectedJars, setSelectedJars] = useState([
+        { name: 'log4j', version: '2.1', remarks: 'Major upgrade' },
+        { name: 'commons-io', version: '2.2', remarks: 'Minor upgrade' },
+        { name: 'guava', version: '3.1', remarks: 'Security patch applied' },
+        { name: 'slf4j', version: '1.7', remarks: 'No change' }
+    ]);
     const [expandedJar, setExpandedJar] = useState(null);
+
 
 
     //error
@@ -149,6 +156,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
                 };
             }),
             thirdPartyJars: selectedJars,
+            highLevelScope: highLevelScope,
         };
 
 
@@ -200,14 +208,16 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
         { label: 'New Relic', value: '' }
     ]);
 
-
-    const handleHighLevelScopeChange = (index, newValue) => {
-        setHighLevelScope(prev => {
-            const updated = [...prev];
-            updated[index].value = newValue;
-            return updated;
-        });
+    const handleScopeChange = (index, newValue) => {
+        const updatedScope = [...highLevelScope];
+        updatedScope[index].value = newValue;
+        setHighLevelScope(updatedScope);
     };
+
+    //jars
+
+
+
 
     // client side validation
     const validateForm = () => {
@@ -253,144 +263,170 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
 
     return (
         <>
-      
-        <form className="form-container" onSubmit={handleSubmit}>
-            <div className="inline-fields">
-                <div className="form-group">
-                    <label className="form-label">Release</label>
-                    <select
-                        name="release"
-                        value={formData.release}
-                        onChange={handleChange}
-                        className="form-select"
-                        disabled={!!lockedRelease}
-                    >
-                        {releaseList.map((release) => (
-                            <option key={release.id} value={release.id}>
-                                {release.name}
-                            </option>
-                        ))}
-                    </select>
+
+            <form className="form-container" onSubmit={handleSubmit}>
+                <div className="inline-fields">
+                    <div className="form-group">
+                        <label className="form-label">Release</label>
+                        <select
+                            name="release"
+                            value={formData.release}
+                            onChange={handleChange}
+                            className="form-select"
+                            disabled={!!lockedRelease}
+                        >
+                            {releaseList.map((release) => (
+                                <option key={release.id} value={release.id}>
+                                    {release.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="form-group">
+                        <label className="form-label">Version</label>
+                        <input
+                            name="name"
+                            type="text"
+                            value={formData.name}
+                            onChange={handleChange}
+                            className="form-input"
+                        />
+                        {errors.name && <span className="error-text">{errors.name}</span>}
+
+                    </div>
+
+
+                    {/*Release Date */}
+                    <div className="form-group">
+                        <label className="form-label">Release date</label>
+                        <input
+                            type="date"
+                            name="release_date"
+                            value={formData.release_date}
+                            onChange={handleChange}
+                            className="form-input"
+                            min={new Date().toISOString().split("T")[0]}
+                        />
+                        {errors.release_date && <span className="error-text">{errors.release_date}</span>}
+
+                    </div>
+
+                    {/* code freeze date */}
+                    <div className="form-group">
+                        <label className="form-label">Code Freeze Date</label>
+                        <input
+                            type="date"
+                            name="code_freeze"
+                            onChange={handleChange}
+                            value={formData.code_freeze || getPreviousDate(formData.release_date, 5)}
+                            className="form-input"
+                            min={new Date().toISOString().split("T")[0]}
+                            max={formData.release_date}
+                        //readOnly
+                        />
+                        {errors.code_freeze && <span className="error-text">{errors.code_freeze}</span>}
+
+                    </div>
+
+                    {/* Platform QA Build */}
+                    <div className="form-group">
+                        <label className="form-label">Platform QA Build Date</label>
+                        <input
+                            type="date"
+                            name="qa_build"
+                            onChange={handleChange}
+                            value={formData.qa_build || getPreviousDate(formData.release_date, 10)}
+                            className="form-input"
+                            min={new Date().toISOString().split("T")[0]}
+                            max={formData.release_date}
+                        //readOnly 	
+                        />
+                        {errors.qa_build && <span className="error-text">{errors.qa_build}</span>}
+
+                    </div>
+
+                    {/* Client Build date */}
+                    <div className="form-group">
+                        <label className="form-label">Client Build Date</label>
+                        <input
+                            type="date"
+                            name="client_build"
+                            onChange={handleChange}
+                            value={formData.client_build || getPreviousDate(formData.release_date, 3)}
+                            className="form-input"
+                            min={new Date().toISOString().split("T")[0]}
+                            max={formData.release_date}
+                        //readOnly
+                        />
+                        {errors.client_build && <span className="error-text">{errors.client_build}</span>}
+                    </div>
+
+                    {/* Kick Off date */}
+                    <div className="form-group">
+                        <label className="form-label">Kick Off Date</label>
+                        <input
+                            type="date"
+                            name="client_build"
+                            onChange={handleChange}
+                            value={formData.kick_off || getPreviousDate(formData.release_date, 30)}
+                            className="form-input"
+                            min={new Date().toISOString().split("T")[0]}
+                            max={formData.release_date}
+                        //readOnly
+                        />
+                        {errors.kick_off && <span className="error-text">{errors.kick_off}</span>}
+                    </div>
                 </div>
-                <div className="form-group">
-                    <label className="form-label">Version</label>
-                    <input
-                        name="name"
-                        type="text"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className="form-input"
-                    />
-                    {errors.name && <span className="error-text">{errors.name}</span>}
-
-                </div>
-
-
-                {/*Release Date */}
-                <div className="form-group">
-                    <label className="form-label">Release date</label>
-                    <input
-                        type="date"
-                        name="release_date"
-                        value={formData.release_date}
-                        onChange={handleChange}
-                        className="form-input"
-                        min={new Date().toISOString().split("T")[0]}
-                    />
-                    {errors.release_date && <span className="error-text">{errors.release_date}</span>}
-
-                </div>
-
-                {/* code freeze date */}
-                <div className="form-group">
-                    <label className="form-label">Code Freeze Date</label>
-                    <input
-                        type="date"
-                        name="code_freeze"
-                        onChange={handleChange}
-                        value={formData.code_freeze || getPreviousDate(formData.release_date, 5)}
-                        className="form-input"
-                        min={new Date().toISOString().split("T")[0]}
-                        max={formData.release_date}
-                    //readOnly
-                    />
-                    {errors.code_freeze && <span className="error-text">{errors.code_freeze}</span>}
-
-                </div>
-
-                {/* Platform QA Build */}
-                <div className="form-group">
-                    <label className="form-label">Platform QA Build Date</label>
-                    <input
-                        type="date"
-                        name="qa_build"
-                        onChange={handleChange}
-                        value={formData.qa_build || getPreviousDate(formData.release_date, 10)}
-                        className="form-input"
-                        min={new Date().toISOString().split("T")[0]}
-                        max={formData.release_date}
-                    //readOnly 	
-                    />
-                    {errors.qa_build && <span className="error-text">{errors.qa_build}</span>}
-
-                </div>
-
-                {/* Client Build date */}
-                <div className="form-group">
-                    <label className="form-label">Client Build Date</label>
-                    <input
-                        type="date"
-                        name="client_build"
-                        onChange={handleChange}
-                        value={formData.client_build || getPreviousDate(formData.release_date, 3)}
-                        className="form-input"
-                        min={new Date().toISOString().split("T")[0]}
-                        max={formData.release_date}
-                    //readOnly
-                    />
-                    {errors.client_build && <span className="error-text">{errors.client_build}</span>}
-                </div>
-
-                {/* Kick Off date */}
-                <div className="form-group">
-                    <label className="form-label">Kick Off Date</label>
-                    <input
-                        type="date"
-                        name="client_build"
-                        onChange={handleChange}
-                        value={formData.kick_off || getPreviousDate(formData.release_date, 30)}
-                        className="form-input"
-                        min={new Date().toISOString().split("T")[0]}
-                        max={formData.release_date}
-                    //readOnly
-                    />
-                    {errors.kick_off && <span className="error-text">{errors.kick_off}</span>}
-                </div>
-            </div>
-
-            <div className="form-group">
-                <label className="form-label">Description</label>
-                <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    rows="3"
-                    className="form-textarea"
+                <HighLevelScopeComponent
+                    highLevelScope={highLevelScope}
+                    onScopeChange={handleScopeChange}
+                    isEditing={true}
                 />
-                {errors.description && <span className="error-text">{errors.description}</span>}
+                {/* Third-Party JAR Search */}
 
-            </div>
+                <JarSelector
+                    mode="edit"
+                    selectedJars={selectedJars}
+                    setSelectedJars={setSelectedJars}
+                    isEditing={true}
+                />
 
-            <div className="inline-fields">
-                {/* <div className="form-group">
-              <label className="form-label">Patch version</label>
-              <input
-                  name="patchVersion"
-                  value={formData.patchVersion}
-                  onChange={handleChange}
-                  className="form-input"
-              />
-          </div> */}
+                <div className="form-group">
+                    <label className="form-label">KBA</label>
+                    <input
+                        type="text"
+                        name="KBA"
+                        // value={formData.description}
+                        // onChange={handleChange}
+                        className="form-textarea" 
+                    />
+                    {/* {errors.description && <span className="error-text">{errors.description}</span>} */}
+                </div>
+
+                <div className="form-group">
+                    <label className="form-label">Functional Fixes</label>
+                    <input
+                        type="text"
+                        name="FunctionalFixes"
+                        // value={formData.description}
+                        // onChange={handleChange}
+                        className="form-textarea" 
+                    />
+                    {/* {errors.description && <span className="error-text">{errors.description}</span>} */}
+                </div>
+
+
+                <div className="form-group">
+                    <label className="form-label">Security issues</label>
+                    <input
+                        type="text"
+                        name="SecurityIssues"
+                        // value={formData.description}
+                        // onChange={handleChange}
+                        className="form-textarea"
+                    />
+                    {/* {errors.description && <span className="error-text">{errors.description}</span>} */}
+                </div>
 
                 <div className="form-group">
                     <label className="form-label">Patch state</label>
@@ -406,67 +442,68 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
                         <option value="rejected">Rejected</option>
                     </select>
                 </div>
-            </div>
-            {/* High Level Scope */}
-            <label className="form-label">High Level Scope</label>
-            <div className="form-group">
-                {highLevelScope.map((item, index) => (
-                    <div className="inline-fields" key={index}>
-                        <div className="form-group" style={{ flex: 1 }}>
-                            <label className="form-label">{item.label}</label>
-                        </div>
-                        <div className="form-group" style={{ flex: 1.5, maxWidth: '380px' }}>
-                            <input
-                                type="text"
-                                className="form-input"
-                                value={item.value}
-                                onChange={(e) => handleHighLevelScopeChange(index, e.target.value)}
-                            />
-                        </div>
+
+                <div className="inline-fields">
+                    {/* <div className="form-group">
+              <label className="form-label">Patch version</label>
+              <input
+                  name="patchVersion"
+                  value={formData.patchVersion}
+                  onChange={handleChange}
+                  className="form-input"
+              />
+          </div> */}
+
+
+                    <div className="form-group">
+                        <label className="form-label">Description</label>
+                        <textarea
+                            name="description"
+                            value={formData.description}
+                            onChange={handleChange}
+                            rows="3"
+                            className="form-textarea"
+                        />
+                        {errors.description && <span className="error-text">{errors.description}</span>}
+
                     </div>
-                ))}
-                {/* {errors.highLevelScope && <span className="error-text">{errors.highLevelScope}</span>} */}
-
-            </div>
-
-            <ProductImageSelector
-                productData={productData}
-                selectedImages={selectedImages}
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                expandedProduct={formData.expandedProduct}
-                setExpandedProduct={(val) =>
-                    setFormData((prev) => ({ ...prev, expandedProduct: val }))
-                }
-                handleProductSelection={handleProductSelection}
-                handleImageToggle={handleImageToggle}
-            />
-            {/* {errors.products && <span className="error-text">{errors.products}</span>} */}
+                </div>
 
 
-            {/* Third-Party JAR Search */}
-            <JarSelector
-                mode="search"
-                jarSearchTerm={jarSearchTerm}
-                setJarSearchTerm={setJarSearchTerm}
-                filteredJars={filteredJars}
-                expandedJar={expandedJar}
-                setExpandedJar={setExpandedJar}
-                selectedJars={selectedJars}
-                setSelectedJars={setSelectedJars}
-            />
+                <ProductImageSelector
+                    productData={productData}
+                    selectedImages={selectedImages}
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    expandedProduct={formData.expandedProduct}
+                    setExpandedProduct={(val) =>
+                        setFormData((prev) => ({ ...prev, expandedProduct: val }))
+                    }
+                    handleProductSelection={handleProductSelection}
+                    handleImageToggle={handleImageToggle}
+                />
+                {/* {errors.products && <span className="error-text">{errors.products}</span>} */}
+
+
+                {/* Third-Party JAR Search */}
+                {/* <JarSelector
+                    mode="search"
+                    jarSearchTerm={jarSearchTerm}
+                    setJarSearchTerm={setJarSearchTerm}
+                    filteredJars={filteredJars}
+                    expandedJar={expandedJar}
+                    setExpandedJar={setExpandedJar}
+                    selectedJars={selectedJars}
+                    setSelectedJars={setSelectedJars}
+                /> */}
 
 
 
-            <div className="form-actions">
-                <button type="button" className="cancel-button" onClick={onCancel}>
-                    Cancel
-                </button>
-                <button type="submit" className="submit-button">
-                    SAVE
-                </button>
-            </div>
-        </form>
+                <div className="form-actions">
+                    <CancelButton onCancel={onCancel} />
+                    <SaveButton />
+                </div>
+            </form>
         </>
     );
 }
