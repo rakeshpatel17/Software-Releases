@@ -10,9 +10,19 @@ const common_headers = {
 };
 
 export const deletePatch = async (patchName) => {
-    const response = await fetch(`http://127.0.0.1:8000/patches?name=${encodeURIComponent(patchName)}`, {
+  const base_url = "http://127.0.0.1:8000"; // Backend URL
+  const username = process.env.REACT_APP_USERNAME;
+  const password = process.env.REACT_APP_PASSWORD;
+  const authHeader = 'Basic ' + btoa(`${username}:${password}`);
+  const common_headers = {
+    "Content-Type": "application/json",
+    'Authorization': authHeader
+  };
+    const response = await fetch(`${base_url}/patches?name=${encodeURIComponent(patchName)}`, {
       method: 'DELETE',
-      headers: common_headers,
+      headers: {
+            common_headers,
+      }
     });
   
     if (!response.ok) {

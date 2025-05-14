@@ -1,25 +1,21 @@
-  
 const base_url = "http://127.0.0.1:8000"; // Backend URL
 const username = process.env.REACT_APP_USERNAME;
 const password = process.env.REACT_APP_PASSWORD;
 const authHeader = 'Basic ' + btoa(`${username}:${password}`);
-
 const common_headers = {
-    "Content-Type": "application/json",
-    'Authorization': authHeader,
-    // Add Authorization or other headers if needed,
+  "Content-Type": "application/json",
+  'Authorization': authHeader
 };
  
  
 const post_patches = async (formData) => {
-  
-    //console.log(username +" "+ password);
+    
    // console.log("Posting data:", formData);
 
     const response = await fetch(`${base_url}/patches/`, {
         method: 'POST',
         headers: {
-            common_headers,  
+            common_headers,
         },
         body: JSON.stringify(formData),
     });
