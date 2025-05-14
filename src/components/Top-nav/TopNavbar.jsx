@@ -53,8 +53,8 @@ function TopNavbar({ onSearch, onLogout,title,  patchVersion}) {
   
         {dropdownOpen && (
           <div className="dropdown">
-            <p>Welcome, rakesh!</p>
-            <p>Email: rakesh@gmail.com</p>
+            <p>Welcome, Admin!</p>
+            <p>Email: admin@opentext.com</p>
             <hr />
             <button onClick={onLogout}>Logout</button>
           </div>
