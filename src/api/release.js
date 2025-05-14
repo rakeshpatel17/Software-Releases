@@ -11,7 +11,9 @@ const get_release = async () => {
   try {
     const response = await fetch(`${base_url}/releases`, {
       method: "GET",
-      headers: common_headers,
+      headers: {
+            ...common_headers,
+      }
     });
 
     if (!response.ok) throw new Error("Failed to fetch releases");

@@ -13,7 +13,9 @@ const get_patches = async (releaseId = null) => {
 
     const response = await fetch(endpoint, {
       method: "GET",
-      headers: common_headers,
+      headers: {
+            ...common_headers,
+      }
     });
 
     if (!response.ok) throw new Error("Failed to fetch patches");

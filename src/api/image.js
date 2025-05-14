@@ -11,7 +11,9 @@ const getProductDetails = async (productId) => {
     const endpoint = `${base_url}/products/${productId}/`; // backend expects trailing slash
     const response = await fetch(endpoint, {
       method: "GET",
-      headers: common_headers,
+      headers: {
+            ...common_headers,
+      }
     });
 
     if (!response.ok) throw new Error("Failed to fetch product details");

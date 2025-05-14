@@ -10,7 +10,7 @@ export const deletePatch = async (patchName) => {
     const response = await fetch(`${base_url}/patches?name=${encodeURIComponent(patchName)}`, {
       method: 'DELETE',
       headers: {
-            common_headers,
+            ...common_headers,
       }
     });
   
