@@ -400,17 +400,19 @@ function PatchPage() {
                 <div className="patch-header">
                     <h2>Patch Details</h2>
                     {/* Button to export data */}
-                    <button
-                        className="edit-btn"
-                        onClick={() => exportToExcel(data, `${patchData.name}_vulnerabilities_${getDate()}`)}
-                    >
-                        Export
-                    </button>
-                    {patchData.patch_state !== 'released' && (
-                        <button className="edit-btn" onClick={toggleEdit}>
-                            {isEditing ? 'Cancel' : 'Edit'}
+                    <div className='edit-export'>
+                        <button
+                            className="export-btn"
+                            onClick={() => exportToExcel(data, `${patchName}_vulnerabilities_${getDate()}`)}
+                        >
+                            Export
                         </button>
-                    )}
+                        {patchData.patch_state !== 'released' && (
+                            <button className="edit-btn" onClick={toggleEdit}>
+                                {isEditing ? 'Cancel' : 'Edit'}
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 <form className="patch-form">

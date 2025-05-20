@@ -66,6 +66,38 @@
 
 }
 
+.export-btn {
+
+    background-color: #20338b;
+
+    color: white;
+
+    padding: 8px 14px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    font-size: 0.95rem;
+
+    cursor: pointer;
+
+    transition: background-color 0.3s ease;
+
+}
+
+.export-btn:hover {
+
+    background-color: #3549c9;
+
+}
+
+.edit-export{
+    display: flex;
+    justify-content: center;
+    gap:6px;
+}
+
 .patch-form {
 
     display: flex;
