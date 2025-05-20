@@ -13,19 +13,13 @@ const staticJarData = [
 ];
 
 function JarSelector({ selectedJars, setSelectedJars, isEditing }) {
-    const [tempSelectedJars, setTempSelectedJars] = useState([...selectedJars]);
     const [focusedIndex, setFocusedIndex] = useState(null);
     const [dropdowns, setDropdowns] = useState([]);
 
-    // Update tempSelectedJars when selectedJars changes (in case new data comes in)
-    useEffect(() => {
-        setTempSelectedJars([...selectedJars]);
-    }, [selectedJars]); // Keep this in sync with selectedJars
-
     const handleJarChange = (index, field, value) => {
-        const updated = [...tempSelectedJars];
+        const updated = [...selectedJars];
         updated[index][field] = value;
-        setTempSelectedJars(updated);
+        setSelectedJars(updated);
 
         if (field === 'name') {
             const updatedDropdowns = [...dropdowns];
@@ -41,12 +35,12 @@ function JarSelector({ selectedJars, setSelectedJars, isEditing }) {
     };
 
     const handleAddJar = () => {
-        setTempSelectedJars(prev => [...prev, { name: '', version: '', remarks: '' }]);
+        setSelectedJars(prev => [...prev, { name: '', version: '', remarks: '' }]);
         setDropdowns(prev => [...prev, []]);
     };
 
     const handleRemoveJar = (index) => {
-        setTempSelectedJars(prev => prev.filter((_, i) => i !== index));
+        setSelectedJars(prev => prev.filter((_, i) => i !== index));
         setDropdowns(prev => prev.filter((_, i) => i !== index));
     };
 
@@ -69,7 +63,7 @@ function JarSelector({ selectedJars, setSelectedJars, isEditing }) {
             });
             setDropdowns(updatedDropdowns);
         };
-    
+
         document.addEventListener('mousedown', handleClickOutside);
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
@@ -113,7 +107,7 @@ function JarSelector({ selectedJars, setSelectedJars, isEditing }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {tempSelectedJars.map((jar, index) => (
+                            {selectedJars.map((jar, index) => (
                                 <tr key={index}>
                                     <td style={{ position: 'relative' }} ref={(el) => (labelRefs.current[index] = el)}>
                                         <input

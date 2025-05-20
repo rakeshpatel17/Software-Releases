@@ -2,7 +2,6 @@ import './HighLevelScope.css';
 import { Trash2 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 
-
 const staticLabelData = [
     { label: 'Base OS' },
     { label: 'Base OS1' },
@@ -16,15 +15,22 @@ const staticLabelData = [
     { label: 'New Relic' },
 ];
 
-function HighLevelScope({ highLevelScope, isEditing }) {
+function HighLevelScope({ highLevelScope = [], setHighLevelScope = () => {}, isEditing }) {
     const [tempHighLevelScope, setTempHighLevelScope] = useState([...highLevelScope]);
 
-    // To reset the temp state when exiting edit mode
+    // Reset temp state when exiting edit mode or when highLevelScope changes
     useEffect(() => {
         if (!isEditing) {
-            setTempHighLevelScope([...highLevelScope]); // Revert to the original state when exiting edit mode
+            setTempHighLevelScope([...highLevelScope]);
         }
     }, [isEditing, highLevelScope]);
+
+    // Update parent's state when tempHighLevelScope changes
+    useEffect(() => {
+        if (typeof setHighLevelScope === 'function') {
+            setHighLevelScope(tempHighLevelScope);
+        }
+    }, [tempHighLevelScope, setHighLevelScope]);
 
     const handleInputChange = (index, newValue) => {
         const updatedScope = [...tempHighLevelScope];
@@ -32,21 +38,19 @@ function HighLevelScope({ highLevelScope, isEditing }) {
         setTempHighLevelScope(updatedScope);
     };
 
-
-
     const handleAddScope = () => {
-        const updatedScope = [...tempHighLevelScope, { label: '', value: '' }];
-        setTempHighLevelScope(updatedScope);
+        setTempHighLevelScope(prev => [...prev, { label: '', value: '' }]);
     };
 
     const handleRemoveScope = (index, e) => {
-        e.preventDefault(); // Prevent form submission
-        const updatedScope = tempHighLevelScope.filter((_, i) => i !== index);
-        setTempHighLevelScope(updatedScope);
+        e.preventDefault();
+        setTempHighLevelScope(prev => prev.filter((_, i) => i !== index));
     };
-    //search 
+
+    // Search suggestions for labels
     const labelRefs = useRef([]);
-    const [labelSuggestions, setLabelSuggestions] = useState([]); // array of arrays for each row
+    const [labelSuggestions, setLabelSuggestions] = useState([]);
+
     const handleLabelChange = (index, newLabel) => {
         const updatedScope = [...tempHighLevelScope];
         updatedScope[index].label = newLabel;
@@ -57,6 +61,7 @@ function HighLevelScope({ highLevelScope, isEditing }) {
                 s.label.toLowerCase().includes(newLabel.toLowerCase())
             )
             : [];
+
         const updatedSuggestions = [...labelSuggestions];
         updatedSuggestions[index] = filteredSuggestions;
         setLabelSuggestions(updatedSuggestions);
@@ -71,24 +76,24 @@ function HighLevelScope({ highLevelScope, isEditing }) {
         updatedSuggestions[index] = [];
         setLabelSuggestions(updatedSuggestions);
     };
+
     useEffect(() => {
-  const handleClickOutside = (event) => {
-    const updatedSuggestions = labelSuggestions.map((sugList, i) => {
-      const refEl = labelRefs.current[i];
-      if (refEl && !refEl.contains(event.target)) {
-        return [];
-      }
-      return sugList;
-    });
-    setLabelSuggestions(updatedSuggestions);
-  };
+        const handleClickOutside = (event) => {
+            const updatedSuggestions = labelSuggestions.map((sugList, i) => {
+                const refEl = labelRefs.current[i];
+                if (refEl && !refEl.contains(event.target)) {
+                    return [];
+                }
+                return sugList;
+            });
+            setLabelSuggestions(updatedSuggestions);
+        };
 
-  document.addEventListener('mousedown', handleClickOutside);
-  return () => {
-    document.removeEventListener('mousedown', handleClickOutside);
-  };
-}, [labelSuggestions]);
-
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [labelSuggestions]);
 
     return (
         <div className="high-level-scope">
@@ -107,7 +112,9 @@ function HighLevelScope({ highLevelScope, isEditing }) {
                             {tempHighLevelScope.map((item, index) => (
                                 <tr key={index}>
                                     <td>
-                                        <div style={{ position: 'relative' }} ref={(el) => (labelRefs.current[index] = el)}
+                                        <div
+                                            style={{ position: 'relative' }}
+                                            ref={(el) => (labelRefs.current[index] = el)}
                                         >
                                             <input
                                                 type="text"
@@ -129,7 +136,6 @@ function HighLevelScope({ highLevelScope, isEditing }) {
                                                 </div>
                                             )}
                                         </div>
-
                                     </td>
                                     <td>
                                         <input
@@ -145,13 +151,11 @@ function HighLevelScope({ highLevelScope, isEditing }) {
                                             onClick={(e) => handleRemoveScope(index, e)}
                                         >
                                             <Trash2 size={18} />
-
                                         </button>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
-
                     </table>
                     <button type="button" className="add-scope-btn" onClick={handleAddScope}>
                         + Add Scope

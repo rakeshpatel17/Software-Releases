@@ -13,28 +13,49 @@ import CancelButton from '../Button/CancelButton';
 import SaveButton from '../Button/SaveButton';
 
 
-function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
+function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) {
     const location = useLocation();
     const lockedRelease = lockedReleaseProp || location.state?.lockedRelease;
+    // const [formData, setFormData] = useState({
+    //     name: '',
+    //     release: lockedRelease || '24.2',
+    //     release_date: '',
+    //     code_freeze: '',
+    //     qa_build: '',
+    //     description: '',
+    //     //patch_version: '',
+    //     patch_state: 'new',
+    //     is_deleted: false,
+    //     //selectedProduct: '',
+    //     // expandedProduct: null,
+    // });
     const [formData, setFormData] = useState({
         name: '',
         release: lockedRelease || '24.2',
         release_date: '',
         code_freeze: '',
-        qa_build: '',
+        platform_qa_build: '',
         description: '',
-        //patch_version: '',
         patch_state: 'new',
         is_deleted: false,
-        //selectedProduct: '',
-        // expandedProduct: null,
+        client_build_availability: '',
+        high_level_scope_input: [],
+        kick_off: '',
+        product_images: [],
+        related_products: [],
+        third_party_jars_input: [],
     });
+
     const [selectedImages, setSelectedImages] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [releaseList, setReleaseList] = useState([]);
     const [productData, setProductData] = useState([]);
     const [selectedProducts, setSelectedProducts] = useState([]);
     //const [patchSize, setPatchSize] = useState([]);
+    const [expandedProduct, setExpandedProduct] = useState([]);
+    const [productSearchTerm, setProductSearchTerm] = useState('');
+
+
 
     // JAR-specific state
     const [jarSearchTerm, setJarSearchTerm] = useState('');
@@ -43,7 +64,6 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
         { name: 'log4j', version: '2.1', remarks: 'Major upgrade' },
         { name: 'commons-io', version: '2.2', remarks: 'Minor upgrade' },
         { name: 'guava', version: '3.1', remarks: 'Security patch applied' },
-        { name: 'slf4j', version: '1.7', remarks: 'No change' }
     ]);
     const [expandedJar, setExpandedJar] = useState(null);
 
@@ -142,6 +162,19 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
             return;
         }
 
+        const transformedHighLevelScope = highLevelScope.map(item => ({
+            name: item.label || item.name,
+            version: item.version || "1.0"
+        }));
+
+        const transformedSelectedJars = selectedJars.map(item => ({
+            name: item.label || item.name,
+            version: item.version || "1.0",
+            remarks: item.remarks || ""
+        }));
+
+        console.log('Transformed High Level Scope:', transformedHighLevelScope);
+        console.log('Transformed Third Party Jars:', transformedSelectedJars);
 
         const finalData = {
             ...formData,
@@ -155,17 +188,19 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
                     selectedImages: selectedImagesForProduct,
                 };
             }),
-            thirdPartyJars: selectedJars,
-            highLevelScope: highLevelScope,
+            // related_products: selectedProducts.map(prod => prod.name),
+            related_products: selectedProducts.map(prod => prod.name),
+            product_images: selectedImages,
+            high_level_scope_input: transformedHighLevelScope,
+            third_party_jars_input: transformedSelectedJars,
         };
 
-
         try {
-            const response = await post_patches(formData);
+            console.log("Final Form Data to send:", finalData);
+            const response = await post_patches(finalData);
         } catch (error) {
             console.error('Error while posting to database:', error);
         }
-
     };
 
     const handleImageToggle = (image) => {
@@ -201,11 +236,9 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
 
     //high level scope
     const [highLevelScope, setHighLevelScope] = useState([
-        { label: 'Base OS', value: '' },
-        { label: 'Tomcat', value: '' },
-        { label: 'JDK', value: '' },
-        { label: 'OTDS', value: '' },
-        { label: 'New Relic', value: '' }
+        { label: 'alpine', value: '' },
+        { label: 'jdk', value: '' },
+        { label: 'new_relic', value: '' },
     ]);
 
     const handleScopeChange = (index, newValue) => {
@@ -230,11 +263,11 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
         if (!formData.release_date) newErrors.release_date = 'Release date is required';
         if (!formData.description.trim()) newErrors.description = 'Description is required';
 
-        if (!formData.release_date) newErrors.code_freeze = 'Code Freeze date is required';
-        if (!formData.release_date) newErrors.qa_build = 'Platform QA Build Date is required';
+        if (!formData.code_freeze) newErrors.code_freeze = 'Code Freeze date is required';
+        if (!formData.platform_qa_build) newErrors.platform_qa_build = 'Platform QA Build Date is required';
+        if (!formData.client_build_availability) newErrors.client_build_availability = 'Client Build Date is required';
+        if (!formData.kick_off) newErrors.kick_off = 'Kick Off Date is required';
 
-        if (!formData.release_date) newErrors.client_build = 'client_build  date is required';
-        if (!formData.release_date) newErrors.kick_off = 'kick_off date is required';
 
 
         // const scopeErrors = highLevelScope.map((item) => item.value.trim() === '');
@@ -259,6 +292,19 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
         date.setDate(date.getDate() - days);
         return date.toISOString().split('T')[0]; // returns YYYY-MM-DD
     };
+
+    useEffect(() => {
+        if (formData.release_date) {
+            setFormData((prev) => ({
+                ...prev,
+                code_freeze: prev.code_freeze || getPreviousDate(formData.release_date, 5),
+                platform_qa_build: prev.platform_qa_build || getPreviousDate(formData.release_date, 10),
+                client_build_availability: prev.client_build_availability || getPreviousDate(formData.release_date, 3),
+                kick_off: prev.kick_off || getPreviousDate(formData.release_date, 30),
+            }));
+        }
+    }, [formData.release_date]);
+
 
 
     return (
@@ -333,15 +379,15 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
                         <label className="form-label">Platform QA Build Date</label>
                         <input
                             type="date"
-                            name="qa_build"
+                            name="platform_qa_build"
                             onChange={handleChange}
-                            value={formData.qa_build || getPreviousDate(formData.release_date, 10)}
+                            value={formData.platform_qa_build || getPreviousDate(formData.release_date, 10)}
                             className="form-input"
                             min={new Date().toISOString().split("T")[0]}
                             max={formData.release_date}
                         //readOnly 	
                         />
-                        {errors.qa_build && <span className="error-text">{errors.qa_build}</span>}
+                        {errors.platform_qa_build && <span className="error-text">{errors.platform_qa_build}</span>}
 
                     </div>
 
@@ -350,15 +396,15 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
                         <label className="form-label">Client Build Date</label>
                         <input
                             type="date"
-                            name="client_build"
+                            name="client_build_availability"
                             onChange={handleChange}
-                            value={formData.client_build || getPreviousDate(formData.release_date, 3)}
+                            value={formData.client_build_availability || getPreviousDate(formData.release_date, 3)}
                             className="form-input"
                             min={new Date().toISOString().split("T")[0]}
                             max={formData.release_date}
                         //readOnly
                         />
-                        {errors.client_build && <span className="error-text">{errors.client_build}</span>}
+                        {errors.client_build_availability && <span className="error-text">{errors.client_build_availability}</span>}
                     </div>
 
                     {/* Kick Off date */}
@@ -366,7 +412,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
                         <label className="form-label">Kick Off Date</label>
                         <input
                             type="date"
-                            name="client_build"
+                            name="kick_off"
                             onChange={handleChange}
                             value={formData.kick_off || getPreviousDate(formData.release_date, 30)}
                             className="form-input"
@@ -379,7 +425,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
                 </div>
                 <HighLevelScopeComponent
                     highLevelScope={highLevelScope}
-                    onScopeChange={handleScopeChange}
+                    setHighLevelScope={setHighLevelScope}
                     isEditing={true}
                 />
                 {/* Third-Party JAR Search */}
@@ -398,7 +444,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
                         name="KBA"
                         // value={formData.description}
                         // onChange={handleChange}
-                        className="form-textarea" 
+                        className="form-textarea"
                     />
                     {/* {errors.description && <span className="error-text">{errors.description}</span>} */}
                 </div>
@@ -410,7 +456,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
                         name="FunctionalFixes"
                         // value={formData.description}
                         // onChange={handleChange}
-                        className="form-textarea" 
+                        className="form-textarea"
                     />
                     {/* {errors.description && <span className="error-text">{errors.description}</span>} */}
                 </div>
@@ -468,20 +514,22 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp }) {
 
                     </div>
                 </div>
-
-
                 <ProductImageSelector
                     productData={productData}
-                    selectedImages={selectedImages}
-                    searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
-                    expandedProduct={formData.expandedProduct}
-                    setExpandedProduct={(val) =>
-                        setFormData((prev) => ({ ...prev, expandedProduct: val }))
-                    }
+                    selectedImages={selectedImages}  // pass current state instead of []
+                    searchTerm={productSearchTerm}
+                    setSearchTerm={setProductSearchTerm}
+                    expandedProduct={expandedProduct}
+                    setExpandedProduct={setExpandedProduct}
                     handleProductSelection={handleProductSelection}
                     handleImageToggle={handleImageToggle}
+                    readOnly={false}
+                    patchSpecificImages={[]}
+                    mode="edit-empty"
                 />
+
+
+
                 {/* {errors.products && <span className="error-text">{errors.products}</span>} */}
 
 
