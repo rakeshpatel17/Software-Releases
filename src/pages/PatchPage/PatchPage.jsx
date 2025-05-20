@@ -313,7 +313,7 @@ function PatchPage() {
                         disabled={!isEditing || tempPatchData.patch_state === 'released'}
                         onChange={e => setTempPatchData({ ...tempPatchData, description: e.target.value })}
                     />
-
+                    {/* 
                     {!isEditing ? (
                         <>
                             <label>Products</label>
@@ -348,7 +348,40 @@ function PatchPage() {
                             handleProductSelection={handleProductSelection}
                             handleImageToggle={handleImageToggle}
                         />
+                    )} */}
+                    {!isEditing ? (
+                        // Read-only mode
+                        <>
+                            <label>Products</label>
+                            <ProductImageSelector
+                                productData={productData}
+                                selectedImages={[]}           // Not used in read mode
+                                searchTerm=""
+                                setSearchTerm={() => { }}
+                                expandedProduct={expandedProduct}
+                                setExpandedProduct={setExpandedProduct}
+                                handleProductSelection={() => { }}
+                                handleImageToggle={() => { }}
+                                patchSpecificImages={selectedImages} // Show patch images
+                                mode="read"                        // Use mode prop instead of readOnly
+                            />
+                        </>
+                    ) : (
+                        // Edit mode with prepopulating
+                        <ProductImageSelector
+                            productData={productData}
+                            selectedImages={selectedImages}     // Pre-selected images passed here
+                            searchTerm={productSearchTerm}
+                            setSearchTerm={setProductSearchTerm}
+                            expandedProduct={expandedProduct}
+                            setExpandedProduct={setExpandedProduct}
+                            handleProductSelection={handleProductSelection}
+                            handleImageToggle={handleImageToggle}
+                            patchSpecificImages={selectedImages} // For filtering images in edit
+                            mode="edit-prepopulated"            // Mode set to editable with prepopulate
+                        />
                     )}
+
 
                     {isEditing && (
                         <div className='form-actions'>
