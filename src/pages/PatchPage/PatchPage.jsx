@@ -12,8 +12,173 @@ import { useOutletContext } from "react-router-dom";
 import { useParams } from 'react-router-dom';
 import CancelButton from '../../components/Button/CancelButton';
 import SaveButton from '../../components/Button/SaveButton';
+import exportToExcel from '../../api/exportToExcel';
 
 function PatchPage() {
+    const data = [
+    {
+        "name": "Server",
+        "version": "1.0",
+        "status": "Active",
+        "is_deleted": false,
+        "created_at": "2025-04-29T05:20:30.839549Z",
+        "updated_at": "2025-05-06T04:19:59.277104Z",
+        "images": [
+            {
+                "image_name": "ot-dctm-ijms",
+                "build_number": "24.2.0002.0175",
+                "release_date": "2025-05-23T10:16:00Z",
+                "ot2_pass": "Yes",
+                "twistlock_report_url": "https://turl2.com",
+                "twistlock_report_clean": false,
+                "is_deleted": false,
+                "product": "Server",
+                "created_at": "2025-05-06T04:47:06.927926Z",
+                "updated_at": "2025-05-06T04:47:06.928127Z",
+                "security_issues": [
+                    {
+                        "cve_id": "CVE-2024-22243",
+                        "cvss_score": 4.0,
+                        "severity": "Critical",
+                        "affected_libraries": "org.springframework:spring-web",
+                        "library_path": "/bin",
+                        "description": "Coming from the base OS in sysdig scan and twistlock scan",
+                        "created_at": "2025-05-06T04:53:21.045626Z",
+                        "updated_at": "2025-05-06T04:53:21.045817Z",
+                        "is_deleted": false
+                    },
+                    {
+                        "cve_id": "CVE-2024-22259",
+                        "cvss_score": 4.0,
+                        "severity": "Critical",
+                        "affected_libraries": "org.springframework:spring-web",
+                        "library_path": "/bin",
+                        "description": "Coming from the base OS in sysdig scan and twistlock scan",
+                        "created_at": "2025-05-06T04:53:46.398707Z",
+                        "updated_at": "2025-05-06T04:53:46.398922Z",
+                        "is_deleted": false
+                    }
+                ]
+            }
+        ],
+        "related_patches": [
+            "24.2.2",
+            "24.2.3"
+        ]
+    },
+    {
+        "name": "Ijms",
+        "version": "1.0",
+        "status": "Active",
+        "is_deleted": false,
+        "created_at": "2025-04-29T05:21:04.963277Z",
+        "updated_at": "2025-05-06T04:22:00.070064Z",
+        "images": [
+            {
+                "image_name": "ot-dctm-ijms",
+                "build_number": "24.2.0002.0137",
+                "release_date": "2025-05-28T10:18:00Z",
+                "ot2_pass": "Yes",
+                "twistlock_report_url": "http://example.com/report",
+                "twistlock_report_clean": false,
+                "is_deleted": false,
+                "product": "Ijms",
+                "created_at": "2025-05-06T04:48:31.954493Z",
+                "updated_at": "2025-05-06T04:48:31.954630Z",
+                "security_issues": [
+                    {
+                        "cve_id": "CVE-2024-22262",
+                        "cvss_score": 4.0,
+                        "severity": "Critical",
+                        "affected_libraries": "org.springframework:spring-web",
+                        "library_path": "/bin",
+                        "description": "Coming from the base OS in sysdig scan and twistlock scan",
+                        "created_at": "2025-05-06T04:54:00.776950Z",
+                        "updated_at": "2025-05-06T04:54:00.777178Z",
+                        "is_deleted": false
+                    },
+                    {
+                        "cve_id": "CVE-2024-22243",
+                        "cvss_score": 4.0,
+                        "severity": "Critical",
+                        "affected_libraries": "org.springframework:spring-web",
+                        "library_path": "/bin",
+                        "description": "Coming from the base OS in sysdig scan and twistlock scan",
+                        "created_at": "2025-05-06T04:54:10.243657Z",
+                        "updated_at": "2025-05-06T04:54:10.243879Z",
+                        "is_deleted": false
+                    }
+                ]
+            }
+        ],
+        "related_patches": [
+            "24.2.2"
+        ]
+    },
+    {
+        "name": "D2",
+        "version": "1.0",
+        "status": "Active",
+        "is_deleted": false,
+        "created_at": "2025-04-29T05:21:56.713925Z",
+        "updated_at": "2025-05-06T04:22:54.588101Z",
+        "images": [
+            {
+                "image_name": "ot-dctm-d2cp-installer",
+                "build_number": "24.2.0002.0157",
+                "release_date": "2025-05-31T10:18:00Z",
+                "ot2_pass": "Yes",
+                "twistlock_report_url": "http://example.com/report",
+                "twistlock_report_clean": false,
+                "is_deleted": false,
+                "product": "D2",
+                "created_at": "2025-05-06T04:50:36.645578Z",
+                "updated_at": "2025-05-06T04:50:36.645821Z",
+                "security_issues": [
+                    {
+                        "cve_id": "CVE-2021-22569",
+                        "cvss_score": 7.5,
+                        "severity": "High",
+                        "affected_libraries": "com.google.protobuf_protobuf-java_2.5.0:gwt-servlet-ot-jak-mig-2.9.0.jar",
+                        "library_path": "/opt/d2config/D2.war/gwt-servlet-ot-jak-mig-2.9.0.jar",
+                        "description": "Coming from the base OS in sysdig scan and twistlock scan",
+                        "created_at": "2025-05-06T04:55:15.148485Z",
+                        "updated_at": "2025-05-06T04:55:15.148637Z",
+                        "is_deleted": false
+                    },
+                    {
+                        "cve_id": "CVE-2021-22570",
+                        "cvss_score": 5.7,
+                        "severity": "Medium",
+                        "affected_libraries": "com.google.code.gson_gson_2.6.2:gwt-servlet-deps-2.9.0.jar",
+                        "library_path": "/opt/d2config/D2.war/gwt-servlet-deps-2.9.0.jar",
+                        "description": "Coming from the base OS",
+                        "created_at": "2025-05-06T04:56:05.666846Z",
+                        "updated_at": "2025-05-06T04:56:05.667010Z",
+                        "is_deleted": false
+                    }
+                ]
+            },
+            {
+                "image_name": "ot-dctm-d2cp-classic",
+                "build_number": "24.2.0002.0157",
+                "release_date": "2025-06-01T10:18:00Z",
+                "ot2_pass": "Yes",
+                "twistlock_report_url": "http://example.com/report",
+                "twistlock_report_clean": true,
+                "is_deleted": false,
+                "product": "D2",
+                "created_at": "2025-05-06T04:51:28.024542Z",
+                "updated_at": "2025-05-06T04:51:28.024773Z",
+                "security_issues": []
+            }
+        ],
+        "related_patches": [
+            "24.2.2",
+            "24.2.3"
+        ]
+    }
+];
     const { patchName } = useParams();
     const [isEditing, setIsEditing] = useState(false);
     const [patchData, setPatchData] = useState({});
@@ -181,7 +346,7 @@ function PatchPage() {
 
         // If changing to "released" from a different state
         if (newState === 'released' && tempPatchData.patch_state !== 'released') {
-            const desc = window.prompt('Enter a description for the released patch:');
+            const desc = window.prompt('Enter KBA link:');
             if (desc !== null && desc.trim() !== '') {
                 setTempPatchData({
                     ...tempPatchData,
@@ -210,12 +375,37 @@ function PatchPage() {
     }, [tempPatchData.name, setTitle]);
 
 
+    // Get current date
+    const getDate = ()=>{
+        const today = new Date();
+
+        // Extract day, month, and year
+        let day = today.getDate();
+        let month = today.getMonth() + 1;
+        let year = today.getFullYear();
+
+        // Add leading zero to day and month if needed
+        day = day < 10 ? '0' + day : day;
+        month = month < 10 ? '0' + month : month;
+
+        // Format the date as dd/mm/yyyy
+        const formattedDate = `${day}-${month}-${year}`;
+        return formattedDate;
+    }
+
     return (
         <>
 
             <div className="patch-page">
                 <div className="patch-header">
                     <h2>Patch Details</h2>
+                    {/* Button to export data */}
+                    <button
+                        className="edit-btn"
+                        onClick={() => exportToExcel(data, `${patchData.name}_vulnerabilities_${getDate()}`)}
+                    >
+                        Export
+                    </button>
                     {patchData.patch_state !== 'released' && (
                         <button className="edit-btn" onClick={toggleEdit}>
                             {isEditing ? 'Cancel' : 'Edit'}

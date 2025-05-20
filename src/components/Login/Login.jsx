@@ -9,7 +9,7 @@ export default function Login({ onLoginSuccess }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (email === "rakesh@gmail.com" && password === "123") {
+    if (email === "admin@opentext.com" && password === "123") {
       onLoginSuccess();
     } else {
       setError("Invalid email or username");
