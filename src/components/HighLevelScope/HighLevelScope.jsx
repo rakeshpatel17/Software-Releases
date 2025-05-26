@@ -26,11 +26,19 @@ function HighLevelScope({ highLevelScope = [], setHighLevelScope = () => {}, isE
     }, [isEditing, highLevelScope]);
 
     // Update parent's state when tempHighLevelScope changes
+    // useEffect(() => {
+    //     if (typeof setHighLevelScope === 'function') {
+    //         setHighLevelScope(tempHighLevelScope);
+    //     }
+    // }, [tempHighLevelScope, setHighLevelScope]);
     useEffect(() => {
-        if (typeof setHighLevelScope === 'function') {
-            setHighLevelScope(tempHighLevelScope);
-        }
-    }, [tempHighLevelScope, setHighLevelScope]);
+    if (typeof setHighLevelScope === 'function') {
+        setHighLevelScope(prev => {
+            const isSame = JSON.stringify(prev) === JSON.stringify(tempHighLevelScope);
+            return isSame ? prev : tempHighLevelScope;
+        });
+    }
+}, [tempHighLevelScope, setHighLevelScope]);
 
     const handleInputChange = (index, newValue) => {
         const updatedScope = [...tempHighLevelScope];
