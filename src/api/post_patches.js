@@ -15,7 +15,7 @@ const post_patches = async (formData) => {
     const response = await fetch(`${base_url}/patches/`, {
         method: 'POST',
         headers: {
-            ......common_headers,  // Spread common_headers here
+            ...common_headers,  // Spread common_headers here
         },
 
         body: JSON.stringify(formData),

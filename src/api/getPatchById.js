@@ -8,7 +8,7 @@ const common_headers = {
 };
 const getPatchById = async (patchName) => {
     try {
-      const endpoint = `${base_url}/patches`; // Endpoint to fetch all patches
+      const endpoint = `${base_url}/patches/${patchName}`; // Endpoint to fetch all patches
   
       const response = await fetch(endpoint, {
         method: "GET",
@@ -22,12 +22,13 @@ const getPatchById = async (patchName) => {
       const data = await response.json();
   
       // Filter by patch name (case-insensitive match if needed)
-      const filteredData = data.filter(
-        patch => patch.name && patch.name.toLowerCase() === patchName.toLowerCase()
-      );
+      // const filteredData = data.filter(
+      //   patch => patch.name && patch.name.toLowerCase() === patchName.toLowerCase()
+      // );
   
       // console.log("Filtered Patch by Name:", filteredData);
-      return filteredData;
+      // return filteredData;
+      return data;
     } catch (error) {
       console.error("Error in getPatchesById:", error);
       return null;
