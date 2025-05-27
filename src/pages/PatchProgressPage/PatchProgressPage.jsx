@@ -5,72 +5,71 @@ import { useParams } from 'react-router-dom';
 import EditableFieldComponent from '../../components/EditableFieldComponent';
 import ToggleButtonComponent from '../../components/ToggleButton/ToggleButton';
 import { useOutletContext } from 'react-router-dom';
+import { getPatchById } from '../../api/getPatchById';
 
 function PatchProgressPage() {
   const { searchTerm, setTitle } = useOutletContext(); 
   const { id } = useParams();
-  const [productJars, setProductJars] = useState({
-    Server: [
-      { jar: 'reactor-netty-http', version: '1.2.4', remarks: 'Major version upgrade', updated: 'Yes' },
-      { jar: 'reactor-netty-core', version: '1.2.4', remarks: 'Major version upgrade', updated: 'Yes' },
-      { jar: 'libraries-bom', version: '26.56.0', remarks: '', updated: 'Yes' },
-      { jar: 'httpcore5', version: '5.3.4', remarks: '', updated: 'Yes' },
-      { jar: 'guava', version: '33.4.5-jre', remarks: 'Major version upgrade', updated: 'Yes' }
-    ],
-    ijms: [
-      { jar: 'jakarta.servlet-api', version: '6.1.0', remarks: 'Major version upgrade', updated: 'Yes' },
-      { jar: 'jakarta.annotation-api', version: '3.0.0', remarks: 'Major version upgrade', updated: 'Yes' },
-      { jar: 'org.glassfish.jaxb_jaxb-xjc', version: '4.0.5', remarks: 'Major version upgrade', updated: 'Yes' },
-      { jar: 'org.glassfish.jaxb_jaxb-jxc', version: '4.0.5', remarks: 'Major version upgrade', updated: 'Yes' },
-      { jar: 'spring framework (spring-core)', version: '6.2.5', remarks: 'Major upgrade done in 25.2', updated: 'Yes' }
-    ],
-    D2: [
-      { jar: 'spring security', version: '6.4.4', remarks: 'Major upgrade done in 25.2', updated: 'Yes' },
-      { jar: 'spring-boot-starter-parent', version: '3.4.4', remarks: 'Major upgrade done in 25.2', updated: 'Yes' },
-      { jar: 'ActiveMQ (activemq-broker)', version: '6.1.6', remarks: 'Major version upgraded in 25.2', updated: 'Yes' },
-      { jar: 'jakarta.jms-api', version: '3.1.0', remarks: 'Major upgrade', updated: 'Yes' },
-      { jar: 'Bouncy Castle', version: '1.80', remarks: 'Major upgrade', updated: 'Yes' }
-    ]
-  });
-  const images = [{
-    "image_name": "ot-dctm-ijms",
-    "build_number": "24.2.0002.0137",
-    "release_date": "2025-05-28T10:18:00Z",
-    "ot2_pass": "Yes",
-    "twistlock_report_url": "http://example.com/report",
-    "twistlock_report_clean": false,
-    "is_deleted": false,
-    "product": "Ijms",
-    "created_at": "2025-05-06T04:48:31.954493Z",
-    "updated_at": "2025-05-06T04:48:31.954630Z",
-    "security_issues": [
-      {
-        "cve_id": "CVE-2024-22262",
-        "cvss_score": 4,
-        "severity": "Critical",
-        "affected_libraries": "org.springframework:spring-web",
-        "library_path": "/bin",
-        "description": "Coming from the base OS in sysdig scan and twistlock scan",
-        "created_at": "2025-05-06T04:54:00.776950Z",
-        "updated_at": "2025-05-06T04:54:00.777178Z",
-        "is_deleted": false
-      },
-      {
-        "cve_id": "CVE-2024-22243",
-        "cvss_score": 4,
-        "severity": "Critical",
-        "affected_libraries": "org.springframework:spring-web",
-        "library_path": "/bin",
-        "description": "Coming from the base OS in sysdig scan and twistlock scan",
-        "created_at": "2025-05-06T04:54:10.243657Z",
-        "updated_at": "2025-05-06T04:54:10.243879Z",
-        "is_deleted": false
-      }
-    ]
-  }]
+  const [productJars, setProductJars] = useState({});
+  const [filteredProducts, setFilteredProducts] = useState({});
+  const [images, setImages] = useState([]);
 
-  
-  const [filteredProducts, setFilteredProducts] = useState(productJars);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const data = await getPatchById(id);
+  //     console.log("the progress page data is : ", data);
+
+  //     // Step 1: Convert jars into one product bucket (e.g., 'General')
+  //     const jarsGrouped = {
+  //       General: data.jars.map(jar => ({
+  //         jar: jar.name,
+  //         version: jar.version,
+  //         remarks: jar.remarks || '',
+  //         updated: 'Yes'
+  //       }))
+  //     };
+
+  //     // Step 2: Extract all images from products
+  //     const allImages = data.products.flatMap(product => product.images || []);
+
+  //     setProductJars(jarsGrouped);
+  //     setFilteredProducts(jarsGrouped);
+  //     setImages(allImages);
+  //   };
+
+  //   fetchData();
+  // }, [id]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const data = await getPatchById(id);
+
+      // Build a per‐product map where each key is the product name (lowercased)
+      // and contains both its images and the global jars bucket.
+      const productMap = data.products.reduce((acc, prod) => {
+        const key = prod.name.toLowerCase();
+        acc[key] = {
+          // images belong to this product
+          images: prod.images,
+
+          // assign the global jars to each product
+          jars: data.jars.map(jar => ({
+            jar: jar.name,
+            version: jar.version,
+            remarks: jar.remarks || '',
+            updated: 'Yes'
+          }))
+        };
+        return acc;
+      }, {});
+      console.log("the present product map is : ", productMap);
+      setProductJars(productMap);
+      setFilteredProducts(productMap);
+    }
+
+    fetchData();
+  }, [id]);
+
 
   useEffect(() => {
     if (searchTerm.trim() === '') {
@@ -113,55 +112,61 @@ function PatchProgressPage() {
             {/* <h2 className="dashboard-title">{id} Progress</h2> */}
           </div>
           <div className="table-scroll-wrapper">
-            {Object.entries(filteredProducts).map(([product, jars],index) => (
-              <div className='patchProgress' key={index}>
-                <div className="product-table-container" key={product}>
-                  <h2>{/*product.toUpperCase()*/highlightText(product.toUpperCase(), searchTerm)}</h2>
-                  <table className="product-table">
-                    <thead>
-                      <tr>
-                        <th>Jar</th>
-                        <th>Version</th>
-                        <th>Remarks</th>
-                        <th>Updated</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {jars.map((entry, index) => (
-                        <tr key={index}>
-                          <td>{entry.jar}</td>
-                          <td>{entry.version}</td>
-                          <td>
-                            <EditableFieldComponent
-                              value={entry.remarks || '—'}
-                              onSave={(newValue) => {
-                                entry.remarks = newValue;
-                              }}
-                            />
-                          </td>
-                          <td>
+            {Object.entries(filteredProducts).map(([productKey, productObj], index) => {
+              const { jars, images } = productObj;
+              return (
+                <div className='patchProgress' key={index}>
+                  <div className="product-table-container">
+                    <h2>
+                      {highlightText(productKey.toUpperCase(), searchTerm)}
+                    </h2>
 
-                            <ToggleButtonComponent
-                              options={['Yes', 'No']}
-                              value={entry.updated}  
-                              onToggle={(newValue) => {
-                                const updatedJars = { ...productJars };
-                                updatedJars[product][index].updated = newValue;
-                                setProductJars(updatedJars); 
-                              }}
-                            />
-                          </td>
+                    <table className="product-table">
+                      <thead>
+                        <tr>
+                          <th>Jar</th>
+                          <th>Version</th>
+                          <th>Remarks</th>
+                          <th>Updated</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  {/* Rendering ImageTable  */}
-                  <div className="image-table-wrapper">
-                          <ImageTable images={images} /*searchTerm={searchTerm}*/ />
+                      </thead>
+                      <tbody>
+                        {jars.map((entry, jIdx) => (
+                            <tr key={jIdx}>
+                              <td>{entry.jar}</td>
+                              <td>{entry.version}</td>
+                              <td>
+                                <EditableFieldComponent
+                                  value={entry.remarks || '—'}
+                                  onSave={(newValue) => {
+                                    entry.remarks = newValue;
+                                  }}
+                                />
+                              </td>
+                              <td>
+                                <ToggleButtonComponent
+                                  options={['Yes', 'No']}
+                                  value={entry.updated}
+                                  onToggle={(newValue) => {
+                                  const updated = { ...productJars };
+                                  updated[productKey].jars[jIdx].updated = newValue;
+                                  setProductJars(updated);
+                                }}
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+
+                    <div className="image-table-wrapper">
+                      {/* now pass this product’s own images */}
+                      <ImageTable images={images} />
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
   );

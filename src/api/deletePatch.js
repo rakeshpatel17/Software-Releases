@@ -18,7 +18,8 @@ export const deletePatch = async (patchName) => {
     "Content-Type": "application/json",
     'Authorization': authHeader
   };
-    const response = await fetch(`${base_url}/patches/${patchName}/`, {
+    // const response = await fetch(`${base_url}/patches/${patchName}/`, {
+    const response = await fetch(`${base_url}/patches/${encodeURIComponent(patchName)}/`, {
       method: 'DELETE',
       headers: {
             ...common_headers,

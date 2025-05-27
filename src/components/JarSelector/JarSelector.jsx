@@ -1,21 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
 import './JarSelector.css';
+import get_jars from '../../api/get_jars';
 import { Trash2 } from 'lucide-react';
 
-const staticJarData = [
-    { name: 'commons-cli' },
-    { name: 'commons-codec' },
-    { name: 'commons-io' },
-    { name: 'log4j' },
-    { name: 'spring-core' },
-    { name: 'spring-security' },
-    { name: 'xmlsec' },
-];
-
 function JarSelector({ selectedJars, setSelectedJars, isEditing }) {
+    const [jarDataSuggestions, setJarDataSuggestions] = useState([]);
     const [focusedIndex, setFocusedIndex] = useState(null);
     const [dropdowns, setDropdowns] = useState([]);
-
+    useEffect(() => {
+        const fetchJars = async () => {
+        const jars = await get_jars();
+        setJarDataSuggestions(jars);
+        };
+        fetchJars();
+    }, []);
     const handleJarChange = (index, field, value) => {
         const updated = [...selectedJars];
         updated[index][field] = value;
@@ -26,7 +24,7 @@ function JarSelector({ selectedJars, setSelectedJars, isEditing }) {
             if (value.trim() === '') {
                 updatedDropdowns[index] = [];
             } else {
-                updatedDropdowns[index] = staticJarData.filter(jar =>
+                updatedDropdowns[index] = jarDataSuggestions.filter(jar =>
                     jar.name.toLowerCase().includes(value.toLowerCase())
                 );
             }

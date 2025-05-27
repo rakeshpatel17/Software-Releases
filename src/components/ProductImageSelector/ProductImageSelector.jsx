@@ -1,9 +1,9 @@
-import React from 'react';
 import './ProductImageSelector.css';
+  import { useMemo } from 'react';
 
 function ProductImageSelector({
   productData = [],
-  selectedImages = [],
+  selectedImages = [], // format: [{ productName, imageName }]
   searchTerm,
   setSearchTerm,
   expandedProduct,
@@ -11,40 +11,94 @@ function ProductImageSelector({
   handleProductSelection,
   handleImageToggle,
   patchSpecificImages = [],
-  mode = 'read', // 'read', 'edit-prepopulated', or 'edit-empty'
+  mode = 'read',
 }) {
-  // Filter products by search term
+    // console.log("selectedImages in child:", selectedImages);
+
   const filteredProducts = productData.filter(product =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Helper to check if image belongs to patch
-  const isImageInPatch = (imageName) => patchSpecificImages.includes(imageName);
+// For edit mode, if selectedImages is an object like { productName: [images...] }
+const flattenedSelectedImagesForEdit = useMemo(() => {
+  if (!selectedImages || typeof selectedImages !== 'object' || Array.isArray(selectedImages)) return [];
+  return Object.entries(selectedImages).flatMap(([productName, images]) =>
+    (images || []).map(imageName => ({
+      productName,
+      imageName,
+    }))
+  );
+}, [selectedImages]);
 
-  // Show product in read mode only if it has patch images
-  const shouldShowProduct = (product) => {
-    if (mode !== 'read') return true;
-    return product.images?.some(img => patchSpecificImages.includes(img.image_name));
-  };
+// For other mode or default, when selectedImages is array of { product, images }
+const flattenedSelectedImagesForArray = useMemo(() => {
+  if (!Array.isArray(selectedImages)) return [];
+  return selectedImages.flatMap(p =>
+    (p.images || []).map(img => ({
+      productName: p.product,
+      imageName: img,
+    }))
+  );
+}, [selectedImages]);
 
-  // Determine if image is checked based on mode
-  const isImageChecked = (imageName) => {
-    if (mode === 'read') {
-      return patchSpecificImages.includes(imageName);
-    }
-    // In edit modes, use selectedImages state (parent manages this)
-    return selectedImages.includes(imageName);
-  };
 
-  // Show only products based on mode & filter
+
+
+
+const isImageInPatch = (productName, imageName) =>
+  patchSpecificImages.some(product =>
+    product.product === productName &&
+    product.images?.some(img => img === imageName)
+  );
+
+const shouldShowProduct = (product) => {
+  if (mode !== 'read') return true;
+  return patchSpecificImages.some(p =>
+    p.product === product.name && p.images?.length > 0
+  );
+};
+
+// const isImageChecked = (productName, imageName) => {
+//   if (mode === 'read') {
+//     return patchSpecificImages.some(
+//       p => p.product === productName && p.images.includes(imageName)
+//     );
+//   }
+//   return flattenedSelectedImages.some(
+//     img => img.productName === productName && img.imageName === imageName
+//   );
+// };
+const isImageChecked = (productName, imageName) => {
+  if (mode === 'read') {
+    return patchSpecificImages.some(
+      p => p.product === productName && p.images.includes(imageName)
+    );
+  }
+  // Use the right flattenedSelectedImages based on selectedImages type
+  if (typeof selectedImages === 'object' && !Array.isArray(selectedImages)) {
+    return flattenedSelectedImagesForEdit.some(
+      img => img.productName === productName && img.imageName === imageName
+    );
+  }
+  return flattenedSelectedImagesForArray.some(
+    img => img.productName === productName && img.imageName === imageName
+  );
+};
+
+
+
+
+
+
   const visibleProducts = filteredProducts.filter(shouldShowProduct);
-
-  // Disable checkboxes only in read mode
   const checkboxesDisabled = mode === 'read';
+
+  const isProductChecked = (product) =>
+  product.images?.some(img => isImageChecked(product.name, img.image_name));
+
 
   return (
     <>
-      {/* Show search input only in edit modes */}
       {(mode !== 'read') && (
         <div className="form-group">
           <label className="form-label">Search Product</label>
@@ -61,20 +115,17 @@ function ProductImageSelector({
       <div className="form-group">
         <div className="scrollable-product-list">
           <div className="product-list">
-
             {visibleProducts.length === 0 ? (
               <div className="no-products-message">No products under this patch</div>
             ) : (
               visibleProducts.map((product) => {
                 const isExpanded = expandedProduct === product.name;
-                // Checkbox checked if any images in product are selected
-                const isChecked = product.images?.some(img => isImageChecked(img.image_name));
+                const isChecked = isProductChecked(product);
 
                 return (
                   <div key={product.name} className="product-item">
                     <div className="product-header">
                       <div className="product-title-checkbox">
-                        {/* Show product checkbox only in edit modes */}
                         {(mode !== 'read') && (
                           <input
                             type="checkbox"
@@ -98,14 +149,14 @@ function ProductImageSelector({
                     {isExpanded && product.images && (
                       <div className="image-list">
                         {product.images
-                          .filter(img => (mode === 'read' ? isImageInPatch(img.image_name) : true))
+                          .filter(img => (mode === 'read' ? isImageInPatch(product.name, img.image_name) : true))
                           .map((img) => (
                             <label key={img.image_name} className="image-item">
                               <input
                                 type="checkbox"
-                                checked={isImageChecked(img.image_name)}
+                                checked={isImageChecked(product.name, img.image_name)}
                                 disabled={checkboxesDisabled}
-                                onChange={() => handleImageToggle(img.image_name)}
+                                onChange={() => handleImageToggle(product.name, img.image_name)}
                               />
                               {img.image_name}
                             </label>

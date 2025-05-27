@@ -31,7 +31,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
     // });
     const [formData, setFormData] = useState({
         name: '',
-        release: lockedRelease || '24.2',
+        release: lockedRelease || '24.4',
         release_date: '',
         code_freeze: '',
         platform_qa_build: '',
@@ -39,11 +39,11 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         patch_state: 'new',
         is_deleted: false,
         client_build_availability: '',
-        high_level_scope_input: [],
+        scopes_data: [],
         kick_off: '',
-        product_images: [],
-        related_products: [],
-        third_party_jars_input: [],
+        products_data: [],
+        // related_products: [],
+        jars_data: [],
     });
 
     const [selectedImages, setSelectedImages] = useState([]);
@@ -111,14 +111,12 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
             const data = await get_release();
             if (data && data.length > 0) {
                 setReleaseList(data);
-
                 setFormData((prev) => ({
                     ...prev,
                     release: lockedRelease || data[0].id, // use lockedRelease if present
                 }));
             }
         };
-
         fetchReleases();
     }, [lockedRelease]);
 
@@ -153,14 +151,49 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         }));
     };
 
+    // useEffect(() => {
+    //     const updatedSelectedProducts = productData.filter(product =>
+    //         product.images?.some(img => selectedImages.includes(img.image_name))
+    //     ).map(product => ({ name: product.name, images: product.images }));
+
+    //     setSelectedProducts(updatedSelectedProducts);
+    // }, [selectedImages, productData]);
+    useEffect(() => {
+        console.log("selectedImages:", selectedImages);
+        const grouped = {};
+
+        selectedImages.forEach(({ productName, imageName }) => {
+            if (!grouped[productName]) {
+                grouped[productName] = [];
+            }
+            grouped[productName].push(imageName);
+        });
+
+        console.log("Grouped:", grouped);
+        setSelectedProducts(grouped);
+    }, [selectedImages]);
+
+
+
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         console.log("Form Data before validation:", formData);
 
         if (!validateForm()) {
             console.warn('Validation failed');
             return;
         }
+        const selectedProducts = {};
+
+        selectedImages.forEach(({ productName, imageName }) => {
+            if (!selectedProducts[productName]) {
+                selectedProducts[productName] = [];
+            }
+            selectedProducts[productName].push(imageName);
+        });
 
         const transformedHighLevelScope = highLevelScope.map(item => ({
             name: item.label || item.name,
@@ -173,27 +206,33 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
             remarks: item.remarks || ""
         }));
 
-        console.log('Transformed High Level Scope:', transformedHighLevelScope);
-        console.log('Transformed Third Party Jars:', transformedSelectedJars);
+        // Build products list
+        const finalProducts = Object.entries(selectedProducts).map(
+            ([productName, imageNames]) => ({
+                productName,
+                selectedImages: imageNames,
+            })
+        );
 
+        // related_products is just list of product names
+        const relatedProducts = Object.keys(selectedProducts);
+        const transformedProductImageMap = Object.entries(selectedProducts).map(
+            ([name, images]) => ({ name, images })
+        );
         const finalData = {
             ...formData,
-            products: selectedProducts.map((product) => {
-                const selectedImagesForProduct = (product.images || [])
-                    .filter((img) => selectedImages.includes(img.image_name))
-                    .map((img) => img.image_name);
-
-                return {
-                    productName: product.name,
-                    selectedImages: selectedImagesForProduct,
-                };
-            }),
-            // related_products: selectedProducts.map(prod => prod.name),
-            related_products: selectedProducts.map(prod => prod.name),
-            product_images: selectedImages,
-            high_level_scope_input: transformedHighLevelScope,
-            third_party_jars_input: transformedSelectedJars,
+            // products: finalProducts,
+            // related_products: relatedProducts,
+            products_data: transformedProductImageMap,
+            //  product_images: selectedImages.map(img => img.imageName),
+            scopes_data: transformedHighLevelScope,
+            jars_data: transformedSelectedJars,
         };
+
+        // console.log("products", finalData.products);
+        console.log("release", formData.name)
+        console.log("selectedProducts", selectedProducts);
+        // console.log("selectedImages", selectedImages);
 
         try {
             console.log("Final Form Data to send:", finalData);
@@ -203,31 +242,32 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         }
     };
 
-    const handleImageToggle = (image) => {
-        setSelectedImages((prev) =>
-            prev.includes(image) ? prev.filter((img) => img !== image) : [...prev, image]
+    const handleImageToggle = (productName, imageName) => {
+        const exists = selectedImages.some(
+            (img) => img.productName === productName && img.imageName === imageName
         );
+        if (exists) {
+            setSelectedImages(prev =>
+                prev.filter(img => !(img.productName === productName && img.imageName === imageName))
+            );
+        } else {
+            setSelectedImages(prev => [...prev, { productName, imageName }]);
+        }
     };
 
-    const handleProductSelection = (product, isChecked) => {
-        const productImages = product.images || [];
 
-        setSelectedImages((prev) => {
-            if (isChecked) {
-                return [...new Set([...prev, ...productImages.map((img) => img.image_name)])];
-            } else {
-                return prev.filter((img) => !productImages.some((prodImg) => prodImg.image_name === img));
-            }
-        });
+    const handleProductSelection = (product, checked) => {
+        const productImages = product.images.map(img => ({
+            productName: product.name,
+            imageName: img.image_name,
+        }));
 
-        setSelectedProducts((prev) => {
-            if (isChecked) {
-                return [...prev, { name: product.name, images: product.images }];
-            } else {
-                return prev.filter((prod) => prod.name !== product.name);
-            }
+        setSelectedImages(prev => {
+            const filtered = prev.filter(img => img.productName !== product.name);
+            return checked ? [...filtered, ...productImages] : filtered;
         });
     };
+
 
     // const filteredProducts = productData.filter((product) =>
     //     product.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -236,9 +276,9 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
 
     //high level scope
     const [highLevelScope, setHighLevelScope] = useState([
-        { label: 'alpine', value: '' },
-        { label: 'jdk', value: '' },
-        { label: 'new_relic', value: '' },
+        { name: 'alpine', version: '21' },
+        { name: 'jdk', version: '12' },
+        { name: 'new_relic', version: '1.5.3' },
     ]);
 
     const handleScopeChange = (index, newValue) => {
@@ -257,9 +297,9 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         const newErrors = {};
 
         if (!formData.name.trim()) newErrors.name = 'Name is required';
-        else if (!formData.name.startsWith(formData.release)) {
-            newErrors.name = `Name must start with release version (${formData.release})`;
-        }
+        // else if (!formData.name.startsWith(formData.release)) {
+        //     newErrors.name = `Name must start with release version (${formData.release})`;
+        // }
         if (!formData.release_date) newErrors.release_date = 'Release date is required';
         if (!formData.description.trim()) newErrors.description = 'Description is required';
 
@@ -275,11 +315,11 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         //     newErrors.highLevelScope = 'high-level scope fields must be filled';
         // }
 
-        if (selectedProducts.length === 0) {
+        if (selectedImages.length === 0) {
             newErrors.products = 'At least one product must be selected';
         }
 
-
+        console.log('Validation Errors:', newErrors);
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -321,9 +361,14 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                             className="form-select"
                             disabled={!!lockedRelease}
                         >
+                            <option value="" disabled>
+                                -- Select a Release --
+                            </option>
                             {releaseList.map((release) => (
-                                <option key={release.id} value={release.id}>
+
+                                <option key={release.name} value={release.name}>
                                     {release.name}
+                                    {console.log("release", release.name)}
                                 </option>
                             ))}
                         </select>
@@ -516,17 +561,17 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                 </div>
                 <ProductImageSelector
                     productData={productData}
-                    selectedImages={selectedImages}  // pass current state instead of []
+                    selectedImages={selectedProducts}
                     searchTerm={productSearchTerm}
                     setSearchTerm={setProductSearchTerm}
                     expandedProduct={expandedProduct}
                     setExpandedProduct={setExpandedProduct}
                     handleProductSelection={handleProductSelection}
                     handleImageToggle={handleImageToggle}
-                    readOnly={false}
                     patchSpecificImages={[]}
-                    mode="edit-empty"
+                    mode="edit"
                 />
+
 
 
 

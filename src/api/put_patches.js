@@ -1,5 +1,4 @@
-
- const base_url = process.env.REACT_APP_BACKEND_URL; // Backend URL
+const base_url = process.env.REACT_APP_BACKEND_URL; // Backend URL
 const username = process.env.REACT_APP_USERNAME;
 const password = process.env.REACT_APP_PASSWORD;
 const authHeader = 'Basic ' + btoa(`${username}:${password}`);
@@ -9,16 +8,17 @@ const common_headers = {
 };
  
  
-const post_patches = async (formData) => {
-   
+const put_patches = async (patchname,formData) => {
+    
     // console.log("Posting data:", formData);
- 
-    const response = await fetch(`${base_url}/patches/`, {
-        method: 'POST',
+    // const patchName = formData.get('name'); 
+
+    const response = await fetch(`${base_url}/patches/${encodeURIComponent(patchname)}/`, {
+        method: 'PUT',
         headers: {
             ...common_headers,  // Spread common_headers here
         },
- 
+
         body: JSON.stringify(formData),
     });
  
@@ -33,5 +33,4 @@ const post_patches = async (formData) => {
 };
  
  
-export default post_patches;
- 
+export default put_patches;

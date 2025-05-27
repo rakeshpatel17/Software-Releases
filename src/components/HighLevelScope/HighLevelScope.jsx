@@ -1,23 +1,33 @@
 import './HighLevelScope.css';
 import { Trash2 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
+import get_scopes from '../../api/get_scopes';
 
-const staticLabelData = [
-    { label: 'Base OS' },
-    { label: 'Base OS1' },
-    { label: 'Base OS2' },
-    { label: 'Base OS3' },
-    { label: 'Base OS4' },
-    { label: 'Base OS5' },
-    { label: 'Tomcat' },
-    { label: 'JDK' },
-    { label: 'OTDS' },
-    { label: 'New Relic' },
-];
+// const scopeDataSuggestions = [
+//     { label: 'Base OS' },
+//     { label: 'Base OS1' },
+//     { label: 'Base OS2' },
+//     { label: 'Base OS3' },
+//     { label: 'Base OS4' },
+//     { label: 'Base OS5' },
+//     { label: 'Tomcat' },
+//     { label: 'JDK' },
+//     { label: 'OTDS' },
+//     { label: 'New Relic' },
+// ];
 
 function HighLevelScope({ highLevelScope = [], setHighLevelScope = () => {}, isEditing }) {
+    // console.log("highLeveScope we get : , ", highLevelScope);
     const [tempHighLevelScope, setTempHighLevelScope] = useState([...highLevelScope]);
-
+    const [scopeDataSuggestions, setScopeDataSuggestions] = useState([]);
+    useEffect(() => {
+    const fetchScopes = async () => {
+      const scopes = await get_scopes();
+      setScopeDataSuggestions(scopes);
+    };
+    fetchScopes();
+  }, []);
+//   console.log(scopeDataSuggestions);
     // Reset temp state when exiting edit mode or when highLevelScope changes
     useEffect(() => {
         if (!isEditing) {
@@ -26,20 +36,30 @@ function HighLevelScope({ highLevelScope = [], setHighLevelScope = () => {}, isE
     }, [isEditing, highLevelScope]);
 
     // Update parent's state when tempHighLevelScope changes
+    // useEffect(() => {
+    //     if (typeof setHighLevelScope === 'function') {
+    //         setHighLevelScope(tempHighLevelScope);
+    //     }
+    // }, [tempHighLevelScope, setHighLevelScope]);
     useEffect(() => {
-        if (typeof setHighLevelScope === 'function') {
-            setHighLevelScope(tempHighLevelScope);
-        }
-    }, [tempHighLevelScope, setHighLevelScope]);
+    if (typeof setHighLevelScope === 'function') {
+        setHighLevelScope(prev => {
+            const isSame = JSON.stringify(prev) === JSON.stringify(tempHighLevelScope);
+            return isSame ? prev : tempHighLevelScope;
+        });
+    }
+}, [tempHighLevelScope, setHighLevelScope]);
 
     const handleInputChange = (index, newValue) => {
         const updatedScope = [...tempHighLevelScope];
-        updatedScope[index].value = newValue;
+        updatedScope[index].version = newValue;
+        console.log("updated scope ",updatedScope);
         setTempHighLevelScope(updatedScope);
+        // console.log("temp high level scope : ", tempHighLevelScope);
     };
 
     const handleAddScope = () => {
-        setTempHighLevelScope(prev => [...prev, { label: '', value: '' }]);
+        setTempHighLevelScope(prev => [...prev, { name: '', version: '' }]);
     };
 
     const handleRemoveScope = (index, e) => {
@@ -53,12 +73,12 @@ function HighLevelScope({ highLevelScope = [], setHighLevelScope = () => {}, isE
 
     const handleLabelChange = (index, newLabel) => {
         const updatedScope = [...tempHighLevelScope];
-        updatedScope[index].label = newLabel;
+        updatedScope[index].name = newLabel;
         setTempHighLevelScope(updatedScope);
 
         const filteredSuggestions = newLabel.trim()
-            ? staticLabelData.filter(s =>
-                s.label.toLowerCase().includes(newLabel.toLowerCase())
+            ? scopeDataSuggestions.filter(s =>
+                s.name.toLowerCase().includes(newLabel.toLowerCase())
             )
             : [];
 
@@ -69,7 +89,7 @@ function HighLevelScope({ highLevelScope = [], setHighLevelScope = () => {}, isE
 
     const handleSuggestionClick = (index, suggestion) => {
         const updatedScope = [...tempHighLevelScope];
-        updatedScope[index].label = suggestion.label;
+        updatedScope[index].name = suggestion.name;
         setTempHighLevelScope(updatedScope);
 
         const updatedSuggestions = [...labelSuggestions];
@@ -118,7 +138,7 @@ function HighLevelScope({ highLevelScope = [], setHighLevelScope = () => {}, isE
                                         >
                                             <input
                                                 type="text"
-                                                value={item.label}
+                                                value={item.name}
                                                 onChange={(e) => handleLabelChange(index, e.target.value)}
                                                 autoComplete="off"
                                             />
@@ -130,7 +150,7 @@ function HighLevelScope({ highLevelScope = [], setHighLevelScope = () => {}, isE
                                                             className="scope-dropdown-item"
                                                             onClick={() => handleSuggestionClick(index, s)}
                                                         >
-                                                            {s.label}
+                                                            {s.name}
                                                         </div>
                                                     ))}
                                                 </div>
@@ -140,7 +160,7 @@ function HighLevelScope({ highLevelScope = [], setHighLevelScope = () => {}, isE
                                     <td>
                                         <input
                                             type="text"
-                                            value={item.value}
+                                            value={item.version}
                                             onChange={(e) => handleInputChange(index, e.target.value)}
                                         />
                                     </td>
@@ -173,8 +193,8 @@ function HighLevelScope({ highLevelScope = [], setHighLevelScope = () => {}, isE
                         <tbody>
                             {highLevelScope.map((item, index) => (
                                 <tr key={index}>
-                                    <td>{item.label}</td>
-                                    <td>{item.value}</td>
+                                    <td>{item.name}</td>
+                                    <td>{item.version}</td>
                                 </tr>
                             ))}
                         </tbody>

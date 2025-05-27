@@ -15,6 +15,7 @@ const Card = ({ info, className = '', children, ...rest }) => {
                 const result = await deletePatch(patchName);
                 alert(result.message || 'Patch deleted successfully');
             } catch (err) {
+                console.error("Delete patch error:", err);
                 alert(`Unable to delete Patch ${patchName}`);
             }
         } else {
