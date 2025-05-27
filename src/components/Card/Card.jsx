@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { deletePatch } from '../../api/deletePatch';
 import { Trash2 } from 'lucide-react';
 
-const Card = ({ info, className = '', children, ...rest }) => {
+const Card = ({ info,setPatches, className = '', children, ...rest }) => {
   const { title, description, image, badge, footer } = info || {};
   const cardClasses = `enhanced-card float = 'float' ${className}`.trim();
 
@@ -14,6 +14,8 @@ const Card = ({ info, className = '', children, ...rest }) => {
             try {
                 const result = await deletePatch(patchName);
                 alert(result.message || 'Patch deleted successfully');
+                setPatches(prev => prev.filter(patch => patch.title !== patchName));
+
             } catch (err) {
                 console.error("Delete patch error:", err);
                 alert(`Unable to delete Patch ${patchName}`);

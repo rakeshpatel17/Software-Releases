@@ -90,6 +90,7 @@ function Dashboard() {
                     <Card
                       key={index}
                       info={patch}
+                      setPatches={setFetchedPatches} 
                       onClick={() => navigate(`/patches/${encodeURIComponent(patch.title)}`, {
                         state: { patch }
                       })}

@@ -18,18 +18,21 @@ export const deletePatch = async (patchName) => {
     "Content-Type": "application/json",
     'Authorization': authHeader
   };
-    // const response = await fetch(`${base_url}/patches/${patchName}/`, {
-    const response = await fetch(`${base_url}/patches/${encodeURIComponent(patchName)}/`, {
-      method: 'DELETE',
-      headers: {
-            ...common_headers,
-      }
-    });
-  
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to delete patch');
+  // const response = await fetch(`${base_url}/patches/${patchName}/`, {
+  const response = await fetch(`${base_url}/patches/${encodeURIComponent(patchName)}/`, {
+    method: 'DELETE',
+    headers: {
+      ...common_headers,
     }
-  
-    return response.json();
-  };
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || 'Failed to delete patch');
+  }
+
+  const text = await response.text();
+  return text ? JSON.parse(text) : { message: 'Patch deleted successfully' };
+
+  // return response.json();
+};

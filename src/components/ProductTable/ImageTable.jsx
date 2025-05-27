@@ -3,6 +3,7 @@ import React, { useState ,useEffect} from 'react';
 import './ImageTable.css'; // separate styling
 import EditableFieldComponent from '../EditableFieldComponent';
 import ToggleButtonComponent from '../ToggleButton/ToggleButton';
+import get_security_issues from '../../api/securityIssues';
 
 function highlightMatch(text, term) {
     if (!term) return text;
