@@ -1,5 +1,5 @@
 // components/ProductTable.js
-import React, { useState ,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import './ImageTable.css'; // separate styling
 import EditableFieldComponent from '../EditableFieldComponent';
 import ToggleButtonComponent from '../ToggleButton/ToggleButton';
@@ -22,7 +22,7 @@ function ImageTable({ images, searchTerm }) {
     // const [editingIndex, setEditingIndex] = useState(null);
     // const [editedDescription, setEditedDescription] = useState('');
 
-  
+
 
     const toggleRow = (idx) => {
         setExpandedRows((prev) => ({
@@ -34,7 +34,7 @@ function ImageTable({ images, searchTerm }) {
     const [toggleRegisteryValues, setToggleRegisteryValues] = useState(() =>
         images.map(() => 'Released')
     );
-    
+
 
     const handleRegisteryToggle = (idx, newValue) => {
         const updatedValues = [...toggleRegisteryValues];
@@ -61,11 +61,20 @@ function ImageTable({ images, searchTerm }) {
     };
     useEffect(() => {
         if (images.length > 0) {
-          setToggleRegisteryValues(images.map(() => 'Released'));
-          setToggleOT2Values(images.map(() => 'Released'));
-          setToggleHelmValues(images.map(() => 'Released'));
+            setToggleRegisteryValues(images.map(img => getToggleValue(img.registry)));
+            setToggleOT2Values(images.map(img => getToggleValue(img.ot2_pass)));
+            setToggleHelmValues(images.map(img => getToggleValue(img.helm_charts)));
         }
-      }, [images]);
+    }, [images]);
+
+
+
+    const getToggleValue = (dbValue) => {
+        const options = ['Released', 'Not Released', 'Not Applicable'];
+        const matchIndex = options.findIndex(opt => opt.toLowerCase() === dbValue?.toLowerCase());
+        return matchIndex !== -1 ? options[matchIndex] : 'Not Released'; // Default fallback
+    };
+
 
 
 
@@ -87,20 +96,21 @@ function ImageTable({ images, searchTerm }) {
                     <React.Fragment key={idx}>
                         <tr>
                             <td>{img.image_name}</td>
-                            <td>{highlightMatch(img.build_number, searchTerm)}</td>
+                            <td>{highlightMatch(img.patch_build_number, searchTerm)}</td>
+                            <td>
+                                <ToggleButtonComponent
+                                    options={['Released', 'Not Released', 'Not Applicable']}
+                                    value={toggleOT2Values[idx]}
+                                    onToggle={(newValue) => handleOT2Toggle(idx, newValue)}
+                                />
+
+                            </td>
                             <td>
                                 <ToggleButtonComponent
                                     options={['Released', 'Not Released', 'Not Applicable']}
                                     value={toggleRegisteryValues[idx]}
                                     onToggle={(newValue) => handleRegisteryToggle(idx, newValue)}
-                                />
-
-                            </td>
-                            <td>   <ToggleButtonComponent
-                                options={['Released', 'Not Released', 'Not Applicable']}
-                                value={toggleOT2Values[idx]}
-                                onToggle={(newValue) => handleOT2Toggle(idx, newValue)}
-                            /></td>
+                                /></td>
                             <td>
                                 <ToggleButtonComponent
                                     options={['Released', 'Not Released', 'Not Applicable']}

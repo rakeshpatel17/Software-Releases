@@ -16,19 +16,6 @@ import SaveButton from '../Button/SaveButton';
 function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) {
     const location = useLocation();
     const lockedRelease = lockedReleaseProp || location.state?.lockedRelease;
-    // const [formData, setFormData] = useState({
-    //     name: '',
-    //     release: lockedRelease || '24.2',
-    //     release_date: '',
-    //     code_freeze: '',
-    //     qa_build: '',
-    //     description: '',
-    //     //patch_version: '',
-    //     patch_state: 'new',
-    //     is_deleted: false,
-    //     //selectedProduct: '',
-    //     // expandedProduct: null,
-    // });
     const [formData, setFormData] = useState({
         name: '',
         release: lockedRelease || '24.4',
@@ -42,19 +29,13 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         scopes_data: [],
         kick_off: '',
         products_data: [],
-        // related_products: [],
         jars_data: [],
     });
 
-    const [selectedImages, setSelectedImages] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
+
     const [releaseList, setReleaseList] = useState([]);
     const [productData, setProductData] = useState([]);
     const [selectedProducts, setSelectedProducts] = useState([]);
-    //const [patchSize, setPatchSize] = useState([]);
-    const [expandedProduct, setExpandedProduct] = useState([]);
-    const [productSearchTerm, setProductSearchTerm] = useState('');
-
 
 
     // JAR-specific state
@@ -65,7 +46,6 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         { name: 'commons-io', version: '2.2', remarks: 'Minor upgrade' },
         { name: 'guava', version: '3.1', remarks: 'Security patch applied' },
     ]);
-    const [expandedJar, setExpandedJar] = useState(null);
 
 
 
@@ -151,29 +131,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         }));
     };
 
-    // useEffect(() => {
-    //     const updatedSelectedProducts = productData.filter(product =>
-    //         product.images?.some(img => selectedImages.includes(img.image_name))
-    //     ).map(product => ({ name: product.name, images: product.images }));
-
-    //     setSelectedProducts(updatedSelectedProducts);
-    // }, [selectedImages, productData]);
-    useEffect(() => {
-        console.log("selectedImages:", selectedImages);
-        const grouped = {};
-
-        selectedImages.forEach(({ productName, imageName }) => {
-            if (!grouped[productName]) {
-                grouped[productName] = [];
-            }
-            grouped[productName].push(imageName);
-        });
-
-        console.log("Grouped:", grouped);
-        setSelectedProducts(grouped);
-    }, [selectedImages]);
-
-
+  
 
 
 
@@ -186,14 +144,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
             console.warn('Validation failed');
             return;
         }
-        const selectedProducts = {};
 
-        selectedImages.forEach(({ productName, imageName }) => {
-            if (!selectedProducts[productName]) {
-                selectedProducts[productName] = [];
-            }
-            selectedProducts[productName].push(imageName);
-        });
 
         const transformedHighLevelScope = highLevelScope.map(item => ({
             name: item.label || item.name,
@@ -206,25 +157,21 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
             remarks: item.remarks || ""
         }));
 
-        // Build products list
-        const finalProducts = Object.entries(selectedProducts).map(
-            ([productName, imageNames]) => ({
-                productName,
-                selectedImages: imageNames,
-            })
-        );
+        // ✅ Transform selectedProducts to include patch-related fields
+        const transformedProducts = selectedProducts.map(product => ({
+            name: product.name,
+            images: product.images.map(img => ({
+                ...img,
+                ot2_pass: "Not Released",
+                registry: "Not Released",
+                helm_charts: "Not Released",
+                patch_build_number: formData.name
+            }))
+        }));
 
-        // related_products is just list of product names
-        const relatedProducts = Object.keys(selectedProducts);
-        const transformedProductImageMap = Object.entries(selectedProducts).map(
-            ([name, images]) => ({ name, images })
-        );
         const finalData = {
             ...formData,
-            // products: finalProducts,
-            // related_products: relatedProducts,
-            products_data: transformedProductImageMap,
-            //  product_images: selectedImages.map(img => img.imageName),
+            products_data: transformedProducts,
             scopes_data: transformedHighLevelScope,
             jars_data: transformedSelectedJars,
         };
@@ -242,36 +189,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         }
     };
 
-    const handleImageToggle = (productName, imageName) => {
-        const exists = selectedImages.some(
-            (img) => img.productName === productName && img.imageName === imageName
-        );
-        if (exists) {
-            setSelectedImages(prev =>
-                prev.filter(img => !(img.productName === productName && img.imageName === imageName))
-            );
-        } else {
-            setSelectedImages(prev => [...prev, { productName, imageName }]);
-        }
-    };
 
-
-    const handleProductSelection = (product, checked) => {
-        const productImages = product.images.map(img => ({
-            productName: product.name,
-            imageName: img.image_name,
-        }));
-
-        setSelectedImages(prev => {
-            const filtered = prev.filter(img => img.productName !== product.name);
-            return checked ? [...filtered, ...productImages] : filtered;
-        });
-    };
-
-
-    // const filteredProducts = productData.filter((product) =>
-    //     product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    // );
 
 
     //high level scope
@@ -280,16 +198,6 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         { name: 'jdk', version: '12' },
         { name: 'new_relic', version: '1.5.3' },
     ]);
-
-    const handleScopeChange = (index, newValue) => {
-        const updatedScope = [...highLevelScope];
-        updatedScope[index].value = newValue;
-        setHighLevelScope(updatedScope);
-    };
-
-    //jars
-
-
 
 
     // client side validation
@@ -315,7 +223,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         //     newErrors.highLevelScope = 'high-level scope fields must be filled';
         // }
 
-        if (selectedImages.length === 0) {
+        if (selectedProducts.length === 0) {
             newErrors.products = 'At least one product must be selected';
         }
 
@@ -361,14 +269,14 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                             className="form-select"
                             disabled={!!lockedRelease}
                         >
-                            <option value="" disabled>
+                            {/* <option value="" disabled>
                                 -- Select a Release --
-                            </option>
+                            </option> */}
                             {releaseList.map((release) => (
 
                                 <option key={release.name} value={release.name}>
                                     {release.name}
-                                    {console.log("release", release.name)}
+                                    {/* {console.log("release", release.name)} */}
                                 </option>
                             ))}
                         </select>
@@ -535,15 +443,6 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                 </div>
 
                 <div className="inline-fields">
-                    {/* <div className="form-group">
-              <label className="form-label">Patch version</label>
-              <input
-                  name="patchVersion"
-                  value={formData.patchVersion}
-                  onChange={handleChange}
-                  className="form-input"
-              />
-          </div> */}
 
 
                     <div className="form-group">
@@ -559,37 +458,18 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
 
                     </div>
                 </div>
+        
                 <ProductImageSelector
-                    productData={productData}
-                    selectedImages={selectedProducts}
-                    searchTerm={productSearchTerm}
-                    setSearchTerm={setProductSearchTerm}
-                    expandedProduct={expandedProduct}
-                    setExpandedProduct={setExpandedProduct}
-                    handleProductSelection={handleProductSelection}
-                    handleImageToggle={handleImageToggle}
-                    patchSpecificImages={[]}
-                    mode="edit"
+                    mode="editEmpty"
+                    products={productData}
+                    selectedProducts={[]}
+                    onSelectionChange={(selectedProducts) => {
+                        setSelectedProducts(selectedProducts);
+                        console.log("From parent", selectedProducts)
+                    }}
+
                 />
-
-
-
-
                 {/* {errors.products && <span className="error-text">{errors.products}</span>} */}
-
-
-                {/* Third-Party JAR Search */}
-                {/* <JarSelector
-                    mode="search"
-                    jarSearchTerm={jarSearchTerm}
-                    setJarSearchTerm={setJarSearchTerm}
-                    filteredJars={filteredJars}
-                    expandedJar={expandedJar}
-                    setExpandedJar={setExpandedJar}
-                    selectedJars={selectedJars}
-                    setSelectedJars={setSelectedJars}
-                /> */}
-
 
 
                 <div className="form-actions">
