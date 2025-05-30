@@ -6,6 +6,7 @@ import EditableFieldComponent from '../../components/EditableFieldComponent';
 import ToggleButtonComponent from '../../components/ToggleButton/ToggleButton';
 import { useOutletContext } from 'react-router-dom';
 import { getPatchById } from '../../api/getPatchById';
+import { jarsUpdate } from '../../api/jars_update';
 
 function PatchProgressPage() {
   const { searchTerm, setTitle } = useOutletContext(); 
@@ -54,15 +55,15 @@ function PatchProgressPage() {
 
           // assign the global jars to each product
           jars: data.jars.map(jar => ({
-            jar: jar.name,
+            name: jar.name,
             version: jar.version,
             remarks: jar.remarks || '',
-            updated: 'Yes'
+            updated: jar.updated || false
           }))
         };
         return acc;
       }, {});
-      console.log("the present product map is : ", productMap);
+      // console.log("the present product map is : ", productMap);
       setProductJars(productMap);
       setFilteredProducts(productMap);
     }
@@ -133,23 +134,36 @@ function PatchProgressPage() {
                       <tbody>
                         {jars.map((entry, jIdx) => (
                             <tr key={jIdx}>
-                              <td>{entry.jar}</td>
+                              <td>{entry.name}</td>
                               <td>{entry.version}</td>
                               <td>
                                 <EditableFieldComponent
                                   value={entry.remarks || '—'}
-                                  onSave={(newValue) => {
-                                    entry.remarks = newValue;
+                                  onSave={async (newValue) => {
+                                    const updatedJars = [...jars];
+                                    updatedJars[jIdx].remarks = newValue;
+                                    // console.log(jars);
+                                    // console.log("updated jars : ", updatedJars);
+                                    try {
+                                      await jarsUpdate(id, { "jars_data": updatedJars }); // PATCH request
+                                      const updated = { ...productJars };
+                                      updated[productKey].jars[jIdx].remarks = newValue;
+                                      setProductJars(updated);
+                                    } catch (error) {
+                                      console.error('Error updating remarks:', error.message);
+                                      alert('Failed to update remarks.');
+                                    }
                                   }}
                                 />
                               </td>
                               <td>
-                                <ToggleButtonComponent
-                                  options={['Yes', 'No']}
-                                  value={entry.updated}
-                                  onToggle={(newValue) => {
+                               <ToggleButtonComponent
+                                options={['Yes', 'No']}
+                                value={entry.updated ? 'Yes' : 'No'}  // convert boolean → string
+                                onToggle={(newValue) => {
+                                  const booleanValue = newValue === 'Yes';  // convert string → boolean
                                   const updated = { ...productJars };
-                                  updated[productKey].jars[jIdx].updated = newValue;
+                                  updated[productKey].jars[jIdx].updated = booleanValue;
                                   setProductJars(updated);
                                 }}
                               />

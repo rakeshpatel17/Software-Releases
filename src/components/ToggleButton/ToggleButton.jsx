@@ -1,6 +1,7 @@
 import './ToggleButton.css'; // Import the CSS
 
 const ToggleButton = ({ options, value, onToggle }) => {
+  // console.log("The value in ToggleButton : ", value);
   if (!Array.isArray(options) || options.length === 0) {
     return null;
   }
