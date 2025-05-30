@@ -1,100 +1,105 @@
-import './ProductImageSelector.css';
-  import { useMemo } from 'react';
+import React, { useEffect, useState } from "react";
+import "./ProductImageSelector.css";
 
-function ProductImageSelector({
-  productData = [],
-  selectedImages = [], // format: [{ productName, imageName }]
-  searchTerm,
-  setSearchTerm,
-  expandedProduct,
-  setExpandedProduct,
-  handleProductSelection,
-  handleImageToggle,
-  patchSpecificImages = [],
-  mode = 'read',
-}) {
-    // console.log("selectedImages in child:", selectedImages);
-
-  const filteredProducts = productData.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-// For edit mode, if selectedImages is an object like { productName: [images...] }
-const flattenedSelectedImagesForEdit = useMemo(() => {
-  if (!selectedImages || typeof selectedImages !== 'object' || Array.isArray(selectedImages)) return [];
-  return Object.entries(selectedImages).flatMap(([productName, images]) =>
-    (images || []).map(imageName => ({
-      productName,
-      imageName,
-    }))
-  );
-}, [selectedImages]);
-
-// For other mode or default, when selectedImages is array of { product, images }
-const flattenedSelectedImagesForArray = useMemo(() => {
-  if (!Array.isArray(selectedImages)) return [];
-  return selectedImages.flatMap(p =>
-    (p.images || []).map(img => ({
-      productName: p.product,
-      imageName: img,
-    }))
-  );
-}, [selectedImages]);
+const ProductImageSelector = ({ mode, products = [], selectedProducts = [], onSelectionChange }) => {
+  const [selected, setSelected] = useState({});
+  const [expanded, setExpanded] = useState({});
+  const [searchTerm, setSearchTerm] = useState("");
 
 
 
 
 
-const isImageInPatch = (productName, imageName) =>
-  patchSpecificImages.some(product =>
-    product.product === productName &&
-    product.images?.some(img => img === imageName)
-  );
-
-const shouldShowProduct = (product) => {
-  if (mode !== 'read') return true;
-  return patchSpecificImages.some(p =>
-    p.product === product.name && p.images?.length > 0
-  );
-};
-
-// const isImageChecked = (productName, imageName) => {
-//   if (mode === 'read') {
-//     return patchSpecificImages.some(
-//       p => p.product === productName && p.images.includes(imageName)
-//     );
-//   }
-//   return flattenedSelectedImages.some(
-//     img => img.productName === productName && img.imageName === imageName
-//   );
-// };
-const isImageChecked = (productName, imageName) => {
-  if (mode === 'read') {
-    return patchSpecificImages.some(
-      p => p.product === productName && p.images.includes(imageName)
-    );
-  }
-  // Use the right flattenedSelectedImages based on selectedImages type
-  if (typeof selectedImages === 'object' && !Array.isArray(selectedImages)) {
-    return flattenedSelectedImagesForEdit.some(
-      img => img.productName === productName && img.imageName === imageName
-    );
-  }
-  return flattenedSelectedImagesForArray.some(
-    img => img.productName === productName && img.imageName === imageName
-  );
-};
+  // console.log("product data in child ", products);
+  // console.log("selectedproducts in child ", selectedProducts);
+  // Filter products based on search term
+  const visibleProducts =
+  mode === "read"
+    ? selectedProducts
+    : products.filter(product =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
 
 
+      
+  useEffect(() => {
+    if (mode === "editPrepopulate") {
+      const initSelected = {};
+      selectedProducts.forEach((product) => {
+        initSelected[product.name] = new Set(
+          product.images.map((image) => image.image_name)
+        );
+      });
+      setSelected({ ...initSelected }); // ensure new object reference
+    }
+    else if (mode === "read") {
+      const initSelected = {};
+      const initExpanded = {};
+      selectedProducts.forEach((product) => {
+        initSelected[product.name] = new Set(
+          product.images.map((image) => image.image_name)
+        );
+        initExpanded[product.name] = false; // auto-expand
+      });
+      setSelected(initSelected);
+      setExpanded(initExpanded);
+    }
 
+  }, [mode, selectedProducts]);
 
+  const isChecked = (productName, imageName = null) => {
+    if (!selected[productName]) return false;
+    if (imageName) return selected[productName].has(imageName);
+    return selected[productName].size > 0;
+  };
 
+  const handleImageToggle = (productName, image) => {
+    const updated = { ...selected };
+    if (!updated[productName]) updated[productName] = new Set();
 
-  const visibleProducts = filteredProducts.filter(shouldShowProduct);
-  const checkboxesDisabled = mode === 'read';
+    if (updated[productName].has(image.image_name)) {
+      updated[productName].delete(image.image_name);
+    } else {
+      updated[productName].add(image.image_name);
+    }
 
-  const isProductChecked = (product) =>
-  product.images?.some(img => isImageChecked(product.name, img.image_name));
+    if (updated[productName].size === 0) {
+      delete updated[productName];
+    }
+
+    setSelected(updated);
+    propagateSelection(updated);
+  };
+
+  const propagateSelection = (selectedMap) => {
+    const selectedList = Object.entries(selectedMap).map(([productName, imageSet]) => {
+      const productObj = products.find((p) => p.name === productName);
+      return {
+        name: productName,
+        images: productObj.images.filter((img) => imageSet.has(img.image_name)),
+      };
+    });
+    onSelectionChange(selectedList);
+  };
+
+  const toggleExpand = (productName) => {
+    setExpanded((prev) => ({ ...prev, [productName]: !prev[productName] }));
+  };
+  const handleProductToggle = (productName, images) => {
+    const updated = { ...selected };
+    const allSelected = selected[productName] && images.every(img => selected[productName].has(img.image_name));
+
+    if (allSelected) {
+      // Unselect all
+      delete updated[productName];
+    } else {
+      // Select all
+      updated[productName] = new Set(images.map(img => img.image_name));
+    }
+
+    setSelected(updated);
+    propagateSelection(updated);
+  };
 
 
   return (
@@ -111,67 +116,52 @@ const isImageChecked = (productName, imageName) => {
           />
         </div>
       )}
-
       <div className="form-group">
         <div className="scrollable-product-list">
           <div className="product-list">
             {visibleProducts.length === 0 ? (
               <div className="no-products-message">No products under this patch</div>
             ) : (
-              visibleProducts.map((product) => {
-                const isExpanded = expandedProduct === product.name;
-                const isChecked = isProductChecked(product);
+              visibleProducts.map((product) => (
+                <div key={product.name} className="product-item">
+                  <div className="product-header">
+                    <div className="product-title-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={isChecked(product.name)}
+                        disabled={mode === "read"}
+                        onChange={() => handleProductToggle(product.name, product.images)}
+                      />
+                      <label>{product.name}</label>
+                    </div>
+                    <button type="button" className="expand-btn" onClick={() => toggleExpand(product.name)}>
+                      {expanded[product.name] ? "−" : "+"}
+                    </button>
+                  </div>
 
-                return (
-                  <div key={product.name} className="product-item">
-                    <div className="product-header">
-                      <div className="product-title-checkbox">
-                        {(mode !== 'read') && (
+                  {expanded[product.name] && (
+                    <div className="image-list">
+                      {product.images.map((image) => (
+                        <div key={image.image_name} className="image-item">
                           <input
                             type="checkbox"
-                            checked={isChecked}
-                            onChange={(e) => handleProductSelection(product, e.target.checked)}
+                            checked={isChecked(product.name, image.image_name)}
+                            disabled={mode === "read"}
+                            onChange={() => handleImageToggle(product.name, image)}
                           />
-                        )}
-                        <span className="product-name">{product.name}</span>
-                      </div>
-                      <button
-                        type="button"
-                        className="expand-btn"
-                        onClick={() =>
-                          setExpandedProduct(isExpanded ? null : product.name)
-                        }
-                      >
-                        {isExpanded ? '-' : '+'}
-                      </button>
+                          <label>{image.image_name}</label>
+                        </div>
+                      ))}
                     </div>
-
-                    {isExpanded && product.images && (
-                      <div className="image-list">
-                        {product.images
-                          .filter(img => (mode === 'read' ? isImageInPatch(product.name, img.image_name) : true))
-                          .map((img) => (
-                            <label key={img.image_name} className="image-item">
-                              <input
-                                type="checkbox"
-                                checked={isImageChecked(product.name, img.image_name)}
-                                disabled={checkboxesDisabled}
-                                onChange={() => handleImageToggle(product.name, img.image_name)}
-                              />
-                              {img.image_name}
-                            </label>
-                          ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })
+                  )}
+                </div>
+              ))
             )}
           </div>
         </div>
       </div>
     </>
   );
-}
+};
 
 export default ProductImageSelector;

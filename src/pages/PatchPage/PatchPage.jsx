@@ -21,10 +21,7 @@ function PatchPage() {
     const [patchData, setPatchData] = useState({});
     const [tempPatchData, setTempPatchData] = useState({});
 
-    //products
-    const [productSearchTerm, setProductSearchTerm] = useState('');
-    const [expandedProduct, setExpandedProduct] = useState(null);
-    const [selectedImages, setSelectedImages] = useState([]);
+    //products  
     const [productData, setProductData] = useState([]);
     const [selectedProducts, setSelectedProducts] = useState([]);
 
@@ -36,29 +33,7 @@ function PatchPage() {
     const [selectedJars, setSelectedJars] = useState([]);
     const [tempSelectedJars, setTempSelectedJars] = useState([]);
 
-    //for converting object into simple names and images
-    function conversion(products) {
-            const simplifiedSelectedProducts = {};
-                    products.forEach(product => {
-                        const imageNames = (product.images || []).map(image => image.image_name);
-                        simplifiedSelectedProducts[product.name] = imageNames;
-                    });
- 
-                    console.log("Simplified selected products (object):", simplifiedSelectedProducts);
- 
-                    // ✅ Convert to expected array format
-                    const convertedArray = Object.entries(simplifiedSelectedProducts).map(
-                        ([product, images]) => ({ product, images })
-                    );
- 
-                    return convertedArray;
-    }
-    function conversion_for_backend_posting(products) {
-        return products.map(({ product, images }) => ({
-            name: product,
-            images
-        }));
-    }
+    
 
     useEffect(() => {
         const fetchData = async () => {
@@ -69,28 +44,19 @@ function PatchPage() {
 
                 const patchData = await getPatchById(patchName);
                 console.log("The updated backend patch data is : ", patchData);
-                if (patchData ) {
+                if (patchData) {
                     const patch = patchData;
                     setPatchData(patch);
                     setTempPatchData(patch);
-                    
 
-                    // const selectedProds = patch.related_products || [];
-                    // const selectedImgs = patch.product_images || [];
+
                     const productImageMap = patch.products || [];
                     const highLevelScopes = patch.scopes || [];
                     const selectedJars = patch.jars || [];
-                    // console.log("patch products : :",patch.products);
-                    // setSelectedProducts(
-                    //     selectedProds.map(prodName => ({
-                    //         name: prodName,
-                    //         images: products.find(p => p.name === prodName)?.images || []
-                    //     }))
-                    // );
-                    // setSelectedImages(selectedImgs);
-
-                    setSelectedProducts(conversion(productImageMap));
-                    console.log("the current selected products : ", conversion(productImageMap));
+                    
+                    setSelectedProducts(productImageMap);
+                    console.log("the current selected products : ", selectedProducts);
+                    console.log("the current selected productimagemap : ", productImageMap);
 
 
                     //  Set high level scope labels
@@ -115,51 +81,6 @@ function PatchPage() {
 
 
 
-const handleImageToggle = (productName, imageName) => {
-  setSelectedProducts(prev => {
-    const productIndex = prev.findIndex(p => p.product === productName);
-
-    if (productIndex === -1) {
-      // Product not selected, add new with this image
-      return [...prev, { product: productName, images: [imageName] }];
-    }
-
-    const product = prev[productIndex];
-    const hasImage = product.images.includes(imageName);
-
-    if (hasImage) {
-      // Remove image from product
-      const newImages = product.images.filter(img => img !== imageName);
-
-      if (newImages.length === 0) {
-        // No images left, remove whole product
-        return prev.filter((_, i) => i !== productIndex);
-      }
-
-      // Update product images
-      return prev.map((p, i) =>
-        i === productIndex ? { ...p, images: newImages } : p
-      );
-    } else {
-      // Add image to product
-      return prev.map((p, i) =>
-        i === productIndex ? { ...p, images: [...p.images, imageName] } : p
-      );
-    }
-  });
-};
-const handleProductSelection = (product, checked) => {
-  setSelectedProducts(prev => {
-    if (checked) {
-      // Add or replace product with all its images
-      const filtered = prev.filter(p => p.product !== product.name);
-      return [...filtered, { product: product.name, images: product.images.map(img => img.image_name) }];
-    } else {
-      // Remove product
-      return prev.filter(p => p.product !== product.name);
-    }
-  });
-};
 
 
     useEffect(() => {
@@ -168,29 +89,8 @@ const handleProductSelection = (product, checked) => {
         }
     }, [isEditing]);
 
-    const handleScopeChange = (index, newValue) => {
-        const updatedScope = [...tempHighLevelScope];
-        updatedScope[index].value = newValue;
-        setTempHighLevelScope(updatedScope);
-        console.log("updated scope:", updatedScope)
-    };
+ 
 
-
-    // useEffect(() => {
-    //     const fetchProducts = async () => {
-
-    //         const data = await getAllProducts();
-    //         console.log("again products all : ", data);
-    //         if (data && data.length > 0) {
-    //             setProductData(data);
-    //         }
-    //     };
-    //     fetchProducts();
-    // }, []);
-
-    // const filteredProducts = productData.filter((product) =>
-    //     product.name.toLowerCase().includes(productSearchTerm.toLowerCase())
-    // );
 
 
 
@@ -213,11 +113,7 @@ const handleProductSelection = (product, checked) => {
 
 
 
-    // const handleJarChange = (index, field, value) => {
-    //     const updatedJars = [...tempSelectedJars];
-    //     updatedJars[index][field] = value;
-    //     setTempSelectedJars(updatedJars);
-    // };
+
 
     const getProgressValue = (state) => {
         switch (state) {
@@ -234,12 +130,21 @@ const handleProductSelection = (product, checked) => {
         // console.log("selectedImages", selectedImages);
         // console.log("temp high level data : ", tempHighLevelScope);
         // console.log("final their set ,", highLevelScope);
+          const transformedProducts = selectedProducts.map(product => ({
+            name: product.name,
+            images: product.images.map(img => ({
+                ...img,
+                ot2_pass: "Not Released",
+                registry: "Not Released",
+                helm_charts: "Not Released",
+                patch_build_number: tempPatchData.name
+            }))
+        }));
+
         try {
             const payload = {
                 ...tempPatchData,
-                // related_products: selectedProducts.map(p => p.name),
-                // product_images: selectedImages,
-                products_data:conversion_for_backend_posting(selectedProducts),
+                products_data: transformedProducts,
                 jars_data: tempSelectedJars,
                 scopes_data: tempHighLevelScope
             };
@@ -315,7 +220,7 @@ const handleProductSelection = (product, checked) => {
         return formattedDate;
     }
 
-   
+
 
     return (
         <>
@@ -431,37 +336,31 @@ const handleProductSelection = (product, checked) => {
                         onChange={e => setTempPatchData({ ...tempPatchData, description: e.target.value })}
                     />
 
-                    {!isEditing? (
+                    {!isEditing ? (
                         // Read-only mode
                         <>
                             <label>Products</label>
+                         
                             <ProductImageSelector
-                                productData={productData}
-                                selectedImages={[]}           // Not used in read mode
-                                searchTerm=""
-                                setSearchTerm={() => { }}
-                                expandedProduct={expandedProduct}
-                                setExpandedProduct={setExpandedProduct}
-                                handleProductSelection={() => { }}
-                                handleImageToggle={() => { }}
-                                patchSpecificImages={selectedProducts} // Show patch images
-                                mode="read"                        // Use mode prop instead of readOnly
+                                mode="read"
+                                products={productData}
+                                selectedProducts={selectedProducts} // images to show as selected
                             />
+
                         </>
                     ) : (
                         // Edit mode with prepopulating
+                      
                         <ProductImageSelector
-                            productData={productData}
-                            selectedImages={selectedProducts}     // Pre-selected images passed here
-                            searchTerm={productSearchTerm}
-                            setSearchTerm={setProductSearchTerm}
-                            expandedProduct={expandedProduct}
-                            setExpandedProduct={setExpandedProduct}
-                            handleProductSelection={handleProductSelection}
-                            handleImageToggle={handleImageToggle}
-                            patchSpecificImages={selectedProducts} // For filtering images in edit
-                            mode="edit-prepopulated"            // Mode set to editable with prepopulate
+                            mode="editPrepopulate"
+                            products={productData}
+                            selectedProducts={selectedProducts} // already selected images for this patch
+                            onSelectionChange={(selectedProducts) => {
+                                setSelectedProducts(selectedProducts);
+                                console.log("from patchpage parent",selectedProducts);
+                            }}
                         />
+
                     )}
 
 
