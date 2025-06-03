@@ -6,6 +6,7 @@ import EditableFieldComponent from '../../components/EditableFieldComponent';
 import ToggleButtonComponent from '../../components/ToggleButton/ToggleButton';
 import { useOutletContext } from 'react-router-dom';
 import { getPatchById } from '../../api/getPatchById';
+import { jarsUpdate } from '../../api/jars_update';
 import FilterMenu from '../../components/Filter/FilterMenu';
 import getProductCompletion from '../../api/productCompletion';
 
@@ -80,15 +81,15 @@ function PatchProgressPage() {
 
           // assign the global jars to each product
           jars: data.jars.map(jar => ({
-            jar: jar.name,
+            name: jar.name,
             version: jar.version,
             remarks: jar.remarks || '',
-            updated: 'Yes'
+            updated: jar.updated || false
           }))
         };
         return acc;
       }, {});
-      console.log("the present product map is : ", productMap);
+      // console.log("the present product map is : ", productMap);
       setProductJars(productMap);
       setFilteredProducts(productMap);
     }
@@ -153,43 +154,56 @@ function PatchProgressPage() {
                     {highlightText(productKey.toUpperCase(), searchTerm)}
                   </h2>
 
-                  <table className="product-table">
-                    <thead>
-                      <tr>
-                        <th>Jar</th>
-                        <th>Version</th>
-                        <th>Remarks</th>
-                        <th>Updated</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {jars.map((entry, jIdx) => (
-                        <tr key={jIdx}>
-                          <td>{entry.jar}</td>
-                          <td>{entry.version}</td>
-                          <td>
-                            <EditableFieldComponent
-                              value={entry.remarks || '—'}
-                              onSave={(newValue) => {
-                                entry.remarks = newValue;
-                              }}
-                            />
-                          </td>
-                          <td>
-                            <ToggleButtonComponent
-                              options={['Yes', 'No']}
-                              value={entry.updated}
-                              onToggle={(newValue) => {
-                                const updated = { ...productJars };
-                                updated[productKey].jars[jIdx].updated = newValue;
-                                setProductJars(updated);
-                              }}
-                            />
-                          </td>
+                    <table className="product-table">
+                      <thead>
+                        <tr>
+                          <th>Jar</th>
+                          <th>Version</th>
+                          <th>Remarks</th>
+                          <th>Updated</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {jars.map((entry, jIdx) => (
+                            <tr key={jIdx}>
+                              <td>{entry.name}</td>
+                              <td>{entry.version}</td>
+                              <td>
+                                <EditableFieldComponent
+                                  value={entry.remarks || '—'}
+                                  onSave={async (newValue) => {
+                                    const updatedJars = [...jars];
+                                    updatedJars[jIdx].remarks = newValue;
+                                    // console.log(jars);
+                                    // console.log("updated jars : ", updatedJars);
+                                    try {
+                                      await jarsUpdate(id, { "jars_data": updatedJars }); // PATCH request
+                                      const updated = { ...productJars };
+                                      updated[productKey].jars[jIdx].remarks = newValue;
+                                      setProductJars(updated);
+                                    } catch (error) {
+                                      console.error('Error updating remarks:', error.message);
+                                      alert('Failed to update remarks.');
+                                    }
+                                  }}
+                                />
+                              </td>
+                              <td>
+                               <ToggleButtonComponent
+                                options={['Yes', 'No']}
+                                value={entry.updated ? 'Yes' : 'No'}  // convert boolean → string
+                                onToggle={(newValue) => {
+                                  const booleanValue = newValue === 'Yes';  // convert string → boolean
+                                  const updated = { ...productJars };
+                                  updated[productKey].jars[jIdx].updated = booleanValue;
+                                  setProductJars(updated);
+                                }}
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
 
                   <div className="image-table-wrapper">
                     {/* now pass this product’s own images */}

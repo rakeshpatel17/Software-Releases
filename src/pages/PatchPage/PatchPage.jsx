@@ -14,6 +14,7 @@ import SaveButton from '../../components/Button/SaveButton';
 import exportToExcel from '../../api/exportToExcel';
 import post_patches from '../../api/post_patches';
 import put_patches from '../../api/put_patches';
+import get_patch_progress from '../../api/get_patch_progress';
 
 function PatchPage() {
     const { patchName } = useParams();
@@ -33,7 +34,16 @@ function PatchPage() {
     const [selectedJars, setSelectedJars] = useState([]);
     const [tempSelectedJars, setTempSelectedJars] = useState([]);
 
-    
+    const [progress, setProgress] = useState(null);
+    useEffect(() => {
+        const fetchProgress = async () => {
+        const result = await get_patch_progress(patchName);
+        console.log(`Patch ${patchName} progress: ${result}%`);
+        setProgress(result); // result should be a number like 33.33
+        };
+
+        if (patchName) fetchProgress();
+    }, [patchName]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -43,7 +53,7 @@ function PatchPage() {
                 setProductData(products);
 
                 const patchData = await getPatchById(patchName);
-                console.log("The updated backend patch data is : ", patchData);
+                // console.log("The updated backend patch data is : ", patchData);
                 if (patchData) {
                     const patch = patchData;
                     setPatchData(patch);
@@ -55,8 +65,8 @@ function PatchPage() {
                     const selectedJars = patch.jars || [];
                     
                     setSelectedProducts(productImageMap);
-                    console.log("the current selected products : ", selectedProducts);
-                    console.log("the current selected productimagemap : ", productImageMap);
+                    // console.log("the current selected products : ", selectedProducts);
+                    // console.log("the current selected productimagemap : ", productImageMap);
 
 
                     //  Set high level scope labels
@@ -111,18 +121,11 @@ function PatchPage() {
         setIsEditing(!isEditing);
     };
 
-
-
-
-
-    const getProgressValue = (state) => {
-        switch (state) {
-            case 'new': return 30;
-            case 'verified': return 50;
-            case 'released': return 100;
-            default: return 0;
-        }
-    };
+    // const getProgressValue = async (id) => {
+    //     const progress = await get_patch_progress(id);
+    //     console.log(`Patch ${patchName} progress: ${progress}%`);
+    //     return progress;
+    // };
     const handleSave = async (e) => {
         e.preventDefault();
         console.log("Save button clicked");
@@ -157,7 +160,7 @@ function PatchPage() {
             setHighLevelScope(tempHighLevelScope);
             setSelectedProducts(selectedProducts);
             // console.log("fetched products after save:", productData);
-            console.log("selected products after save:", selectedProducts);
+            // console.log("selected products after save:", selectedProducts);
             setIsEditing(false);
         } catch (error) {
             console.error("Failed to save patch data:", error);
@@ -312,7 +315,7 @@ function PatchPage() {
                     />
 
                     <div className="progress-container">
-                        <ProgressBar value={getProgressValue(patchData.patch_state)} label="Patch Progress" redirectTo={`/progress/${patchName}`} />
+                        <ProgressBar value={progress} label="Patch Progress" redirectTo={`/progress/${patchName}`} />
                     </div>
                     <div className="form-group">
                         <label>Patch State</label>
