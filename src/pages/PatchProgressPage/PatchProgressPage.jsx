@@ -6,39 +6,65 @@ import EditableFieldComponent from '../../components/EditableFieldComponent';
 import ToggleButtonComponent from '../../components/ToggleButton/ToggleButton';
 import { useOutletContext } from 'react-router-dom';
 import { getPatchById } from '../../api/getPatchById';
+import FilterMenu from '../../components/Filter/FilterMenu';
+import getProductCompletion from '../../api/productCompletion';
+
 
 function PatchProgressPage() {
-  const { searchTerm, setTitle } = useOutletContext(); 
+  const { searchTerm, setTitle } = useOutletContext();
   const { id } = useParams();
   const [productJars, setProductJars] = useState({});
   const [filteredProducts, setFilteredProducts] = useState({});
   const [images, setImages] = useState([]);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const data = await getPatchById(id);
-  //     console.log("the progress page data is : ", data);
+  //product complete and not complete 
+  const [filter, setFilter] = useState('all');
+  const [completedProducts, setCompletedProducts] = useState({});
+  const [notCompletedProducts, setNotCompletedProducts] = useState({});
+  const [loading, setLoading] = useState(true);
 
-  //     // Step 1: Convert jars into one product bucket (e.g., 'General')
-  //     const jarsGrouped = {
-  //       General: data.jars.map(jar => ({
-  //         jar: jar.name,
-  //         version: jar.version,
-  //         remarks: jar.remarks || '',
-  //         updated: 'Yes'
-  //       }))
-  //     };
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      const data = await getProductCompletion(id);
+      if (data) {
+        setCompletedProducts(data.completed_products || {});
+        setNotCompletedProducts(data.incomplete_products || {});
+      }
+      setLoading(false);
+    }
+    fetchData();
+  }, [id]);
 
-  //     // Step 2: Extract all images from products
-  //     const allImages = data.products.flatMap(product => product.images || []);
+  let productsToShow = {};
+  // console.log("filter:", filter);
+  // console.log("completedProducts:", completedProducts);
+  // console.log("notCompletedProducts:", notCompletedProducts);
+  // console.log("productJars:", productJars);
 
-  //     setProductJars(jarsGrouped);
-  //     setFilteredProducts(jarsGrouped);
-  //     setImages(allImages);
-  //   };
-
-  //   fetchData();
-  // }, [id]);
+  if (filter === 'completed') {
+  // Convert array to object keyed by product name lowercased
+  const completedMap = Object.fromEntries(
+    completedProducts.map(prod => [prod.name.toLowerCase(), prod])
+  );
+  // console.log("Completed Map keys:", Object.keys(completedMap));
+  
+  productsToShow = Object.fromEntries(
+    Object.entries(productJars).filter(([key]) => key in completedMap)
+  );
+} else if (filter === 'not_completed') {
+  // Convert array to object keyed by product name lowercased
+  const notCompletedMap = Object.fromEntries(
+    notCompletedProducts.map(prod => [prod.name.toLowerCase(), prod])
+  );
+  // console.log("Not Completed Map keys:", Object.keys(notCompletedMap));
+  
+  productsToShow = Object.fromEntries(
+    Object.entries(productJars).filter(([key]) => key in notCompletedMap)
+  );
+} else {
+  productsToShow = productJars;
+}
 
   useEffect(() => {
     async function fetchData() {
@@ -87,10 +113,10 @@ function PatchProgressPage() {
 
   const highlightText = (text, highlight) => {
     if (!highlight) return text;
-  
+
     const regex = new RegExp(`(${highlight})`, 'gi');
     const parts = text.split(regex);
-  
+
     return parts.map((part, i) =>
       part.toLowerCase() === highlight.toLowerCase() ? (
         <mark key={i} style={{ backgroundColor: 'yellow' }}>{part}</mark>
@@ -99,76 +125,82 @@ function PatchProgressPage() {
       )
     );
   };
-  
+
 
   useEffect(() => {
-    setTitle(`${id} Progress`);  
+    setTitle(`${id} Progress`);
   }, [id, setTitle]);
 
+  if (loading) return <div>Loading...</div>;
+
   return (
+    <div>
+      <div className="filter-menu-container">
+        <FilterMenu setFilter={setFilter} />
+      </div>
 
-        <div className="dashboard-main">
-          <div className="dashboard-header">
-            {/* <h2 className="dashboard-title">{id} Progress</h2> */}
-          </div>
-          <div className="table-scroll-wrapper">
-            {Object.entries(filteredProducts).map(([productKey, productObj], index) => {
-              const { jars, images } = productObj;
-              return (
-                <div className='patchProgress' key={index}>
-                  <div className="product-table-container">
-                    <h2>
-                      {highlightText(productKey.toUpperCase(), searchTerm)}
-                    </h2>
+      <div className="dashboard-main">
+        <div className="dashboard-header">
+          {/* <h2 className="dashboard-title">{id} Progress</h2> */}
+        </div>
+        <div className="table-scroll-wrapper">
+          {Object.entries(productsToShow).map(([productKey, productObj], index) => {
+            const { jars, images } = productObj;
+            return (
+              <div className='patchProgress' key={index}>
+                <div className="product-table-container">
+                  <h2>
+                    {highlightText(productKey.toUpperCase(), searchTerm)}
+                  </h2>
 
-                    <table className="product-table">
-                      <thead>
-                        <tr>
-                          <th>Jar</th>
-                          <th>Version</th>
-                          <th>Remarks</th>
-                          <th>Updated</th>
+                  <table className="product-table">
+                    <thead>
+                      <tr>
+                        <th>Jar</th>
+                        <th>Version</th>
+                        <th>Remarks</th>
+                        <th>Updated</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {jars.map((entry, jIdx) => (
+                        <tr key={jIdx}>
+                          <td>{entry.jar}</td>
+                          <td>{entry.version}</td>
+                          <td>
+                            <EditableFieldComponent
+                              value={entry.remarks || '—'}
+                              onSave={(newValue) => {
+                                entry.remarks = newValue;
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <ToggleButtonComponent
+                              options={['Yes', 'No']}
+                              value={entry.updated}
+                              onToggle={(newValue) => {
+                                const updated = { ...productJars };
+                                updated[productKey].jars[jIdx].updated = newValue;
+                                setProductJars(updated);
+                              }}
+                            />
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {jars.map((entry, jIdx) => (
-                            <tr key={jIdx}>
-                              <td>{entry.jar}</td>
-                              <td>{entry.version}</td>
-                              <td>
-                                <EditableFieldComponent
-                                  value={entry.remarks || '—'}
-                                  onSave={(newValue) => {
-                                    entry.remarks = newValue;
-                                  }}
-                                />
-                              </td>
-                              <td>
-                                <ToggleButtonComponent
-                                  options={['Yes', 'No']}
-                                  value={entry.updated}
-                                  onToggle={(newValue) => {
-                                  const updated = { ...productJars };
-                                  updated[productKey].jars[jIdx].updated = newValue;
-                                  setProductJars(updated);
-                                }}
-                              />
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                      ))}
+                    </tbody>
+                  </table>
 
-                    <div className="image-table-wrapper">
-                      {/* now pass this product’s own images */}
-                      <ImageTable images={images} />
-                    </div>
+                  <div className="image-table-wrapper">
+                    {/* now pass this product’s own images */}
+                    <ImageTable images={images} />
                   </div>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
         </div>
+      </div></div>
   );
 }
 
