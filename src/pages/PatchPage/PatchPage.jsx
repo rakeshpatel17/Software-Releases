@@ -21,6 +21,7 @@ function PatchPage() {
     const [isEditing, setIsEditing] = useState(false);
     const [patchData, setPatchData] = useState({});
     const [tempPatchData, setTempPatchData] = useState({});
+    const [loading, setLoading] = useState(true);
 
     //products  
     const [productData, setProductData] = useState([]);
@@ -38,7 +39,7 @@ function PatchPage() {
     useEffect(() => {
         const fetchProgress = async () => {
         const result = await get_patch_progress(patchName);
-        console.log(`Patch ${patchName} progress: ${result}%`);
+        // console.log(`Patch ${patchName} progress: ${result}%`);
         setProgress(result); // result should be a number like 33.33
         };
 
@@ -85,13 +86,10 @@ function PatchPage() {
                     })));
                 }
             }
+            setLoading(false); // Making loading false when total patch data loads
         };
         fetchData();
     }, [patchName]);
-
-
-
-
 
     useEffect(() => {
         if (isEditing) {
@@ -99,17 +97,10 @@ function PatchPage() {
         }
     }, [isEditing]);
 
- 
-
-
-
-
     useEffect(() => {
         setTempSelectedJars(selectedJars);
         setTempHighLevelScope(highLevelScope);
     }, [selectedJars, highLevelScope]);
-
-
 
     const toggleEdit = () => {
         if (isEditing) {
@@ -166,9 +157,6 @@ function PatchPage() {
             console.error("Failed to save patch data:", error);
         }
     };
-
-
-
 
     /* asks for qba while changing state to released */
     const handleStateChange = (e) => {
@@ -233,12 +221,25 @@ function PatchPage() {
                     <h2>Patch Details</h2>
                     {/* Button to export data */}
                     <div className='edit-export'>
-                        <button
+                        {/* <button
                             className="export-btn"
                             onClick={() => exportToExcel(patchData.products, `${patchName}_vulnerabilities_${getDate()}`)}
                         >
                             Export
-                        </button>
+                        </button> */}
+                        {!loading && (
+                            <button
+                            className="export-btn"
+                            onClick={() =>
+                                exportToExcel(
+                                patchData.products,
+                                `${patchName}_vulnerabilities_${getDate()}`
+                                )
+                            }
+                            >
+                            Export
+                            </button>
+                        )}
                         {patchData.patch_state !== 'released' && (
                             <button className="edit-btn" onClick={toggleEdit}>
                                 {isEditing ? 'Cancel' : 'Edit'}
