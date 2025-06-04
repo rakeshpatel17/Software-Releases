@@ -327,8 +327,7 @@ function PatchPage() {
                             onChange={handleStateChange}
                         >
                             <option value="new">New</option>
-                            <option value="rejected">Rejected</option>
-                            <option value="verified">Verified</option>
+                            <option value="cancelled">Cancelled</option>
                             <option value="released">Released</option>
                             <option value="in_progress">In progress</option>
                         </select>

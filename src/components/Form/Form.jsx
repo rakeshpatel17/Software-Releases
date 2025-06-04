@@ -437,8 +437,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                     >
                         <option value="new">New</option>
                         <option value="released">Released</option>
-                        <option value="verified">Verified</option>
-                        <option value="rejected">Rejected</option>
+                        <option value="cancelled">Cancelled</option>
                         <option value="in_progress">In progress</option>
                     </select>
                 </div>
