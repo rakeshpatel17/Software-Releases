@@ -330,6 +330,7 @@ function PatchPage() {
                             <option value="rejected">Rejected</option>
                             <option value="verified">Verified</option>
                             <option value="released">Released</option>
+                            <option value="in_progress">In progress</option>
                         </select>
                     </div>
 

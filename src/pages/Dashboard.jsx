@@ -54,9 +54,11 @@ function Dashboard() {
 
   const verified = filteredPatches.filter(p => p.badge.toLowerCase() === 'verified');
   const rejected = filteredPatches.filter(p => p.badge.toLowerCase() === 'rejected');
+  const in_progress = filteredPatches.filter(p => p.badge.toLowerCase() === 'in_progress');
 
   const displayGroups = [
     { title: 'New & Released Patches', items: newReleased },
+    { title: 'In progress Patches', items: in_progress },
     { title: 'Verified Patches', items: verified },
     { title: 'Rejected Patches', items: rejected }
   ];
