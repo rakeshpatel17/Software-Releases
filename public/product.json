@@ -1,0 +1,570 @@
+[
+  {
+    "24.2": [
+      {
+        "products_data": {
+          "name": "Server",
+          "images": [
+            {
+              "imagename": "ot-dctm-server"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "IJMS",
+          "images": [
+            {
+              "imagename": "ot-dctm-ijms"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "DFS",
+          "images": [
+            {
+              "imagename": "ot-dctm-dfs"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "CMIS",
+          "images": [
+            {
+              "imagename": "ot-dctm-cmis"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "Documentum ReST",
+          "images": [
+            {
+              "imagename": "ot-dctm-rest"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "Common",
+          "images": [
+            {
+              "imagename": "common/alpinelinux-openjdk-tomcat:dctm-alpinelinux3-temurinopenjdk17.0.15-tomcat10.1.41"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "D2",
+          "images": [
+            {
+              "imagename": "ot-dctm-d2cp-installer"
+            },
+            {
+              "imagename": "ot-dctm-d2pp-installer"
+            },
+            {
+              "imagename": "ot-dctm-d2cp-ijms"
+            },
+            {
+              "imagename": "ot-dctm-d2pp-ijms"
+            },
+            {
+              "imagename": "ot-dctm-d2cp-rest"
+            },
+            {
+              "imagename": "ot-dctm-d2pp-rest"
+            },
+            {
+              "imagename": "ot-dctm-d2cp-smartview"
+            },
+            {
+              "imagename": "ot-dctm-d2pp-smartview"
+            },
+            {
+              "imagename": "ot-dctm-d2cp-config"
+            },
+            {
+              "imagename": "ot-dctm-d2pp-config"
+            },
+            {
+              "imagename": "ot-dctm-d2cp-classic"
+            },
+            {
+              "imagename": "ot-dctm-d2pp-classic"
+            },
+            {
+              "imagename": "ot-dctm-d2-mobile-init-container"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "WFD",
+          "images": [
+            {
+              "imagename": "ot-dctm-workflow-designer"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "PE",
+          "images": [
+            {
+              "imagename": "ot-dctm-xcp-installer"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "DA",
+          "images": [
+            {
+              "imagename": "ot-dctm-admin"
+            },
+            {
+              "imagename": "ot-dctm-admin-tomcat"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "Records",
+          "images": [
+            {
+              "imagename": "ot-dctm-records"
+            },
+            {
+              "imagename": "ot-dctm-records-darinstallation"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "RQM",
+          "images": [
+            {
+              "imagename": "ot-dctm-rqm"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "Content Connect",
+          "images": [
+            {
+              "imagename": "ot-dctm-content-connect"
+            },
+            {
+              "imagename": "ot-dctm-content-connect-dbinit"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "CC Smartview",
+          "images": [
+            {
+              "imagename": "ot-dctm-smartviewm365-ns"
+            },
+            {
+              "imagename": "ot-dctm-smartviewm365customjar"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "Documentum Search",
+          "images": [
+            {
+              "imagename": "ot-dctm-search-admin"
+            },
+            {
+              "imagename": "ot-coresearch-api"
+            },
+            {
+              "imagename": "ot-dctm-content-fetcher"
+            },
+            {
+              "imagename": "ot-dctm-index-agent"
+            },
+            {
+              "imagename": "ot-coresearch-indexer"
+            },
+            {
+              "imagename": "ot-dctm-search-parser"
+            },
+            {
+              "imagename": "ot-dctm-search-agent"
+            },
+            {
+              "imagename": "ot-dctm-zk-status-checker"
+            },
+            {
+              "imagename": "ot-dctm-solr"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "DCC",
+          "images": [
+            {
+              "imagename": "ot-dctm-dcc-consul"
+            },
+            {
+              "imagename": "ot-dctm-dcc-dbschema"
+            },
+            {
+              "imagename": "ot-dctm-dcc-metadataservice"
+            },
+            {
+              "imagename": "ot-dctm-dcc-corenotificationservice"
+            },
+            {
+              "imagename": "ot-dctm-dcc-syncagent"
+            },
+            {
+              "imagename": "ot-dctm-dcc-syncnshare-manual"
+            },
+            {
+              "imagename": "ot-dctm-dcc-mailservice"
+            },
+            {
+              "imagename": "ot-dctm-dcc-darinitcontainer"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "Documentum SAP Connectors",
+          "images": [
+            {
+              "imagename": "artifactory.otxlab.net/cs-sapc-docker-rel/dctm-assap"
+            },
+            {
+              "imagename": "artifactory.otxlab.net/cs-sapc-docker-rel/dctm-cssap"
+            },
+            {
+              "imagename": "artifactory.otxlab.net/cs-sapc-docker-rel/dctm-assap-ilm"
+            },
+            {
+              "imagename": "artifactory.otxlab.net/cs-sapc-docker-rel/dctm-admin-sapconnector"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "Advanced Workflow",
+          "images": [
+            {
+              "imagename": "ot-dctm-xcp-apphost"
+            },
+            {
+              "imagename": "ot-dctm-xcp-bps"
+            },
+            {
+              "imagename": "ot-dctm-xcp-xda"
+            },
+            {
+              "imagename": "ot-dctm-xcp-xda-tools"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "24.4": [
+      {
+        "products_data": {
+          "name": "Server",
+          "images": [
+            {
+              "imagename": "ot-dctm-server"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "IJMS",
+          "images": [
+            {
+              "imagename": "ot-dctm-ijms"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "DFS",
+          "images": [
+            {
+              "imagename": "ot-dctm-dfs"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "CMIS",
+          "images": [
+            {
+              "imagename": "ot-dctm-cmis"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "Documentum ReST",
+          "images": [
+            {
+              "imagename": "ot-dctm-restart"
+            },
+            {
+              "imagename": "ot-dctm-rest"
+            },
+            {
+              "imagename": "ot-dctm-tomcat"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "Common",
+          "images": [
+            {
+              "imagename": "common/alpinelinux-openjdk-tomcat:dctm-alpinelinux3-temurinopenjdk17.0.14-tomcat10.1.36"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "D2",
+          "images": [
+            {
+              "imagename": "ot-dctm-client-installer"
+            },
+            {
+              "imagename": "ot-dctm-client-config"
+            },
+            {
+              "imagename": "ot-dctm-client-classic"
+            },
+            {
+              "imagename": "ot-dctm-client-rest"
+            },
+            {
+              "imagename": "ot-dctm-client-smartview"
+            },
+            {
+              "imagename": "ot-dctm-client-ijms"
+            },
+            {
+              "imagename": "ot-dctm-client-mobile"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "WFD",
+          "images": [
+            {
+              "imagename": "ot-dctm-workflow-designer"
+            },
+            {
+              "imagename": "ot-dctm-xcp-installer"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "DA",
+          "images": [
+            {
+              "imagename": "ot-dctm-admin"
+            },
+            {
+              "imagename": "ot-dctm-admin-tomcat"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "Records",
+          "images": [
+            {
+              "imagename": "ot-dctm-records"
+            },
+            {
+              "imagename": "ot-dctm-records-darinstallation"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "RQM",
+          "images": [
+            {
+              "imagename": "ot-dctm-rqm"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "Content Connect",
+          "images": [
+            {
+              "imagename": "ot-dctm-content-connect"
+            },
+            {
+              "imagename": "ot-dctm-content-connect-dbinit"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "CC Smartview",
+          "images": [
+            {
+              "imagename": "ot-dctm-smartviewm365-ns"
+            },
+            {
+              "imagename": "ot-dctm-smartviewm365-customjar"
+            },
+            {
+              "imagename": "ot-dctm-smartviewm365"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "Documentum Search",
+          "images": [
+            {
+              "imagename": "ot-dctm-search-admin"
+            },
+            {
+              "imagename": "ot-coresearch-api"
+            },
+            {
+              "imagename": "ot-dctm-content-fetcher"
+            },
+            {
+              "imagename": "ot-dctm-index-agent"
+            },
+            {
+              "imagename": "ot-coresearch-indexer"
+            },
+            {
+              "imagename": "ot-dctm-search-parser"
+            },
+            {
+              "imagename": "ot-dctm-search-agent"
+            },
+            {
+              "imagename": "ot-dctm-solr"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "DCC",
+          "images": [
+            {
+              "imagename": "ot-dctm-dcc-consul"
+            },
+            {
+              "imagename": "ot-dctm-dcc-dbschema"
+            },
+            {
+              "imagename": "ot-dctm-dcc-metadataservice"
+            },
+            {
+              "imagename": "ot-dctm-dcc-corenotificationservice"
+            },
+            {
+              "imagename": "ot-dctm-dcc-syncagent"
+            },
+            {
+              "imagename": "ot-dctm-dcc-syncnshare-manual"
+            },
+            {
+              "imagename": "ot-dctm-dcc-mailservice"
+            },
+            {
+              "imagename": "ot-dctm-dcc-darinitcontainer"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "Documentum SAP Connectors",
+          "images": [
+            {
+              "imagename": "dctm-assap"
+            },
+            {
+              "imagename": "dctm-assap-ilm"
+            },
+            {
+              "imagename": "dctm-admin-sapconnector"
+            },
+            {
+              "imagename": "dctm-cssap"
+            }
+          ]
+        }
+      },
+      {
+        "products_data": {
+          "name": "Advanced Workflow",
+          "images": [
+            {
+              "imagename": "ot-dctm-bps"
+            },
+            {
+              "imagename": "ot-dctm-xda"
+            },
+            {
+              "imagename": "ot-dctm-xda-tools"
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

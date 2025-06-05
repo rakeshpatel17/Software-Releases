@@ -22,6 +22,10 @@ function PatchPage() {
     const [patchData, setPatchData] = useState({});
     const [tempPatchData, setTempPatchData] = useState({});
 
+
+    const [selectedRelease, setSelectedRelease] = useState("");
+    const [versionName, SetversionName] = useState("");
+
     //products  
     const [productData, setProductData] = useState([]);
     const [selectedProducts, setSelectedProducts] = useState([]);
@@ -37,9 +41,9 @@ function PatchPage() {
     const [progress, setProgress] = useState(null);
     useEffect(() => {
         const fetchProgress = async () => {
-        const result = await get_patch_progress(patchName);
-        console.log(`Patch ${patchName} progress: ${result}%`);
-        setProgress(result); // result should be a number like 33.33
+            const result = await get_patch_progress(patchName);
+            console.log(`Patch ${patchName} progress: ${result}%`);
+            setProgress(result); // result should be a number like 33.33
         };
 
         if (patchName) fetchProgress();
@@ -50,7 +54,17 @@ function PatchPage() {
             const products = await getAllProducts();
             // console.log("all products getting :  ",products);
             if (products && products.length > 0) {
-                setProductData(products);
+                let releaseObj;
+                if (selectedRelease) {
+                    releaseObj = products.find(obj => Object.keys(obj)[0] === selectedRelease);
+                }
+                if (!releaseObj) releaseObj = products[0]; // fallback
+
+                const releaseKey = Object.keys(releaseObj)[0];
+                const releaseProducts = releaseObj[releaseKey];
+
+                setSelectedRelease(releaseKey);
+                setProductData(releaseProducts);
 
                 const patchData = await getPatchById(patchName);
                 // console.log("The updated backend patch data is : ", patchData);
@@ -63,7 +77,7 @@ function PatchPage() {
                     const productImageMap = patch.products || [];
                     const highLevelScopes = patch.scopes || [];
                     const selectedJars = patch.jars || [];
-                    
+
                     setSelectedProducts(productImageMap);
                     // console.log("the current selected products : ", selectedProducts);
                     // console.log("the current selected productimagemap : ", productImageMap);
@@ -99,7 +113,7 @@ function PatchPage() {
         }
     }, [isEditing]);
 
- 
+
 
 
 
@@ -133,7 +147,7 @@ function PatchPage() {
         // console.log("selectedImages", selectedImages);
         // console.log("temp high level data : ", tempHighLevelScope);
         // console.log("final their set ,", highLevelScope);
-          const transformedProducts = selectedProducts.map(product => ({
+        const transformedProducts = selectedProducts.map(product => ({
             name: product.name,
             images: product.images.map(img => ({
                 ...img,
@@ -224,6 +238,18 @@ function PatchPage() {
     }
 
 
+    const transformedProducts = productData.map(item => ({
+        name: item.products_data.name,
+        images: item.products_data.images.map(img => ({
+            image_name: img.imagename
+        }))
+    }));
+    const handleReleaseChange = (newRelease) => {
+        // For example, update a state that triggers fetching products
+        setSelectedRelease(newRelease);
+    };
+
+
 
     return (
         <>
@@ -255,7 +281,11 @@ function PatchPage() {
                                 type="text"
                                 value={tempPatchData.release || ''}
                                 disabled={!isEditing}
-                                onChange={e => setTempPatchData({ ...tempPatchData, release: e.target.value })}
+                                onChange={e => {
+                                    const newRelease = e.target.value;
+                                    setTempPatchData({ ...tempPatchData, release: newRelease });
+                                    handleReleaseChange(newRelease);
+                                }}
                             />
                         </div>
                         <div className="form-group">
@@ -343,24 +373,25 @@ function PatchPage() {
                         // Read-only mode
                         <>
                             <label>Products</label>
-                         
+
                             <ProductImageSelector
+                                
                                 mode="read"
-                                products={productData}
+                                products={transformedProducts}
                                 selectedProducts={selectedProducts} // images to show as selected
                             />
 
                         </>
                     ) : (
                         // Edit mode with prepopulating
-                      
+
                         <ProductImageSelector
                             mode="editPrepopulate"
-                            products={productData}
+                            products={transformedProducts}
                             selectedProducts={selectedProducts} // already selected images for this patch
                             onSelectionChange={(selectedProducts) => {
                                 setSelectedProducts(selectedProducts);
-                                console.log("from patchpage parent",selectedProducts);
+                                console.log("from patchpage parent", selectedProducts);
                             }}
                         />
 

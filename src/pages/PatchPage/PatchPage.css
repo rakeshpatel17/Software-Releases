@@ -1,4 +1,4 @@
-.patch-page {
+/* .patch-page {
     max-width: 1050px;
     width: 100%; 
     margin: 2rem auto;
@@ -11,6 +11,19 @@
 
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
+    font-family: 'Segoe UI', sans-serif;
+    box-sizing: border-box;
+} */
+ .patch-page {
+    width: 90%;                /* Takes 90% of the screen width */
+    max-width: 95vw;           /* Ensures it doesn’t exceed the viewport */
+    margin: 2rem auto;
+    padding: 2rem;
+    
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    
     font-family: 'Segoe UI', sans-serif;
     box-sizing: border-box;
 }

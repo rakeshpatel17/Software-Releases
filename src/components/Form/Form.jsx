@@ -1,4 +1,4 @@
-
+import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import './Form.css';
 import get_release from '../../api/release';
@@ -36,6 +36,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
     const [releaseList, setReleaseList] = useState([]);
     const [productData, setProductData] = useState([]);
     const [selectedProducts, setSelectedProducts] = useState([]);
+    const [selectedRelease, setSelectedRelease] = useState(""); 
 
 
     // JAR-specific state
@@ -100,16 +101,39 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         fetchReleases();
     }, [lockedRelease]);
 
-    //product
+    //  product
     useEffect(() => {
         const fetchProducts = async () => {
             const data = await getAllProducts();
             if (data && data.length > 0) {
-                setProductData(data);
+                let releaseObj;
+                if (selectedRelease) {
+                    releaseObj = data.find(obj => Object.keys(obj)[0] === selectedRelease);
+                }
+                if (!releaseObj) releaseObj = data[0]; // fallback
+
+                const releaseKey = Object.keys(releaseObj)[0];
+                const releaseProducts = releaseObj[releaseKey];
+
+                setSelectedRelease(releaseKey); setProductData(releaseProducts);
+                console.log("productdata", data)
+
             }
-        };
+
+        }
+
+
         fetchProducts();
-    }, []);
+    }, [selectedRelease]);
+
+// const handleChange = (e) => {
+//   setSelectedRelease(e.target.value);
+//   // also update formData if you use it
+// };
+
+
+
+
 
     //jars
     useEffect(() => {
@@ -129,11 +153,12 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
             ...prevData,
             [name]: type === 'checkbox' ? checked : value,
         }));
+         if (name === "release") {
+        setSelectedRelease(value); 
+  }
     };
 
-  
-
-
+          const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -184,6 +209,9 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         try {
             console.log("Final Form Data to send:", finalData);
             const response = await post_patches(finalData);
+            navigate(`/patches/${formData.name}`, {
+                state: { patch: finalData }
+            });
         } catch (error) {
             console.error('Error while posting to database:', error);
         }
@@ -253,6 +281,12 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         }
     }, [formData.release_date]);
 
+    const transformedProducts = productData.map(item => ({
+        name: item.products_data.name,
+        images: item.products_data.images.map(img => ({
+            image_name: img.imagename
+        }))
+    }));
 
 
     return (
@@ -458,10 +492,11 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
 
                     </div>
                 </div>
-        
+
                 <ProductImageSelector
                     mode="editEmpty"
-                    products={productData}
+                    products={transformedProducts}
+                    selectedRelease={selectedRelease}
                     selectedProducts={[]}
                     onSelectionChange={(selectedProducts) => {
                         setSelectedProducts(selectedProducts);

@@ -1,4 +1,4 @@
-.form-container {
+/* .form-container {
   width: 100%;
   max-width: 1050px;
   margin: 2rem auto;
@@ -10,7 +10,24 @@
   flex-direction: column;
   gap: 1rem;
   box-sizing: border-box;
+} */
+ .form-container {
+  width: 90%;                   /* Fluid width relative to screen */
+  max-width: 95vw;              /* Prevents it from exceeding viewport width */
+  margin: 2rem auto;
+  padding: 2rem;
+  
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  box-sizing: border-box;
 }
+
 
 .form-group {
   display: flex;

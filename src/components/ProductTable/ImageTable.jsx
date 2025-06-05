@@ -4,6 +4,8 @@ import './ImageTable.css'; // separate styling
 import EditableFieldComponent from '../EditableFieldComponent';
 import ToggleButtonComponent from '../ToggleButton/ToggleButton';
 import get_security_issues from '../../api/securityIssues';
+import { securityIssuesUpdate } from '../../api/updateIssuesdes';
+import { getPatchById } from '../../api/getPatchById';
 
 function highlightMatch(text, term) {
     if (!term) return text;
@@ -17,12 +19,12 @@ function highlightMatch(text, term) {
     );
 }
 
-function ImageTable({ images, searchTerm }) {
+function ImageTable({ images, patchname, searchTerm }) {
     const [expandedRows, setExpandedRows] = useState({});
     // const [editingIndex, setEditingIndex] = useState(null);
     // const [editedDescription, setEditedDescription] = useState('');
 
-
+    // console.log("data",images)
 
     const toggleRow = (idx) => {
         setExpandedRows((prev) => ({
@@ -74,6 +76,28 @@ function ImageTable({ images, searchTerm }) {
         const matchIndex = options.findIndex(opt => opt.toLowerCase() === dbValue?.toLowerCase());
         return matchIndex !== -1 ? options[matchIndex] : 'Not Released'; // Default fallback
     };
+
+
+    const [patchData, setPatchData] = useState(null);
+    const [Productsdata, setProductsdata] = useState(null);
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const data = await getPatchById(patchname); // assuming this returns the JSON you posted
+                console.log('🔄 Full patch data:', data);
+
+                // Extract products_data
+                const products_data = data.products;
+                setPatchData(data);
+                setProductsdata(products_data)
+                console.log(' Products data:', products_data);
+            } catch (error) {
+                console.error(' Error fetching patch data:', error);
+            }
+        }
+
+        fetchData();
+    }, [patchname]);
 
 
 
@@ -167,14 +191,42 @@ function ImageTable({ images, searchTerm }) {
                                                                 <td>{issue.library_path}</td>
                                                                 <td>
                                                                     <EditableFieldComponent
-                                                                        value={issue.description}
-                                                                        onSave={(newValue) => {
-                                                                            const updatedIssues = [...img.security_issues];
-                                                                            updatedIssues[index].description = newValue;
-                                                                            img.security_issues = updatedIssues;
+                                                                        value={
+                                                                            Productsdata.find(p => p.name === img.product)?.product_security_des || '—'
+                                                                        }
+                                                                        onSave={async (newValue) => {
+                                                                            const updatedProducts = [...Productsdata]; // shallow copy
+
+                                                                            // Find product that contains this image
+                                                                            const productIndex = updatedProducts.findIndex(p =>
+                                                                                p.images.some(i =>
+                                                                                    i.image_name === img.image_name &&
+                                                                                    i.patch_build_number === img.patch_build_number
+                                                                                )
+                                                                            );
+
+                                                                            if (productIndex !== -1) {
+                                                                                updatedProducts[productIndex].product_security_des = newValue;
+
+                                                                                try {
+                                                                                    await securityIssuesUpdate(patchname, { products_data: updatedProducts });
+
+                                                                                    // 🔁 REFRESH DATA FROM BACKEND
+                                                                                    const refreshed = await getPatchById(patchname);
+                                                                                    setProductsdata(refreshed.products);
+                                                                                    console.log(" Refreshed Products:", refreshed.products);
+                                                                                } catch (error) {
+                                                                                    console.error("Error updating product_security_des:", error.message);
+                                                                                    alert("Update failed");
+                                                                                }
+                                                                            } else {
+                                                                                console.warn(" Product not found for image", img.image_name);
+                                                                            }
                                                                         }}
+
                                                                     />
                                                                 </td>
+
                                                             </tr>
                                                         ))}
                                                     </tbody>

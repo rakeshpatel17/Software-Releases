@@ -9,6 +9,7 @@ import { getPatchById } from '../../api/getPatchById';
 import { jarsUpdate } from '../../api/jars_update';
 import FilterMenu from '../../components/Filter/FilterMenu';
 import getProductCompletion from '../../api/productCompletion';
+import LoadingSpinner from '../../components/Loading/LoadingSpinner';
 
 
 function PatchProgressPage() {
@@ -24,6 +25,9 @@ function PatchProgressPage() {
   const [notCompletedProducts, setNotCompletedProducts] = useState({});
   const [loading, setLoading] = useState(true);
 
+  const [patch, setPatch] = useState(null);
+
+
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
@@ -38,34 +42,26 @@ function PatchProgressPage() {
   }, [id]);
 
   let productsToShow = {};
-  // console.log("filter:", filter);
-  // console.log("completedProducts:", completedProducts);
-  // console.log("notCompletedProducts:", notCompletedProducts);
-  // console.log("productJars:", productJars);
 
-  if (filter === 'completed') {
-  // Convert array to object keyed by product name lowercased
+if (filter === 'completed') {
   const completedMap = Object.fromEntries(
     completedProducts.map(prod => [prod.name.toLowerCase(), prod])
   );
-  // console.log("Completed Map keys:", Object.keys(completedMap));
-  
   productsToShow = Object.fromEntries(
     Object.entries(productJars).filter(([key]) => key in completedMap)
   );
 } else if (filter === 'not_completed') {
-  // Convert array to object keyed by product name lowercased
   const notCompletedMap = Object.fromEntries(
     notCompletedProducts.map(prod => [prod.name.toLowerCase(), prod])
   );
-  // console.log("Not Completed Map keys:", Object.keys(notCompletedMap));
-  
   productsToShow = Object.fromEntries(
     Object.entries(productJars).filter(([key]) => key in notCompletedMap)
   );
 } else {
   productsToShow = productJars;
 }
+
+
 
   useEffect(() => {
     async function fetchData() {
@@ -92,6 +88,7 @@ function PatchProgressPage() {
       // console.log("the present product map is : ", productMap);
       setProductJars(productMap);
       setFilteredProducts(productMap);
+      setPatch(data);
     }
 
     fetchData();
@@ -132,7 +129,16 @@ function PatchProgressPage() {
     setTitle(`${id} Progress`);
   }, [id, setTitle]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <LoadingSpinner />;
+
+  if (!loading && Object.keys(productsToShow).length === 0) {
+  return (
+    <div style={{ marginTop: '100px', textAlign: 'center', fontSize: '18px' }}>
+      No products to show .
+    </div>
+  );
+}
+
 
   return (
     <div>
@@ -207,7 +213,7 @@ function PatchProgressPage() {
 
                   <div className="image-table-wrapper">
                     {/* now pass this product’s own images */}
-                    <ImageTable images={images} />
+                    <ImageTable images={images} patchname={patch?.name}/>
                   </div>
                 </div>
               </div>

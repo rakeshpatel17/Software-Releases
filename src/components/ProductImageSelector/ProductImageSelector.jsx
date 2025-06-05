@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./ProductImageSelector.css";
 
-const ProductImageSelector = ({ mode, products = [], selectedProducts = [], onSelectionChange }) => {
+const ProductImageSelector = ({ mode, products = [], release, selectedProducts = [], onSelectionChange }) => {
   const [selected, setSelected] = useState({});
   const [expanded, setExpanded] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
@@ -10,18 +10,19 @@ const ProductImageSelector = ({ mode, products = [], selectedProducts = [], onSe
 
 
 
-  // console.log("product data in child ", products);
-  // console.log("selectedproducts in child ", selectedProducts);
+  console.log("product data in child ", products);
+  console.log("release ", release)
+  console.log("selectedproducts in child ", selectedProducts);
   // Filter products based on search term
   const visibleProducts =
-  mode === "read"
-    ? selectedProducts
-    : products.filter(product =>
+    mode === "read"
+      ? selectedProducts
+      : products.filter(product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
 
 
-      
+
   useEffect(() => {
     if (mode === "editPrepopulate") {
       const initSelected = {};
@@ -76,7 +77,12 @@ const ProductImageSelector = ({ mode, products = [], selectedProducts = [], onSe
       const productObj = products.find((p) => p.name === productName);
       return {
         name: productName,
-        images: productObj.images.filter((img) => imageSet.has(img.image_name)),
+        images: productObj.images
+          .filter((img) => imageSet.has(img.image_name))
+          .map(img => ({
+            ...img,
+            // build_number: patchName,  
+          })),
       };
     });
     onSelectionChange(selectedList);
