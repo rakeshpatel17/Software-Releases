@@ -47,19 +47,19 @@
   font-size: 0.75rem;
   margin-bottom: 0.5rem;
 }
-.card-badge.verified {
-  background-color: #2ecc71; /* green */
-}
 
 .card-badge.new {
   background-color: #3498db; /* blue */
 }
 
-.card-badge.rejected {
+.card-badge.cancelled {
   background-color: #e74c3c; /* red */
 }
 .card-badge.released {
   background-color: #0c7724; /* red */
+}
+.card-badge.in_progress{
+  background-color: #2ecc71;;
 }
 
 
