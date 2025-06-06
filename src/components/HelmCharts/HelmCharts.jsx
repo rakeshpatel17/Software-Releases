@@ -10,10 +10,11 @@ const HelmCharts = ({ product }) => {
     const matchIndex = options.findIndex(opt => opt.toLowerCase() === dbValue?.toLowerCase());
     return matchIndex !== -1 ? options[matchIndex] : 'Not Released';
   };
-
+  console.log("product in helm",product)
   useEffect(() => {
-    if (product?.images) {
-      setToggleHelmValues(product.images.map(img => getToggleValue(img.helm_charts)));
+    // Instead of mapping images, just set one toggle value for product.helm_charts
+    if (product?.helm_charts !== undefined) {
+      setToggleHelmValues([getToggleValue(product.helm_charts)]);
     } else {
       setToggleHelmValues([]);
     }
@@ -35,18 +36,17 @@ const HelmCharts = ({ product }) => {
       <table className="helm-charts-table">
         <thead>
           <tr>
-
             <th>Helm Chart</th>
           </tr>
         </thead>
         <tbody>
-          {product.images && product.images.length > 0 ? (
-            product.images.map((img, idx) => (
+          {toggleHelmValues.length > 0 ? (
+            toggleHelmValues.map((val, idx) => (
               <tr key={idx}>
                 <td>
                   <ToggleButtonComponent
                     options={['Released', 'Not Released', 'Not Applicable']}
-                    value={toggleHelmValues[idx]}
+                    value={val}
                     onToggle={(newValue) => handleHelmToggle(idx, newValue)}
                   />
                 </td>
@@ -54,7 +54,7 @@ const HelmCharts = ({ product }) => {
             ))
           ) : (
             <tr>
-              <td colSpan="2" style={{ textAlign: 'center' }}>
+              <td colSpan="1" style={{ textAlign: 'center' }}>
                 No Helm Chart data found.
               </td>
             </tr>
