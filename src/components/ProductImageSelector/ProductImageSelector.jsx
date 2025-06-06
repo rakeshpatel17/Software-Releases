@@ -138,7 +138,9 @@ const ProductImageSelector = ({ mode, products = [], release, selectedProducts =
                         disabled={mode === "read"}
                         onChange={() => handleProductToggle(product.name, product.images)}
                       />
-                      <label>{product.name}</label>
+
+                      <label onClick={() => toggleExpand(product.name)}
+                        style={{ cursor: "pointer", userSelect: "none", marginLeft: "8px" }}>{product.name}</label>
                     </div>
                     <button type="button" className="expand-btn" onClick={() => toggleExpand(product.name)}>
                       {expanded[product.name] ? "−" : "+"}

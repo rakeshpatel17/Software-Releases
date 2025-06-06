@@ -110,7 +110,7 @@ function ImageTable({ images, patchname, searchTerm }) {
                     <th>Build Number</th>
                     <th>Registery</th>
                     <th>OT2 Pass</th>
-                    <th>Helm Charts</th>
+                    {/* <th>Helm Charts</th> */}
                     <th>Status</th>
                     <th>More Details</th>
                 </tr>
@@ -135,13 +135,13 @@ function ImageTable({ images, patchname, searchTerm }) {
                                     value={toggleRegisteryValues[idx]}
                                     onToggle={(newValue) => handleRegisteryToggle(idx, newValue)}
                                 /></td>
-                            <td>
+                            {/* <td>
                                 <ToggleButtonComponent
                                     options={['Released', 'Not Released', 'Not Applicable']}
                                     value={toggleHelmValues[idx]}
                                     onToggle={(newValue) => handleHelmToggle(idx, newValue)}
                                 />
-                            </td>
+                            </td> */}
                             <td>
                                 {img.twistlock_report_clean ? (
                                     <span style={{ color: 'green', fontWeight: 'bold' }}> ✔ Success </span>
@@ -157,7 +157,7 @@ function ImageTable({ images, patchname, searchTerm }) {
                         </tr>
                         {expandedRows[idx] && (
                             <tr>
-                                <td colSpan="7">
+                                <td colSpan="6">
                                     <div className="expanded-content">
 
                                         <p style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>

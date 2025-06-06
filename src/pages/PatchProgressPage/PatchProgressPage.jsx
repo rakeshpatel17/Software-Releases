@@ -10,6 +10,7 @@ import { jarsUpdate } from '../../api/jars_update';
 import FilterMenu from '../../components/Filter/FilterMenu';
 import getProductCompletion from '../../api/productCompletion';
 import LoadingSpinner from '../../components/Loading/LoadingSpinner';
+import HelmCharts from '../../components/HelmCharts/HelmCharts';
 
 
 function PatchProgressPage() {
@@ -43,23 +44,23 @@ function PatchProgressPage() {
 
   let productsToShow = {};
 
-if (filter === 'completed') {
-  const completedMap = Object.fromEntries(
-    completedProducts.map(prod => [prod.name.toLowerCase(), prod])
-  );
-  productsToShow = Object.fromEntries(
-    Object.entries(productJars).filter(([key]) => key in completedMap)
-  );
-} else if (filter === 'not_completed') {
-  const notCompletedMap = Object.fromEntries(
-    notCompletedProducts.map(prod => [prod.name.toLowerCase(), prod])
-  );
-  productsToShow = Object.fromEntries(
-    Object.entries(productJars).filter(([key]) => key in notCompletedMap)
-  );
-} else {
-  productsToShow = productJars;
-}
+  if (filter === 'completed') {
+    const completedMap = Object.fromEntries(
+      completedProducts.map(prod => [prod.name.toLowerCase(), prod])
+    );
+    productsToShow = Object.fromEntries(
+      Object.entries(productJars).filter(([key]) => key in completedMap)
+    );
+  } else if (filter === 'not_completed') {
+    const notCompletedMap = Object.fromEntries(
+      notCompletedProducts.map(prod => [prod.name.toLowerCase(), prod])
+    );
+    productsToShow = Object.fromEntries(
+      Object.entries(productJars).filter(([key]) => key in notCompletedMap)
+    );
+  } else {
+    productsToShow = productJars;
+  }
 
 
 
@@ -132,12 +133,39 @@ if (filter === 'completed') {
   if (loading) return <LoadingSpinner />;
 
   if (!loading && Object.keys(productsToShow).length === 0) {
-  return (
-    <div style={{ marginTop: '100px', textAlign: 'center', fontSize: '18px' }}>
-      No products to show .
-    </div>
-  );
-}
+    return (
+      <div style={{ marginTop: '100px', textAlign: 'center', fontSize: '18px' }}>
+        No products to show .
+      </div>
+    );
+  }
+
+  const handleRefresh = async () => {
+    try {
+      const data = await getPatchById(id);
+      const productMap = data.products.reduce((acc, prod) => {
+        const key = prod.name.toLowerCase();
+        acc[key] = {
+          images: prod.images,
+          jars: data.jars.map(jar => ({
+            name: jar.name,
+            version: jar.version,
+            remarks: jar.remarks || '',
+            updated: jar.updated || false,
+          })),
+        };
+        return acc;
+      }, {});
+      console.log("in handle refresh",productMap)
+      setProductJars(productMap);
+      setFilteredProducts(productMap);
+      setPatch(data);
+    } catch (error) {
+      console.error('Error refreshing data:', error.message);
+      alert('Failed to refresh jars.');
+    }
+  };
+
 
 
   return (
@@ -156,64 +184,77 @@ if (filter === 'completed') {
             return (
               <div className='patchProgress' key={index}>
                 <div className="product-table-container">
-                  <h2>
-                    {highlightText(productKey.toUpperCase(), searchTerm)}
-                  </h2>
+                  <div className="d-flex align-items-center mb-3" style={{ position: 'relative' }}>
+                    <h2 className="mb-0 mx-auto">
+                      {highlightText(productKey.toUpperCase(), searchTerm)}
+                    </h2>
+                    <button
+                      onClick={handleRefresh}
+                      className="btn p-0 bg-transparent border-0"
+                      title="Refresh"
+                      style={{ position: 'absolute', right: '3px' ,marginRight:'3px'}}
+                    >
+                      <i className="bi bi-arrow-clockwise fs-5"></i>
+                    </button>
+                  </div>
 
-                    <table className="product-table">
-                      <thead>
-                        <tr>
-                          <th>Jar</th>
-                          <th>Version</th>
-                          <th>Remarks</th>
-                          <th>Updated</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {jars.map((entry, jIdx) => (
-                            <tr key={jIdx}>
-                              <td>{entry.name}</td>
-                              <td>{entry.version}</td>
-                              <td>
-                                <EditableFieldComponent
-                                  value={entry.remarks || '—'}
-                                  onSave={async (newValue) => {
-                                    const updatedJars = [...jars];
-                                    updatedJars[jIdx].remarks = newValue;
-                                    // console.log(jars);
-                                    // console.log("updated jars : ", updatedJars);
-                                    try {
-                                      await jarsUpdate(id, { "jars_data": updatedJars }); // PATCH request
-                                      const updated = { ...productJars };
-                                      updated[productKey].jars[jIdx].remarks = newValue;
-                                      setProductJars(updated);
-                                    } catch (error) {
-                                      console.error('Error updating remarks:', error.message);
-                                      alert('Failed to update remarks.');
-                                    }
-                                  }}
-                                />
-                              </td>
-                              <td>
-                               <ToggleButtonComponent
-                                options={['Yes', 'No']}
-                                value={entry.updated ? 'Yes' : 'No'}  // convert boolean → string
-                                onToggle={(newValue) => {
-                                  const booleanValue = newValue === 'Yes';  // convert string → boolean
+                      <div className="image-table-wrapper">
+                    <HelmCharts  product={productObj} />
+                  </div>
+                  <table className="product-table">
+                    <thead>
+                      <tr>
+                        <th>Jar</th>
+                        <th>Version</th>
+                        <th>Remarks</th>
+                        <th>Updated</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {jars.map((entry, jIdx) => (
+                        <tr key={jIdx}>
+                          <td>{entry.name}</td>
+                          <td>{entry.version}</td>
+                          <td>
+                            <EditableFieldComponent
+                              value={entry.remarks || '—'}
+                              onSave={async (newValue) => {
+                                const updatedJars = [...jars];
+                                updatedJars[jIdx].remarks = newValue;
+                                // console.log(jars);
+                                // console.log("updated jars : ", updatedJars);
+                                try {
+                                  await jarsUpdate(id, { "jars_data": updatedJars }); // PATCH request
                                   const updated = { ...productJars };
-                                  updated[productKey].jars[jIdx].updated = booleanValue;
+                                  updated[productKey].jars[jIdx].remarks = newValue;
                                   setProductJars(updated);
-                                }}
-                              />
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                                } catch (error) {
+                                  console.error('Error updating remarks:', error.message);
+                                  alert('Failed to update remarks.');
+                                }
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <ToggleButtonComponent
+                              options={['Yes', 'No']}
+                              value={entry.updated ? 'Yes' : 'No'}  // convert boolean → string
+                              onToggle={(newValue) => {
+                                const booleanValue = newValue === 'Yes';  // convert string → boolean
+                                const updated = { ...productJars };
+                                updated[productKey].jars[jIdx].updated = booleanValue;
+                                setProductJars(updated);
+                              }}
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
 
                   <div className="image-table-wrapper">
                     {/* now pass this product’s own images */}
-                    <ImageTable images={images} patchname={patch?.name}/>
+                    <ImageTable images={images} patchname={patch?.name} />
                   </div>
                 </div>
               </div>
