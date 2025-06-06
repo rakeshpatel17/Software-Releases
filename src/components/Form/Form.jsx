@@ -185,11 +185,11 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         // ✅ Transform selectedProducts to include patch-related fields
         const transformedProducts = selectedProducts.map(product => ({
             name: product.name,
+            helm_charts: "Not Released",
             images: product.images.map(img => ({
                 ...img,
                 ot2_pass: "Not Released",
                 registry: "Not Released",
-                helm_charts: "Not Released",
                 patch_build_number: formData.name
             }))
         }));

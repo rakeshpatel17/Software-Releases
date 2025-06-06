@@ -87,6 +87,7 @@ function PatchProgressPage() {
             remarks: jar.remarks || "",
             updated: jar.updated || false
           })),
+          helm_charts: prod.helm_charts
         };
       }
 
@@ -156,6 +157,7 @@ function PatchProgressPage() {
             remarks: jar.remarks || '',
             updated: jar.updated || false,
           })),
+          helm_charts: prod.helm_charts
         };
         return acc;
       }, {});
@@ -201,9 +203,7 @@ function PatchProgressPage() {
                     </button>
                   </div>
 
-                      <div className="image-table-wrapper">
-                    <HelmCharts  product={productObj} />
-                  </div>
+                   
                   <table className="product-table">
                     <thead>
                       <tr>
@@ -260,6 +260,9 @@ function PatchProgressPage() {
                   <div className="image-table-wrapper">
                     {/* now pass this product’s own images */}
                     <ImageTable images={images} patchname={patch?.name} />
+                  </div>
+                     <div className="image-table-wrapper">
+                    <HelmCharts  product={productObj} />
                   </div>
                 </div>
               </div>
