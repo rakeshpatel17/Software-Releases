@@ -84,13 +84,13 @@ function ImageTable({ images, patchname, searchTerm }) {
         async function fetchData() {
             try {
                 const data = await getPatchById(patchname); // assuming this returns the JSON you posted
-                console.log('🔄 Full patch data:', data);
+                // console.log(' Full patch data:', data);
 
                 // Extract products_data
                 const products_data = data.products;
                 setPatchData(data);
                 setProductsdata(products_data)
-                console.log(' Products data:', products_data);
+                // console.log(' Products data:', products_data);
             } catch (error) {
                 console.error(' Error fetching patch data:', error);
             }

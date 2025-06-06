@@ -6,12 +6,12 @@ import EditableFieldComponent from '../../components/EditableFieldComponent';
 import ToggleButtonComponent from '../../components/ToggleButton/ToggleButton';
 import { useOutletContext } from 'react-router-dom';
 import { getPatchById } from '../../api/getPatchById';
-import { jarsUpdate } from '../../api/jars_update';
 import FilterMenu from '../../components/Filter/FilterMenu';
 import getProductCompletion from '../../api/productCompletion';
 import LoadingSpinner from '../../components/Loading/LoadingSpinner';
 import HelmCharts from '../../components/HelmCharts/HelmCharts';
 import patch_product_jars from '../../api/patch_product_jars';
+import { update_patch_product_jar } from '../../api/update_patch_product_jar';
 
 
 function PatchProgressPage() {
@@ -72,7 +72,7 @@ function PatchProgressPage() {
 
       // Loop over each product and fetch its jars.
       for (const prod of data.products) {
-        const key = prod.name.toLowerCase();
+        const key = prod.name;
 
         // Wait for patch_product_jars to resolve for this (patch, product).
         const ppj = await patch_product_jars(id, prod.name);
@@ -229,7 +229,7 @@ function PatchProgressPage() {
                                 // console.log(jars);
                                 // console.log("updated jars : ", updatedJars);
                                 try {
-                                  await jarsUpdate(id, { "jars_data": updatedJars }); // PATCH request
+                                  await update_patch_product_jar(id,productKey,entry.name, { "remarks": newValue }); // PATCH request
                                   const updated = { ...productJars };
                                   updated[productKey].jars[jIdx].remarks = newValue;
                                   setProductJars(updated);

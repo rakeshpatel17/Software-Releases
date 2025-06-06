@@ -10,9 +10,9 @@ const ProductImageSelector = ({ mode, products = [], release, selectedProducts =
 
 
 
-  console.log("product data in child ", products);
-  console.log("release ", release)
-  console.log("selectedproducts in child ", selectedProducts);
+  // console.log("product data in child ", products);
+  // console.log("release ", release)
+  // console.log("selectedproducts in child ", selectedProducts);
   // Filter products based on search term
   const visibleProducts =
     mode === "read"
