@@ -11,6 +11,7 @@ import FilterMenu from '../../components/Filter/FilterMenu';
 import getProductCompletion from '../../api/productCompletion';
 import LoadingSpinner from '../../components/Loading/LoadingSpinner';
 import HelmCharts from '../../components/HelmCharts/HelmCharts';
+import patch_product_jars from '../../api/patch_product_jars';
 
 
 function PatchProgressPage() {
@@ -62,31 +63,33 @@ function PatchProgressPage() {
     productsToShow = productJars;
   }
 
-
-
   useEffect(() => {
     async function fetchData() {
       const data = await getPatchById(id);
 
-      // Build a per‐product map where each key is the product name (lowercased)
-      // and contains both its images and the global jars bucket.
-      const productMap = data.products.reduce((acc, prod) => {
-        const key = prod.name.toLowerCase();
-        acc[key] = {
-          // images belong to this product
-          images: prod.images,
+      // Create an empty map.
+      const productMap = {};
 
-          // assign the global jars to each product
-          jars: data.jars.map(jar => ({
+      // Loop over each product and fetch its jars.
+      for (const prod of data.products) {
+        const key = prod.name.toLowerCase();
+
+        // Wait for patch_product_jars to resolve for this (patch, product).
+        const ppj = await patch_product_jars(id, prod.name);
+
+        // Build the entry for this product.
+        productMap[key] = {
+          images: prod.images,
+          jars: ppj.map(jar => ({
             name: jar.name,
             version: jar.version,
-            remarks: jar.remarks || '',
+            current_version: jar.current_version,
+            remarks: jar.remarks || "",
             updated: jar.updated || false
-          }))
+          })),
         };
-        return acc;
-      }, {});
-      // console.log("the present product map is : ", productMap);
+      }
+
       setProductJars(productMap);
       setFilteredProducts(productMap);
       setPatch(data);
@@ -205,6 +208,7 @@ function PatchProgressPage() {
                     <thead>
                       <tr>
                         <th>Jar</th>
+                        <th>Current Version</th>
                         <th>Version</th>
                         <th>Remarks</th>
                         <th>Updated</th>
@@ -214,6 +218,7 @@ function PatchProgressPage() {
                       {jars.map((entry, jIdx) => (
                         <tr key={jIdx}>
                           <td>{entry.name}</td>
+                          <td>{entry.current_version}</td>
                           <td>{entry.version}</td>
                           <td>
                             <EditableFieldComponent
