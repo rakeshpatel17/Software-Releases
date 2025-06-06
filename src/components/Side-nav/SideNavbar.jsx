@@ -8,7 +8,7 @@ import logo from '../../assets/logo.png';
 
 // API calls
 import get_release from '../../api/release';
-import get_products from '../../api/product'; 
+import get_products from '../../api/get_products';
 // import DropdownItem from './Menu/DropdownItem';
 
 function SideNavbar() {
@@ -21,6 +21,7 @@ function SideNavbar() {
       try {
         const releaseData = await get_release();
         const productData = await get_products();
+        // console.log("products are : ", productData);
 
         if (releaseData && Array.isArray(releaseData)) {
           const releases = releaseData.map((item) => ({
