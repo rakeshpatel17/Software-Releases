@@ -45,26 +45,26 @@ function PatchProgressPage() {
 
   let productsToShow = {};
 
+  const normalize = str => str.trim().toLowerCase();
+
   if (filter === 'completed') {
-    const completedMap = Object.fromEntries(
-      completedProducts.map(prod => [prod.name.toLowerCase(), prod])
-    );
+    const completedSet = new Set(completedProducts.map(p => normalize(p.name)));
     productsToShow = Object.fromEntries(
-      Object.entries(productJars).filter(([key]) => key in completedMap)
+      Object.entries(productJars).filter(([key]) => completedSet.has(normalize(key)))
     );
   } else if (filter === 'not_completed') {
-    const notCompletedMap = Object.fromEntries(
-      notCompletedProducts.map(prod => [prod.name.toLowerCase(), prod])
-    );
+    const notCompletedSet = new Set(notCompletedProducts.map(p => normalize(p.name)));
     productsToShow = Object.fromEntries(
-      Object.entries(productJars).filter(([key]) => key in notCompletedMap)
+      Object.entries(productJars).filter(([key]) => notCompletedSet.has(normalize(key)))
     );
   } else {
     productsToShow = productJars;
   }
 
+
   useEffect(() => {
     async function fetchData() {
+        setLoading(true); 
       const data = await getPatchById(id);
 
       // Create an empty map.
@@ -94,6 +94,7 @@ function PatchProgressPage() {
       setProductJars(productMap);
       setFilteredProducts(productMap);
       setPatch(data);
+        setLoading(false);
     }
 
     fetchData();
@@ -135,13 +136,7 @@ function PatchProgressPage() {
   }, [id, setTitle]);
 
 
-  if (!loading && Object.keys(productsToShow).length === 0 && Object.keys(productJars).length > 0) {
-    return (
-      <div style={{ marginTop: '100px', textAlign: 'center', fontSize: '18px' }}>
-        No products to show.
-      </div>
-    );
-  }
+ 
 
   if (loading) return <LoadingSpinner />;
 
@@ -197,6 +192,13 @@ function PatchProgressPage() {
       <div className="filter-menu-container">
         <FilterMenu setFilter={setFilter} />
       </div>
+          {loading ? (
+      <LoadingSpinner />
+    ) : Object.keys(productsToShow).length === 0 && Object.keys(productJars).length > 0 ? (
+      <div style={{ marginTop: '100px', textAlign: 'center', fontSize: '18px' }}>
+        No products to show.
+      </div>
+    ) : (
 
       <div className="dashboard-main">
         <div className="dashboard-header">
@@ -225,59 +227,59 @@ function PatchProgressPage() {
                       </button>
                     </div>
 
-                   
-                  <table className="product-table">
-                    <thead>
-                      <tr>
-                        <th>Jar</th>
-                        <th>Current Version</th>
-                        <th>Version</th>
-                        <th>Remarks</th>
-                        <th>Updated</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {jars.map((entry, jIdx) => (
-                        <tr key={jIdx}>
-                          <td>{entry.name}</td>
-                          <td>{entry.current_version}</td>
-                          <td>{entry.version}</td>
-                          <td>
-                            <EditableFieldComponent
-                              value={entry.remarks || '—'}
-                              onSave={async (newValue) => {
-                                const updatedJars = [...jars];
-                                updatedJars[jIdx].remarks = newValue;
-                                // console.log(jars);
-                                // console.log("updated jars : ", updatedJars);
-                                try {
-                                  await update_patch_product_jar(id,productKey,entry.name, { "remarks": newValue }); // PATCH request
-                                  const updated = { ...productJars };
-                                  updated[productKey].jars[jIdx].remarks = newValue;
-                                  setProductJars(updated);
-                                } catch (error) {
-                                  console.error('Error updating remarks:', error.message);
-                                  alert('Failed to update remarks.');
-                                }
-                              }}
-                            />
-                          </td>
-                          <td>
-                            <ToggleButtonComponent
-                              options={['Yes', 'No']}
-                              value={entry.updated ? 'Yes' : 'No'}  // convert boolean → string
-                              onToggle={(newValue) => {
-                                const booleanValue = newValue === 'Yes';  // convert string → boolean
-                                const updated = { ...productJars };
-                                updated[productKey].jars[jIdx].updated = booleanValue;
-                                setProductJars(updated);
-                              }}
-                            />
-                          </td>
+
+                    <table className="product-table">
+                      <thead>
+                        <tr>
+                          <th>Jar</th>
+                          <th>Current Version</th>
+                          <th>Version</th>
+                          <th>Remarks</th>
+                          <th>Updated</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {jars.map((entry, jIdx) => (
+                          <tr key={jIdx}>
+                            <td>{entry.name}</td>
+                            <td>{entry.current_version}</td>
+                            <td>{entry.version}</td>
+                            <td>
+                              <EditableFieldComponent
+                                value={entry.remarks || '—'}
+                                onSave={async (newValue) => {
+                                  const updatedJars = [...jars];
+                                  updatedJars[jIdx].remarks = newValue;
+                                  // console.log(jars);
+                                  // console.log("updated jars : ", updatedJars);
+                                  try {
+                                    await update_patch_product_jar(id, productKey, entry.name, { "remarks": newValue }); // PATCH request
+                                    const updated = { ...productJars };
+                                    updated[productKey].jars[jIdx].remarks = newValue;
+                                    setProductJars(updated);
+                                  } catch (error) {
+                                    console.error('Error updating remarks:', error.message);
+                                    alert('Failed to update remarks.');
+                                  }
+                                }}
+                              />
+                            </td>
+                            <td>
+                              <ToggleButtonComponent
+                                options={['Yes', 'No']}
+                                value={entry.updated ? 'Yes' : 'No'}  // convert boolean → string
+                                onToggle={(newValue) => {
+                                  const booleanValue = newValue === 'Yes';  // convert string → boolean
+                                  const updated = { ...productJars };
+                                  updated[productKey].jars[jIdx].updated = booleanValue;
+                                  setProductJars(updated);
+                                }}
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
 
                     <div className="image-table-wrapper">
                       {/* now pass this product’s own images */}
@@ -291,7 +293,7 @@ function PatchProgressPage() {
               );
             })}
         </div>
-      </div></div>
+      </div>)}</div>
   );
 }
 
