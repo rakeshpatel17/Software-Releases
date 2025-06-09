@@ -18,7 +18,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
     const lockedRelease = lockedReleaseProp || location.state?.lockedRelease;
     const [formData, setFormData] = useState({
         name: '',
-        release: lockedRelease || '24.4',
+        release: lockedRelease || '',
         release_date: '',
         code_freeze: '',
         platform_qa_build: '',
@@ -36,7 +36,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
     const [releaseList, setReleaseList] = useState([]);
     const [productData, setProductData] = useState([]);
     const [selectedProducts, setSelectedProducts] = useState([]);
-    const [selectedRelease, setSelectedRelease] = useState(""); 
+    const [selectedRelease, setSelectedRelease] = useState("");
 
 
     // JAR-specific state
@@ -126,10 +126,10 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         fetchProducts();
     }, [selectedRelease]);
 
-// const handleChange = (e) => {
-//   setSelectedRelease(e.target.value);
-//   // also update formData if you use it
-// };
+    // const handleChange = (e) => {
+    //   setSelectedRelease(e.target.value);
+    //   // also update formData if you use it
+    // };
 
 
 
@@ -153,12 +153,12 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
             ...prevData,
             [name]: type === 'checkbox' ? checked : value,
         }));
-         if (name === "release") {
-        setSelectedRelease(value); 
-  }
+        if (name === "release") {
+            setSelectedRelease(value);
+        }
     };
 
-          const navigate = useNavigate();
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -303,14 +303,12 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                             className="form-select"
                             disabled={!!lockedRelease}
                         >
-                            {/* <option value="" disabled>
+                            <option value="" disabled>
                                 -- Select a Release --
-                            </option> */}
+                            </option>
                             {releaseList.map((release) => (
-
                                 <option key={release.name} value={release.name}>
                                     {release.name}
-                                    {/* {console.log("release", release.name)} */}
                                 </option>
                             ))}
                         </select>
