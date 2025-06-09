@@ -134,40 +134,59 @@ function PatchProgressPage() {
     setTitle(`${id} Progress`);
   }, [id, setTitle]);
 
-  if (loading) return <LoadingSpinner />;
 
-  if (!loading && Object.keys(productsToShow).length === 0) {
+  if (!loading && Object.keys(productsToShow).length === 0 && Object.keys(productJars).length > 0) {
     return (
       <div style={{ marginTop: '100px', textAlign: 'center', fontSize: '18px' }}>
-        No products to show .
+        No products to show.
       </div>
     );
   }
 
-  const handleRefresh = async () => {
+  if (loading) return <LoadingSpinner />;
+
+  const handleProductRefresh = async (productKey) => {
     try {
+      // Convert product key back to original case (if needed)
+      const productName = productKey.toUpperCase();
+
+      // Fetch full patch data
       const data = await getPatchById(id);
-      const productMap = data.products.reduce((acc, prod) => {
-        const key = prod.name.toLowerCase();
-        acc[key] = {
-          images: prod.images,
-          jars: data.jars.map(jar => ({
-            name: jar.name,
-            version: jar.version,
-            remarks: jar.remarks || '',
-            updated: jar.updated || false,
-          })),
-          helm_charts: prod.helm_charts
-        };
-        return acc;
-      }, {});
-      console.log("in handle refresh",productMap)
-      setProductJars(productMap);
-      setFilteredProducts(productMap);
-      setPatch(data);
+
+      // Find the product from the patch data
+      const prod = data.products.find(p => p.name.toLowerCase() === productKey.toLowerCase());
+      if (!prod) throw new Error(`Product ${productName} not found`);
+
+      // Fetch jars for this product
+      const ppj = await patch_product_jars(id, prod.name);
+
+      // Build updated product object
+      const updatedProduct = {
+        images: prod.images,
+        jars: ppj.map(jar => ({
+          name: jar.name,
+          version: jar.version,
+          current_version: jar.current_version,
+          remarks: jar.remarks || "",
+          updated: jar.updated || false
+        })),
+        helm_charts: prod.helm_charts
+      };
+
+      // Update only this product in the state
+      setProductJars(prev => ({
+        ...prev,
+        [productKey]: updatedProduct
+      }));
+
+      setFilteredProducts(prev => ({
+        ...prev,
+        [productKey]: updatedProduct
+      }));
+
     } catch (error) {
-      console.error('Error refreshing data:', error.message);
-      alert('Failed to refresh jars.');
+      console.error(`Error refreshing ${productKey}:`, error.message);
+      alert(`Failed to refresh ${productKey}`);
     }
   };
 
@@ -184,90 +203,93 @@ function PatchProgressPage() {
           {/* <h2 className="dashboard-title">{id} Progress</h2> */}
         </div>
         <div className="table-scroll-wrapper">
-          {Object.entries(productsToShow).map(([productKey, productObj], index) => {
-            const { jars, images } = productObj;
-            return (
-              <div className='patchProgress' key={index}>
-                <div className="product-table-container">
-                  <div className="d-flex align-items-center mb-3" style={{ position: 'relative' }}>
-                    <h2 className="mb-0 mx-auto">
-                      {highlightText(productKey.toUpperCase(), searchTerm)}
-                    </h2>
-                    <button
-                      onClick={handleRefresh}
-                      className="btn p-0 bg-transparent border-0"
-                      title="Refresh"
-                      style={{ position: 'absolute', right: '3px' ,marginRight:'3px'}}
-                    >
-                      <i className="bi bi-arrow-clockwise fs-5"></i>
-                    </button>
-                  </div>
+          {Object.entries(productsToShow)
+            .filter(([productKey]) => productKey.toLowerCase().includes(searchTerm.toLowerCase()))
+            .map(([productKey, productObj], index) => {
 
-                   
-                  <table className="product-table">
-                    <thead>
-                      <tr>
-                        <th>Jar</th>
-                        <th>Current Version</th>
-                        <th>Version</th>
-                        <th>Remarks</th>
-                        <th>Updated</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {jars.map((entry, jIdx) => (
-                        <tr key={jIdx}>
-                          <td>{entry.name}</td>
-                          <td>{entry.current_version}</td>
-                          <td>{entry.version}</td>
-                          <td>
-                            <EditableFieldComponent
-                              value={entry.remarks || '—'}
-                              onSave={async (newValue) => {
-                                const updatedJars = [...jars];
-                                updatedJars[jIdx].remarks = newValue;
-                                // console.log(jars);
-                                // console.log("updated jars : ", updatedJars);
-                                try {
-                                  await jarsUpdate(id, { "jars_data": updatedJars }); // PATCH request
-                                  const updated = { ...productJars };
-                                  updated[productKey].jars[jIdx].remarks = newValue;
-                                  setProductJars(updated);
-                                } catch (error) {
-                                  console.error('Error updating remarks:', error.message);
-                                  alert('Failed to update remarks.');
-                                }
-                              }}
-                            />
-                          </td>
-                          <td>
-                            <ToggleButtonComponent
-                              options={['Yes', 'No']}
-                              value={entry.updated ? 'Yes' : 'No'}  // convert boolean → string
-                              onToggle={(newValue) => {
-                                const booleanValue = newValue === 'Yes';  // convert string → boolean
-                                const updated = { ...productJars };
-                                updated[productKey].jars[jIdx].updated = booleanValue;
-                                setProductJars(updated);
-                              }}
-                            />
-                          </td>
+              const { jars, images } = productObj;
+              return (
+                <div className='patchProgress' key={index}>
+                  <div className="product-table-container">
+                    <div className="d-flex align-items-center mb-3" style={{ position: 'relative' }}>
+                      <h2 className="mb-0 mx-auto">
+                        {highlightText(productKey.toUpperCase(), searchTerm)}
+                      </h2>
+                      <button
+                        onClick={() => handleProductRefresh(productKey)}
+                        className="btn p-0 bg-transparent border-0"
+                        title="Refresh"
+                        style={{ position: 'absolute', right: '3px', marginRight: '3px' }}
+                      >
+                        <i className="bi bi-arrow-clockwise fs-5"></i>
+                      </button>
+                    </div>
+
+
+                    <table className="product-table">
+                      <thead>
+                        <tr>
+                          <th>Jar</th>
+                          <th>Current Version</th>
+                          <th>Version</th>
+                          <th>Remarks</th>
+                          <th>Updated</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {jars.map((entry, jIdx) => (
+                          <tr key={jIdx}>
+                            <td>{entry.name}</td>
+                            <td>{entry.current_version}</td>
+                            <td>{entry.version}</td>
+                            <td>
+                              <EditableFieldComponent
+                                value={entry.remarks || '—'}
+                                onSave={async (newValue) => {
+                                  const updatedJars = [...jars];
+                                  updatedJars[jIdx].remarks = newValue;
+                                  // console.log(jars);
+                                  // console.log("updated jars : ", updatedJars);
+                                  try {
+                                    await jarsUpdate(id, { "jars_data": updatedJars }); // PATCH request
+                                    const updated = { ...productJars };
+                                    updated[productKey].jars[jIdx].remarks = newValue;
+                                    setProductJars(updated);
+                                  } catch (error) {
+                                    console.error('Error updating remarks:', error.message);
+                                    alert('Failed to update remarks.');
+                                  }
+                                }}
+                              />
+                            </td>
+                            <td>
+                              <ToggleButtonComponent
+                                options={['Yes', 'No']}
+                                value={entry.updated ? 'Yes' : 'No'}  // convert boolean → string
+                                onToggle={(newValue) => {
+                                  const booleanValue = newValue === 'Yes';  // convert string → boolean
+                                  const updated = { ...productJars };
+                                  updated[productKey].jars[jIdx].updated = booleanValue;
+                                  setProductJars(updated);
+                                }}
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
 
-                  <div className="image-table-wrapper">
-                    {/* now pass this product’s own images */}
-                    <ImageTable images={images} patchname={patch?.name} />
-                  </div>
-                     <div className="image-table-wrapper">
-                    <HelmCharts  product={productObj} />
+                    <div className="image-table-wrapper">
+                      {/* now pass this product’s own images */}
+                      <ImageTable images={images} patchname={patch?.name} />
+                    </div>
+                    <div className="image-table-wrapper">
+                      <HelmCharts product={productObj} />
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       </div></div>
   );
