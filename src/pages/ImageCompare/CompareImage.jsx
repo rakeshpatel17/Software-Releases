@@ -1,42 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './CompareImage.css';
-
-const staticPatches = [
-    {
-        name: "24.2.1",
-        products: [
-            {
-                name: "Server",
-                images: [
-                    {
-                        image_name: "ot-dctm-server",
-                        build_number: "24.2.1",
-                        patch_build_number: "10.10.10.10",
-                        size: "200MB",
-                        layers: 15
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        name: "24.2.5",
-        products: [
-            {
-                name: "Server",
-                images: [
-                    {
-                        image_name: "ot-dctm-server",
-                        build_number: "24.2.5",
-                        patch_build_number: "24.2.5",
-                        size: "210MB",
-                        layers: 17
-                    }
-                ]
-            }
-        ]
-    }
-];
+import get_patches from '../../api/patches';
 
 export default function CompareImage() {
     const [patch1, setPatch1] = useState('');
@@ -44,6 +8,15 @@ export default function CompareImage() {
     const [commonImages, setCommonImages] = useState([]);
     const [selectedImage, setSelectedImage] = useState('');
     const [compared, setCompared] = useState(null);
+    const [patches, setPatches] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+        const data = await get_patches();
+            setPatches(data);
+        };
+        fetchData();
+    }, []);
 
     useEffect(() => {
         if (patch1 && patch2) {
@@ -59,7 +32,7 @@ export default function CompareImage() {
     }, [patch1, patch2]);
 
     const getImages = (patchName) => {
-        const patch = staticPatches.find(p => p.name === patchName);
+        const patch = patches.find(p => p.name === patchName);
         return patch?.products.flatMap(p => p.images) || [];
     };
 
@@ -77,7 +50,7 @@ export default function CompareImage() {
                     <label>Patch 1</label>
                     <select value={patch1} onChange={e => setPatch1(e.target.value)}>
                         <option value="">Select Patch</option>
-                        {staticPatches.map(p => (
+                        {patches.map(p => (
                             <option key={p.name} value={p.name}>{p.name}</option>
                         ))}
                     </select>
@@ -87,7 +60,7 @@ export default function CompareImage() {
                     <label>Patch 2</label>
                     <select value={patch2} onChange={e => setPatch2(e.target.value)}>
                         <option value="">Select Patch</option>
-                        {staticPatches.map(p => (
+                        {patches.map(p => (
                             <option key={p.name} value={p.name}>{p.name}</option>
                         ))}
                     </select>
