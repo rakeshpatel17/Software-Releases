@@ -177,7 +177,7 @@ function ImageTable({ images, patchname, searchTerm }) {
                                                             <th>CVSS Score</th>
                                                             <th>Severity</th>
                                                             <th>Affected Libraries</th>
-                                                            <th>Library Path</th>
+                                                            {/* <th>Library Path</th> */}
                                                             <th>Description</th>
                                                         </tr>
                                                     </thead>
@@ -190,7 +190,7 @@ function ImageTable({ images, patchname, searchTerm }) {
                                                                 <td>{issue.cvss_score}</td>
                                                                 <td>{issue.severity}</td>
                                                                 <td>{issue.affected_libraries}</td>
-                                                                <td>{issue.library_path}</td>
+                                                                {/* <td>{issue.library_path}</td> */}
                                                                 <td>
                                                                     <EditableFieldComponent
                                                                         value={
