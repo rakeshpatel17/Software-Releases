@@ -143,7 +143,7 @@ function ImageTable({ images, patchname, searchTerm }) {
                                 />
                             </td> */}
                             <td>
-                                {img.twistlock_report_clean ? (
+                                { img.security_issues.length == 0 ? (
                                     <span style={{ color: 'green', fontWeight: 'bold' }}> ✔ Success </span>
                                 ) : (
                                     <span style={{ color: 'red', fontWeight: 'bold' }}> ✖ Fail </span>

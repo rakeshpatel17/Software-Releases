@@ -239,7 +239,14 @@ function PatchProgressPage() {
                         </tr>
                       </thead>
                       <tbody>
-                        {jars.map((entry, jIdx) => (
+                        {jars.length === 0 ? (
+                          <tr>
+                            <td colSpan={5} style={{ textAlign: 'center' }}>
+                              No jars available
+                            </td>
+                          </tr>
+                        ) :
+                        (jars.map((entry, jIdx) => (
                           <tr key={jIdx}>
                             <td>{entry.name}</td>
                             <td>{entry.current_version}</td>
@@ -277,7 +284,7 @@ function PatchProgressPage() {
                               />
                             </td>
                           </tr>
-                        ))}
+                        )))}
                       </tbody>
                     </table>
 
