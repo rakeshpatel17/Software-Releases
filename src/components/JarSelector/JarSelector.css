@@ -146,6 +146,7 @@
   border-collapse: collapse;
   margin-top: 10px !important;
   table-layout: fixed;
+  color: black !important;
 }
 
 .jar-selector-edit-table th,
@@ -153,12 +154,14 @@
   padding: 10px;
   text-align: left;
   border: 1px solid #ddd;
+  color: #333 !important;
 }
 
 /* Editable Table Styles */
 .jar-selector-edit-table th,
 .jar-selector-edit-table td {
   background-color: #f7f9fc; /* Set header to a light background */
+  color: #333;
 }
 
 .jar-selector-edit-table td {
@@ -211,7 +214,7 @@
 }
 
 /* Read-Only Mode Styles */
-.jar-selector-edit-table.read-only-jars-table td {
+.jar-selector-edit-table.read-only-jars-table td  {
   background-color: #ffffff;
   color: #333;
 }
@@ -231,6 +234,7 @@
   border: 1px solid #ccc;
   padding: 8px;
   text-align: left;
+  color: #333 !important;
 }
 
 /* Last Child (Remove Button Column) */

@@ -3,74 +3,196 @@ import './CompareImage.css';
 import get_patches from '../../api/patches';
 import { useOutletContext } from 'react-router-dom';
 
-
 export default function CompareImage() {
     const [patch1, setPatch1] = useState('');
     const [patch2, setPatch2] = useState('');
-    const [commonImages, setCommonImages] = useState([]);
-    const [selectedImage, setSelectedImage] = useState('');
-    const [compared, setCompared] = useState(null);
+    const [comparedImages, setComparedImages] = useState([]);
     const [patches, setPatches] = useState([]);
+    const [showComparison, setShowComparison] = useState(false);
 
-    const { searchTerm, setTitle } = useOutletContext();
-
+    const { setTitle } = useOutletContext();
 
     useEffect(() => {
         const fetchData = async () => {
             const data = await get_patches();
-            setPatches(data);
+            setPatches(Array.isArray(data) ? data : []);
         };
         fetchData();
     }, []);
 
     useEffect(() => {
-        if (patch1 && patch2) {
-            if (patch1 === patch2) {
-                window.alert("Patch 1 and Patch 2 should not be the same.");
-                setPatch1('');
-                setPatch2('');
-                setCommonImages([]);
-                setSelectedImage('');
-                setCompared(null);
-                return;
-            }
+        setTitle('Image Comparison');
+    }, []);
 
-            const images1 = getImages(patch1);
-            const images2 = getImages(patch2);
-            const common = images1.filter(img1 =>
-                images2.some(img2 => img2.image_name === img1.image_name)
-            );
-            const commonImageNames = common.map(img => img.image_name);
-            setCommonImages(commonImageNames);
-            setSelectedImage('');
-            setCompared(null);
+    const getPatchData = (patchName) => {
+        return patches.find(p => p.name === patchName);
+    };
 
-            if (commonImageNames.length === 0) {
-                window.alert("No common images found between the selected patches.");
-                  setPatch1('');
-                setPatch2('');
-                setCommonImages([]);
-                setSelectedImage('');
-                setCompared(null);
-            }
-        }
-    }, [patch1, patch2]);
+    // const handleCompare = () => {
+    //     if (!patch1 || !patch2) return;
 
+    //     if (patch1 === patch2) {
+    //         alert('Patch 1 and Patch 2 should not be the same.');
+    //         setPatch1('');
+    //         setPatch2('');
+    //         setComparedImages([]);
+    //         setShowComparison(false);
+    //         return;
+    //     }
+
+    //     const patchData1 = getPatchData(patch1);
+    //     const patchData2 = getPatchData(patch2);
+    //     if (!patchData1 || !patchData2) return;
+
+    //     const comparison = [];
+
+    //     patchData1.products.forEach(product1 => {
+    //         const product2 = patchData2.products.find(p => p.name === product1.name);
+    //         if (!product2) return;
+
+    //         const commonImages = product1.images.filter(img1 =>
+    //             product2.images.some(img2 => img2.image_name === img1.image_name)
+    //         );
+
+    //         if (commonImages.length > 0) {
+    //             const rows = commonImages.map(img1 => {
+    //                 const img2 = product2.images.find(i => i.image_name === img1.image_name);
+    //                 return {
+    //                     image_name: img1.image_name,
+    //                     patch1: img1,
+    //                     patch2: img2,
+    //                     remarks: ''
+    //                 };
+
+    //             });
+
+    //             comparison.push({ product: product1.name, images: rows });
+    //         }
+    //     });
+
+    //     if (comparison.length === 0) {
+    //         alert('No common images found between the selected patches.');
+    //         setPatch1('');
+    //         setPatch2('');
+    //         setComparedImages([]);
+    //         setShowComparison(false);
+    //         return;
+    //     }
+
+    //     setComparedImages(comparison);
+    //     setShowComparison(true);
+    // };
    
-  useEffect(() => {
-    setTitle(`Image Comparsion`);
-  }, []);
-
-    const getImages = (patchName) => {
-        const patch = patches.find(p => p.name === patchName);
-        return patch?.products.flatMap(p => p.images) || [];
-    };
-
     const handleCompare = () => {
-        const img1 = getImages(patch1).find(i => i.image_name === selectedImage);
-        const img2 = getImages(patch2).find(i => i.image_name === selectedImage);
-        setCompared({ img1, img2 });
+    if (!patch1 || !patch2) return;
+
+    if (patch1 === patch2) {
+        alert('Patch 1 and Patch 2 should not be the same.');
+        setPatch1('');
+        setPatch2('');
+        setComparedImages([]);
+        setShowComparison(false);
+        return;
+    }
+
+    // Sort patch names based on version number
+    const versionToArray = (ver) => ver.split('.').map(num => parseInt(num, 10));
+
+    const isOlder = (v1, v2) => {
+        const a = versionToArray(v1);
+        const b = versionToArray(v2);
+        for (let i = 0; i < Math.max(a.length, b.length); i++) {
+            const val1 = a[i] || 0;
+            const val2 = b[i] || 0;
+            if (val1 < val2) return true;
+            if (val1 > val2) return false;
+        }
+        return false; // equal
     };
+
+    // Ensure patch1 is always the older one
+    let older = patch1;
+    let newer = patch2;
+    if (!isOlder(patch1, patch2)) {
+        older = patch2;
+        newer = patch1;
+    }
+
+    const patchData1 = getPatchData(older);
+    const patchData2 = getPatchData(newer);
+    if (!patchData1 || !patchData2) return;
+
+    const comparison = [];
+
+    patchData1.products.forEach(product1 => {
+        const product2 = patchData2.products.find(p => p.name === product1.name);
+        if (!product2) return;
+
+        const commonImages = product1.images.filter(img1 =>
+            product2.images.some(img2 => img2.image_name === img1.image_name)
+        );
+
+        if (commonImages.length > 0) {
+            const rows = commonImages.map(img1 => {
+                const img2 = product2.images.find(i => i.image_name === img1.image_name);
+                return {
+                    image_name: img1.image_name,
+                    patch1: img1,
+                    patch2: img2,
+                    remarks: ''
+                };
+            });
+
+            comparison.push({ product: product1.name, images: rows });
+        }
+    });
+
+    if (comparison.length === 0) {
+        alert('No common images found between the selected patches.');
+        setPatch1('');
+        setPatch2('');
+        setComparedImages([]);
+        setShowComparison(false);
+        return;
+    }
+
+    setPatch1(older);
+    setPatch2(newer);
+    setComparedImages(comparison);
+    setShowComparison(true);
+};
+
+    const compareSizeField = (img1, img2) => {
+        const styleRed = { color: 'red', fontWeight: 'bold' };
+        const styleGreen = { color: 'green', fontWeight: 'bold' };
+
+        const parseSize = (size) => {
+            if (!size) return 0;
+            const num = parseFloat(size);
+            if (size.toLowerCase().includes('gb')) return num * 1024;
+            if (size.toLowerCase().includes('mb')) return num;
+            return num;
+        };
+
+        const size1 = parseSize(img1?.size);
+        const size2 = parseSize(img2?.size);
+
+        return [
+            size1 > size2
+                ? <span style={styleRed}>{img1?.size}</span>
+                : size1 < size2
+                    ? <span style={styleGreen}>{img1?.size}</span>
+                    : img1?.size,
+
+            size2 > size1
+                ? <span style={styleRed}>{img2?.size}</span>
+                : size2 < size1
+                    ? <span style={styleGreen}>{img2?.size}</span>
+                    : img2?.size,
+        ];
+    };
+
+
 
     return (
         <div className="compare-container">
@@ -95,61 +217,41 @@ export default function CompareImage() {
                         ))}
                     </select>
                 </div>
-
-                {patch1 && patch2 && patch1 !== patch2 && (
-                    commonImages.length > 0 ? (
-                        <div className="dropdown-group">
-                            <label>Common Images</label>
-                            <select value={selectedImage} onChange={e => setSelectedImage(e.target.value)}>
-                                <option value="">Select Image</option>
-                                {commonImages.map((img, idx) => (
-                                    <option key={idx} value={img}>{img}</option>
-                                ))}
-                            </select>
-                        </div>
-                    ) : null
-                )}
-
             </div>
 
-
-
-
-            {selectedImage && (
+            {patch1 && patch2 && (
                 <button className="compare-btn" onClick={handleCompare}>Compare</button>
             )}
 
-            {compared && (
+            {showComparison && comparedImages.length > 0 && (
                 <div className="compare-table">
                     <table>
                         <thead>
                             <tr>
-                                <th>Field</th>
+                                <th>Image</th>
                                 <th>{patch1}</th>
                                 <th>{patch2}</th>
+                                <th>Remarks</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Size</td>
-                                <td>{compared.img1.size}</td>
-                                <td>{compared.img2.size}</td>
-                            </tr>
-                            <tr>
-                                <td>Layers</td>
-                                <td>{compared.img1.layers}</td>
-                                <td>{compared.img2.layers}</td>
-                            </tr>
-                            {/* <tr>
-                                <td>Build Number</td>
-                                <td>{compared.img1.build_number}</td>
-                                <td>{compared.img2.build_number}</td>
-                            </tr> */}
-                            <tr>
-                                <td> Build Number</td>
-                                <td>{compared.img1.patch_build_number}</td>
-                                <td>{compared.img2.patch_build_number}</td>
-                            </tr>
+                            {comparedImages.map((group, idx) => (
+                                <React.Fragment key={idx}>
+                                    <tr className="product-row">
+                                        <td colSpan="4"><strong>{group.product}</strong></td>
+                                    </tr>
+                                    {group.images.map((img, i) => (
+                                        <tr key={i}>
+                                            <td>{img.image_name}</td>
+                                            {/* <td>{img.size1}</td>
+                                            <td>{img.size2}</td> */}
+                                            <td>{compareSizeField(img.patch1, img.patch2)[0]}</td>
+                                            <td>{compareSizeField(img.patch1, img.patch2)[1]}</td>
+                                            <td>{img.remarks}</td>
+                                        </tr>
+                                    ))}
+                                </React.Fragment>
+                            ))}
                         </tbody>
                     </table>
                 </div>

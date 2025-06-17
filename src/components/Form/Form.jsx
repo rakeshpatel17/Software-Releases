@@ -11,6 +11,8 @@ import { useLocation } from 'react-router-dom';
 import HighLevelScopeComponent from '../HighLevelScope/HighLevelScope';
 import CancelButton from '../Button/CancelButton';
 import SaveButton from '../Button/SaveButton';
+import { useOutletContext } from 'react-router-dom';
+
 
 
 function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) {
@@ -52,6 +54,13 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
 
     //error
     const [errors, setErrors] = useState({});
+
+    //title
+    const { searchTerm, setTitle } = useOutletContext();
+     useEffect(() => {
+        setTitle(`Add New Patch`);
+      }, []);
+
 
     const staticJarData = [
         { name: 'commons-cli' },

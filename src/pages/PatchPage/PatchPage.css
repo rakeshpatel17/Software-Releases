@@ -1,19 +1,4 @@
-/* .patch-page {
-    max-width: 1050px;
-    width: 100%; 
-    margin: 2rem auto;
 
-    padding: 2rem;
-
-    background-color: #ffffff;
-
-    border-radius: 12px;
-
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-
-    font-family: 'Segoe UI', sans-serif;
-    box-sizing: border-box;
-} */
  .patch-page {
     width: 90%;                /* Takes 90% of the screen width */
     max-width: 95vw;           /* Ensures it doesn’t exceed the viewport */
@@ -300,6 +285,7 @@
   .read-only-jars-table th {
     background-color: #f7f9fc;
     text-align: left;
+    color: #333;
   }
   
 
@@ -344,9 +330,6 @@
 }
 .read-only-scope {
     padding: 2px;
-    /* background-color: #f7f9fc; */
-    /* border-radius: 6px; */
-    /* border: 1px solid #bfe2d1; */
     overflow-x: auto;
 }
 
@@ -374,8 +357,7 @@
 
 
 
-/* editable */
-/* Editable Scope Table */
+
 .editable-scope-table,
 .editable-jars-table {
     width: 100%;
@@ -400,7 +382,6 @@
     color: #000;
 }
 
-/* Inputs inside table cells */
 .editable-scope-table input[type="text"],
 .editable-jars-table input[type="text"] {
     width: 100%;
@@ -412,7 +393,6 @@
     box-sizing: border-box;
 }
 
-/* Add/Remove buttons inside table */
 .scope-action-btn,
 .jar-action-btn {
     padding: 6px 10px;
@@ -429,7 +409,6 @@
     background-color: #c0392b;
 }
 
-/* Add row button */
 .add-scope-btn,
 .add-jar-btn {
     padding: 6px 12px;

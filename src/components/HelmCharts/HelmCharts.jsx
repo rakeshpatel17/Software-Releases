@@ -10,7 +10,7 @@ const HelmCharts = ({ product }) => {
     const matchIndex = options.findIndex(opt => opt.toLowerCase() === dbValue?.toLowerCase());
     return matchIndex !== -1 ? options[matchIndex] : 'Not Released';
   };
-  console.log("product in helm",product)
+//   console.log("product in helm",product)
   useEffect(() => {
     // Instead of mapping images, just set one toggle value for product.helm_charts
     if (product?.helm_charts !== undefined) {
