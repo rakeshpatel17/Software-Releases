@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './CompareImage.css';
 import get_patches from '../../api/patches';
+import { useOutletContext } from 'react-router-dom';
+
 
 export default function CompareImage() {
     const [patch1, setPatch1] = useState('');
@@ -9,6 +11,9 @@ export default function CompareImage() {
     const [selectedImage, setSelectedImage] = useState('');
     const [compared, setCompared] = useState(null);
     const [patches, setPatches] = useState([]);
+
+    const { searchTerm, setTitle } = useOutletContext();
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -51,7 +56,10 @@ export default function CompareImage() {
         }
     }, [patch1, patch2]);
 
-
+   
+  useEffect(() => {
+    setTitle(`Image Comparsion`);
+  }, []);
 
     const getImages = (patchName) => {
         const patch = patches.find(p => p.name === patchName);
