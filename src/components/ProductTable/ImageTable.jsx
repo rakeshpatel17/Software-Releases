@@ -77,6 +77,13 @@ function ImageTable({ images, patchname, searchTerm }) {
         return matchIndex !== -1 ? options[matchIndex] : 'Not Released'; // Default fallback
     };
 
+    const severityColors = {
+    low:      '#008000',
+    medium:   '#FFFF00',
+    high:     '#FFA500',
+    critical: '#FF0000',
+    };
+
 
     const [patchData, setPatchData] = useState(null);
     const [Productsdata, setProductsdata] = useState(null);
@@ -188,7 +195,9 @@ function ImageTable({ images, patchname, searchTerm }) {
                                                             <tr key={index}>
                                                                 <td>{issue.cve_id}</td>
                                                                 <td>{issue.cvss_score}</td>
-                                                                <td>{issue.severity}</td>
+                                                                <td style={{ color: severityColors[issue.severity.toLowerCase()] }}>
+                                                                    {issue.severity}
+                                                                </td>
                                                                 <td>{issue.affected_libraries}</td>
                                                                 {/* <td>{issue.library_path}</td> */}
                                                                 <td>
