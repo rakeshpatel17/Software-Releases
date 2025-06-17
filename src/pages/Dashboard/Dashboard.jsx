@@ -26,7 +26,7 @@ function Dashboard() {
   useEffect(() => {
     const fetch = async () => {
       const data = await get_patches();
-      //console.log("fetched raw data : ", data);
+      console.log("fetched raw data : ", data);
       const mappedData = (data || []).map((patch) => ({
         title: patch.name || "Untitled Patch",
         description: patch.description || "No description available",

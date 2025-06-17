@@ -9,6 +9,8 @@ import PatchPage from "./pages/PatchPage/PatchPage";
 import PatchProgressPage from "./pages/PatchProgressPage/PatchProgressPage";
 import MainLayout from "./Layouts/MainLayout";
 import Form from "./components/Form/Form";
+import CompareImage from "./pages/ImageCompare/CompareImage"
+
 
 
 // PrivateRoute component: checks if authenticated
@@ -54,6 +56,7 @@ function AppRoutes({ isLoggedIn, handleLoginSuccess, handleLogout }) {
             <Route path="products/:productName" element={<ProductPage />} />
             <Route path="patches/:patchName" element={<PatchPage />} />
             <Route path="progress/:id" element={<PatchProgressPage />} />
+            <Route path="tools/comparsion" element={<CompareImage />} />
           </Route>
 
          {/* Redirect any unknown routes */}
