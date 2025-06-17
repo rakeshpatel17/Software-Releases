@@ -164,7 +164,7 @@ function ImageTable({ images, patchname, searchTerm }) {
                                             <span ><strong>Twist Lock Report: </strong><a href={img.twistlock_report_url} target="_blank" rel="noopener noreferrer">
                                                 View Report
                                             </a></span>
-                                            <span><strong>Twistlock Report Clean:</strong> {img.twistlock_report_clean ? 'Yes' : 'No'}</span>
+                                            {/* <span><strong>Twistlock Report Clean:</strong> {img.twistlock_report_clean ? 'Yes' : 'No'}</span> */}
                                             <span><strong>Created At:</strong> {new Date(img.created_at).toLocaleString()}</span>
                                         </p>
                                         <div style={{ marginTop: '12px' }}>
@@ -182,7 +182,9 @@ function ImageTable({ images, patchname, searchTerm }) {
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {img.security_issues.map((issue, index) => (
+                                                        {img.security_issues.slice() // create a shallow copy to avoid mutating original data
+                                                                .sort((a, b) => b.cvss_score - a.cvss_score) // sort descending
+                                                                .map((issue, index) => (
                                                             <tr key={index}>
                                                                 <td>{issue.cve_id}</td>
                                                                 <td>{issue.cvss_score}</td>
