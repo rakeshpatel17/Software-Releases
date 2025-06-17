@@ -42,25 +42,25 @@ function AppRoutes({ isLoggedIn, handleLoginSuccess, handleLogout }) {
         />
 
         <Route
-            path="/"
-            element={
-              <PrivateRoute isAuthenticated={isLoggedIn}>
-                <MainLayout onLogout={onLogout} />
-              </PrivateRoute>
-            }
-          >
-            <Route index element={<Navigate to="dashboard" />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="addpatch" element={<Form />} />
-            <Route path="releases/:id" element={<ReleasePatches />} />
-            <Route path="products/:productName" element={<ProductPage />} />
-            <Route path="patches/:patchName" element={<PatchPage />} />
-            <Route path="progress/:id" element={<PatchProgressPage />} />
-            <Route path="tools/comparsion" element={<CompareImage />} />
-          </Route>
+          path="/"
+          element={
+            <PrivateRoute isAuthenticated={isLoggedIn}>
+              <MainLayout onLogout={onLogout} />
+            </PrivateRoute>
+          }
+        >
+          <Route index element={<Navigate to="dashboard" />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="addpatch" element={<Form />} />
+          <Route path="releases/:id" element={<ReleasePatches />} />
+          <Route path="products/:productName" element={<ProductPage />} />
+          <Route path="patches/:patchName" element={<PatchPage />} />
+          <Route path="progress/:id" element={<PatchProgressPage />} />
+          <Route path="tools/comparison" element={<CompareImage />} />
+        </Route>
 
-         {/* Redirect any unknown routes */}
-         <Route path="*" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
+        {/* Redirect any unknown routes */}
+        <Route path="*" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
       </Routes>
     </>
   );

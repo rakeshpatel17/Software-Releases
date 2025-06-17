@@ -107,17 +107,7 @@ export default function CompareImage() {
             </div>
 
 
-            {commonImages.length > 0 && (
-                <div className="dropdown-group">
-                    <label>Common Images</label>
-                    <select value={selectedImage} onChange={e => setSelectedImage(e.target.value)}>
-                        <option value="">Select Image</option>
-                        {commonImages.map((img, idx) => (
-                            <option key={idx} value={img}>{img}</option>
-                        ))}
-                    </select>
-                </div>
-            )}
+    
 
             {selectedImage && (
                 <button className="compare-btn" onClick={handleCompare}>Compare</button>

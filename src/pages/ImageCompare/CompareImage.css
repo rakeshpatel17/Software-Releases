@@ -5,7 +5,7 @@
   padding: 40px;
   border: 2px solid #ccc;
   border-radius: 12px;
-  background-color: #fdfdfd;
+  background-color: #f7f9fc;
   font-family: Arial, sans-serif;
 }
 
@@ -55,7 +55,7 @@ select {
   width: 100%;
   padding: 14px;
   margin-top: 10px;
-  background-color: #007bff;
+  background-color: #20338b;
   color: white;
   font-weight: bold;
   font-size: 16px;
@@ -79,11 +79,12 @@ table {
 
 th, td {
   padding: 12px;
-  border: 1px solid #aaa;
+  border: 1px solid #ccc;
   text-align: left;
 }
 
 th {
-  background-color: #e8e8e8;
+  background-color: #20338b;
+  color: white;
   font-weight: bold;
 }

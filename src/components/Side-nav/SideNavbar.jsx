@@ -1,5 +1,5 @@
 
-import{ useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Heading from './Heading/Heading';
 import Subheading from './Menu/SubHeading';
 import MenuItem from './Menu/MenuItem';
@@ -36,7 +36,7 @@ function SideNavbar() {
           const products = productData.map((item) => ({
             iconClass: "", // Optional icon class
             name: item.name,
-            hyperlink: `/products/${item.name}`, 
+            hyperlink: `/products/${item.name}`,
           }));
           setProductNames(products);
         }
@@ -75,6 +75,17 @@ function SideNavbar() {
             name="Products"
             data={productNames}
           />
+          <MenuItem
+            name="Tools"
+            data={[
+              {
+                iconClass: "", // optional
+                name: "Comparison",
+                hyperlink: "/tools/comparison",
+              },
+            ]}
+          />
+
         </nav>
       </aside>
     </>
