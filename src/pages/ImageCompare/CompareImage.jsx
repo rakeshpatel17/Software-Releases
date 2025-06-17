@@ -140,13 +140,13 @@ export default function CompareImage() {
                                 <td>{compared.img1.layers}</td>
                                 <td>{compared.img2.layers}</td>
                             </tr>
-                            <tr>
+                            {/* <tr>
                                 <td>Build Number</td>
                                 <td>{compared.img1.build_number}</td>
                                 <td>{compared.img2.build_number}</td>
-                            </tr>
+                            </tr> */}
                             <tr>
-                                <td>Patch Build Number</td>
+                                <td> Build Number</td>
                                 <td>{compared.img1.patch_build_number}</td>
                                 <td>{compared.img2.patch_build_number}</td>
                             </tr>
