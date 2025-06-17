@@ -12,7 +12,7 @@ export default function CompareImage() {
 
     useEffect(() => {
         const fetchData = async () => {
-        const data = await get_patches();
+            const data = await get_patches();
             setPatches(data);
         };
         fetchData();
@@ -20,16 +20,38 @@ export default function CompareImage() {
 
     useEffect(() => {
         if (patch1 && patch2) {
+            if (patch1 === patch2) {
+                window.alert("Patch 1 and Patch 2 should not be the same.");
+                setPatch1('');
+                setPatch2('');
+                setCommonImages([]);
+                setSelectedImage('');
+                setCompared(null);
+                return;
+            }
+
             const images1 = getImages(patch1);
             const images2 = getImages(patch2);
             const common = images1.filter(img1 =>
                 images2.some(img2 => img2.image_name === img1.image_name)
             );
-            setCommonImages(common.map(img => img.image_name));
+            const commonImageNames = common.map(img => img.image_name);
+            setCommonImages(commonImageNames);
             setSelectedImage('');
             setCompared(null);
+
+            if (commonImageNames.length === 0) {
+                window.alert("No common images found between the selected patches.");
+                  setPatch1('');
+                setPatch2('');
+                setCommonImages([]);
+                setSelectedImage('');
+                setCompared(null);
+            }
         }
     }, [patch1, patch2]);
+
+
 
     const getImages = (patchName) => {
         const patch = patches.find(p => p.name === patchName);
@@ -66,21 +88,24 @@ export default function CompareImage() {
                     </select>
                 </div>
 
-                {commonImages.length > 0 && (
-                    <div className="dropdown-group">
-                        <label>Common Images</label>
-                        <select value={selectedImage} onChange={e => setSelectedImage(e.target.value)}>
-                            <option value="">Select Image</option>
-                            {commonImages.map((img, idx) => (
-                                <option key={idx} value={img}>{img}</option>
-                            ))}
-                        </select>
-                    </div>
+                {patch1 && patch2 && patch1 !== patch2 && (
+                    commonImages.length > 0 ? (
+                        <div className="dropdown-group">
+                            <label>Common Images</label>
+                            <select value={selectedImage} onChange={e => setSelectedImage(e.target.value)}>
+                                <option value="">Select Image</option>
+                                {commonImages.map((img, idx) => (
+                                    <option key={idx} value={img}>{img}</option>
+                                ))}
+                            </select>
+                        </div>
+                    ) : null
                 )}
+
             </div>
 
 
-    
+
 
             {selectedImage && (
                 <button className="compare-btn" onClick={handleCompare}>Compare</button>
