@@ -11,6 +11,8 @@ import { useLocation } from 'react-router-dom';
 import HighLevelScopeComponent from '../HighLevelScope/HighLevelScope';
 import CancelButton from '../Button/CancelButton';
 import SaveButton from '../Button/SaveButton';
+import { useOutletContext } from 'react-router-dom';
+
 
 
 function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) {
@@ -52,6 +54,13 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
 
     //error
     const [errors, setErrors] = useState({});
+
+    //title
+    const { searchTerm, setTitle } = useOutletContext();
+    useEffect(() => {
+        setTitle(`Add New Patch`);
+    }, []);
+
 
     const staticJarData = [
         { name: 'commons-cli' },
@@ -147,75 +156,125 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         }
     }, [jarSearchTerm]);
 
+    // const handleChange = (e) => {
+    //     const { name, value, type, checked } = e.target;
+    //     setFormData((prevData) => ({
+    //         ...prevData,
+    //         [name]: type === 'checkbox' ? checked : value,
+    //     }));
+    //     if (name === "release") {
+    //         setSelectedRelease(value);
+    //     }
+
+    //     if (errors[name]) {
+    //         setErrors((prevErrors) => ({
+    //             ...prevErrors,
+    //             [name]: '',
+    //         }));
+    //     }
+    // };
+      
     const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setFormData((prevData) => ({
+    const { name, value, type, checked } = e.target;
+
+    setFormData((prevData) => {
+        const updatedData = {
             ...prevData,
             [name]: type === 'checkbox' ? checked : value,
-        }));
-        if (name === "release") {
-            setSelectedRelease(value);
+        };
+
+        // If release_date is changed, update dependent dates
+        if (name === 'release_date') {
+            updatedData.code_freeze = getPreviousDate(value, 5);
+            updatedData.platform_qa_build = getPreviousDate(value, 10);
+            updatedData.client_build_availability = getPreviousDate(value, 3);
+            updatedData.kick_off = getPreviousDate(value, 30);
         }
-    };
+
+        return updatedData;
+    });
+
+    // Handle release selection
+    if (name === "release") {
+        setSelectedRelease(value);
+    }
+
+    // Clear error for this field
+    if (errors[name]) {
+        setErrors((prevErrors) => ({
+            ...prevErrors,
+            [name]: '',
+        }));
+    }
+
+    if (name === 'release_date') {
+        setErrors((prevErrors) => ({
+            ...prevErrors,
+            code_freeze: '',
+            platform_qa_build: '',
+            client_build_availability: '',
+            kick_off: '',
+        }));
+    }
+};
 
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        console.log("Form Data before validation:", formData);
-
-        if (!validateForm()) {
-            console.warn('Validation failed');
-            return;
-        }
-
-
-        const transformedHighLevelScope = highLevelScope.map(item => ({
-            name: item.label || item.name,
-            version: item.version || "1.0"
-        }));
-
-        const transformedSelectedJars = selectedJars.map(item => ({
-            name: item.label || item.name,
-            version: item.version || "1.0",
-            remarks: item.remarks || ""
-        }));
-
-        // ✅ Transform selectedProducts to include patch-related fields
-        const transformedProducts = selectedProducts.map(product => ({
-            name: product.name,
-            helm_charts: "Not Released",
-            images: product.images.map(img => ({
-                ...img,
-                ot2_pass: "Not Released",
-                registry: "Not Released",
-                patch_build_number: formData.name
-            }))
-        }));
-
-        const finalData = {
-            ...formData,
-            products_data: transformedProducts,
-            scopes_data: transformedHighLevelScope,
-            jars_data: transformedSelectedJars,
-        };
-
-        // console.log("products", finalData.products);
-        console.log("release", formData.name)
-        console.log("selectedProducts", selectedProducts);
-        // console.log("selectedImages", selectedImages);
-
-        try {
-            console.log("Final Form Data to send:", finalData);
-            const response = await post_patches(finalData);
-            navigate(`/patches/${formData.name}`, {
-                state: { patch: finalData }
-            });
-        } catch (error) {
-            console.error('Error while posting to database:', error);
-        }
+    const patchedFormData = {
+        ...formData,
+        release: selectedRelease || formData.release, // Fallback to selectedRelease
     };
+
+    console.log("Form Data before validation:", patchedFormData);
+
+    if (!validateForm(patchedFormData)) {
+        console.warn('Validation failed');
+        return;
+    }
+
+    const transformedHighLevelScope = highLevelScope.map(item => ({
+        name: item.label || item.name,
+        version: item.version || "1.0"
+    }));
+
+    const transformedSelectedJars = selectedJars.map(item => ({
+        name: item.label || item.name,
+        version: item.version || "1.0",
+        remarks: item.remarks || ""
+    }));
+
+    const transformedProducts = selectedProducts.map(product => ({
+        name: product.name,
+        helm_charts: "Not Released",
+        images: product.images.map(img => ({
+            ...img,
+            ot2_pass: "Not Released",
+            registry: "Not Released",
+            patch_build_number: patchedFormData.name
+        }))
+    }));
+
+    const finalData = {
+        ...patchedFormData,
+        products_data: transformedProducts,
+        scopes_data: transformedHighLevelScope,
+        jars_data: transformedSelectedJars,
+    };
+
+    console.log("Final Form Data to send:", finalData);
+
+    try {
+        const response = await post_patches(finalData);
+        navigate(`/patches/${patchedFormData.name}`, {
+            state: { patch: finalData }
+        });
+    } catch (error) {
+        console.error('Error while posting to database:', error);
+    }
+};
 
 
 
@@ -229,36 +288,25 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
 
 
     // client side validation
-    const validateForm = () => {
-        const newErrors = {};
+    const validateForm = (formDataArg = formData) => {
+    const newErrors = {};
 
-        if (!formData.name.trim()) newErrors.name = 'Name is required';
-        // else if (!formData.name.startsWith(formData.release)) {
-        //     newErrors.name = `Name must start with release version (${formData.release})`;
-        // }
-        if (!formData.release_date) newErrors.release_date = 'Release date is required';
-        if (!formData.description.trim()) newErrors.description = 'Description is required';
+    if (!formDataArg.name?.trim()) newErrors.name = 'Name is required';
+    if (!formDataArg.release) newErrors.release = 'Release is required';
+    if (!formDataArg.release_date) newErrors.release_date = 'Release date is required';
+    if (!formDataArg.description?.trim()) newErrors.description = 'Description is required';
+    if (!formDataArg.code_freeze) newErrors.code_freeze = 'Code Freeze date is required';
+    if (!formDataArg.platform_qa_build) newErrors.platform_qa_build = 'Platform QA Build Date is required';
+    if (!formDataArg.client_build_availability) newErrors.client_build_availability = 'Client Build Date is required';
+    if (!formDataArg.kick_off) newErrors.kick_off = 'Kick Off Date is required';
 
-        if (!formData.code_freeze) newErrors.code_freeze = 'Code Freeze date is required';
-        if (!formData.platform_qa_build) newErrors.platform_qa_build = 'Platform QA Build Date is required';
-        if (!formData.client_build_availability) newErrors.client_build_availability = 'Client Build Date is required';
-        if (!formData.kick_off) newErrors.kick_off = 'Kick Off Date is required';
+    if (selectedProducts.length === 0) {
+        newErrors.products = 'At least one product must be selected';
+    }
 
-
-
-        // const scopeErrors = highLevelScope.map((item) => item.value.trim() === '');
-        // if (scopeErrors.includes(true)) {
-        //     newErrors.highLevelScope = 'high-level scope fields must be filled';
-        // }
-
-        if (selectedProducts.length === 0) {
-            newErrors.products = 'At least one product must be selected';
-        }
-
-        console.log('Validation Errors:', newErrors);
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+};
 
 
     // To get code freeze date
@@ -341,7 +389,8 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                         {errors.release_date && <span className="error-text">{errors.release_date}</span>}
 
                     </div>
-
+                </div>
+                <div className="inline-fields">
                     {/* code freeze date */}
                     <div className="form-group">
                         <label className="form-label">Code Freeze Date</label>

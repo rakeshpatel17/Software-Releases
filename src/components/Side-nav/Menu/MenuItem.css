@@ -39,3 +39,7 @@
 .dropdown-arrow-left.rotate {
   transform: rotate(-90deg); /* optional if you want rotate on open */
 }
+
+/* .dropdown-container {
+  background-color: inherit;
+} */

@@ -59,34 +59,38 @@ function SideNavbar() {
       </button>
 
       <aside className={`side-navbar ${isOpen ? 'open' : ''}`}>
-        <Heading link={logo} name="OpenText" />
-        <Subheading name="Menu" />
-        <nav className="menu">
-          <MenuItem
-            iconClass="bi bi-house-door-fill"
-            name="Overview"
-            hyperlink="/dashboard"
-          />
-          <MenuItem
-            name="Releases"
-            data={releaseNames}
-          />
-          <MenuItem
-            name="Products"
-            data={productNames}
-          />
-          <MenuItem
-            name="Tools"
-            data={[
-              {
-                iconClass: "", // optional
-                name: "Comparison",
-                hyperlink: "/tools/comparison",
-              },
-            ]}
-          />
+        <div className="side-navbar-header">
 
-        </nav>
+          <Heading link={logo} name="OpenText" />
+          <Subheading name="Menu" /></div>
+        <div className="side-navbar-scrollable">
+
+          <nav className="menu">
+            <MenuItem
+              iconClass="bi bi-house-door-fill"
+              name="Overview"
+              hyperlink="/dashboard"
+            />
+            <MenuItem
+              name="Releases"
+              data={releaseNames}
+            />
+            <MenuItem
+              name="Products"
+              data={productNames}
+            />
+            <MenuItem
+              name="Tools"
+              data={[
+                {
+                  iconClass: "", // optional
+                  name: "Comparison",
+                  hyperlink: "/tools/comparison",
+                },
+              ]}
+            />
+
+          </nav></div>
       </aside>
     </>
   );

@@ -148,7 +148,7 @@ function HighLevelScope({ highLevelScope = [], setHighLevelScope = () => {}, isE
                                                         <div
                                                             key={i}
                                                             className="scope-dropdown-item"
-                                                            onClick={() => handleSuggestionClick(index, s)}
+                                                            onMouseDown={() => handleSuggestionClick(index, s)}
                                                         >
                                                             {s.name}
                                                         </div>
