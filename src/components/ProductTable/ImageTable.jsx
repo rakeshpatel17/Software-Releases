@@ -25,7 +25,7 @@ function ImageTable({ images, patchname, searchTerm }) {
     // const [editedDescription, setEditedDescription] = useState('');
 
     // console.log("data",images)
-
+    const [loading, setLoading] = useState(true);
     const toggleRow = (idx) => {
         setExpandedRows((prev) => ({
             ...prev,
@@ -102,6 +102,7 @@ function ImageTable({ images, patchname, searchTerm }) {
                 setPatchData(data);
                 setProductsdata(products_data)
                 // console.log(' Products data:', products_data);
+                setLoading(false);
             } catch (error) {
                 console.error(' Error fetching patch data:', error);
             }
@@ -177,13 +178,13 @@ function ImageTable({ images, patchname, searchTerm }) {
                                 </button>
                             </td>
                         </tr>
-                        {expandedRows[idx] && (
+                        {expandedRows[idx] && !loading && (
                             <tr>
                                 <td colSpan="6">
                                     <div className="expanded-content">
 
                                         <p style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-                                            <span ><strong>Twist Lock Report: </strong><a href={img.twistlock_report_url} target="_blank" rel="noopener noreferrer">
+                                            <span ><strong>Twist Lock Report: </strong><a href={img.twistlock_report_url } target="_blank" rel="noopener noreferrer">
                                                 View Report
                                             </a></span>
                                             {/* <span><strong>Twistlock Report Clean:</strong> {img.twistlock_report_clean ? 'Yes' : 'No'}</span> */}

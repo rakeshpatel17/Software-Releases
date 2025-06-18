@@ -12,7 +12,6 @@ import LoadingSpinner from '../../components/Loading/LoadingSpinner';
 import HelmCharts from '../../components/HelmCharts/HelmCharts';
 import patch_product_jars from '../../api/patch_product_jars';
 import { update_patch_product_jar } from '../../api/update_patch_product_jar';
-import RefreshButton from '../../components/Button/RefreshButton';
 
 
 function PatchProgressPage() {
@@ -218,16 +217,14 @@ function PatchProgressPage() {
                       <h2 className="mb-0 mx-auto">
                         {highlightText(productKey.toUpperCase(), searchTerm)}
                       </h2>
-                      {/* <button
+                      <button
                         onClick={() => handleProductRefresh(productKey)}
                         className="btn p-0 bg-transparent border-0"
                         title="Refresh"
                         style={{ position: 'absolute', right: '3px', marginRight: '3px' }}
                       >
                         <i className="bi bi-arrow-clockwise fs-5"></i>
-                      </button> */}
-                      <RefreshButton onRefresh={() => handleProductRefresh(productKey)} />
-
+                      </button>
                     </div>
 
 

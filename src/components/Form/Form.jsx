@@ -188,10 +188,10 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
 
             // If release_date changes, update dependent dates
             if (name === 'release_date') {
-                updatedData.code_freeze = getPreviousDate(value, 5);
-                updatedData.platform_qa_build = getPreviousDate(value, 10);
-                updatedData.client_build_availability = getPreviousDate(value, 3);
-                updatedData.kick_off = getPreviousDate(value, 30);
+                updatedData.code_freeze = getPreviousDate(value, 1);
+                updatedData.platform_qa_build = getPreviousDate(value, 1);
+                updatedData.client_build_availability = getPreviousDate(value, 1);
+                updatedData.kick_off = getPreviousDate(value, 1);
             }
             if (name === 'release') {
                 updatedData.name = ``;
@@ -341,10 +341,10 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         if (formData.release_date) {
             setFormData((prev) => ({
                 ...prev,
-                code_freeze: prev.code_freeze || getPreviousDate(formData.release_date, 5),
-                platform_qa_build: prev.platform_qa_build || getPreviousDate(formData.release_date, 10),
-                client_build_availability: prev.client_build_availability || getPreviousDate(formData.release_date, 3),
-                kick_off: prev.kick_off || getPreviousDate(formData.release_date, 30),
+                code_freeze: prev.code_freeze || getPreviousDate(formData.release_date, 1),
+                platform_qa_build: prev.platform_qa_build || getPreviousDate(formData.release_date, 1),
+                client_build_availability: prev.client_build_availability || getPreviousDate(formData.release_date, 1),
+                kick_off: prev.kick_off || getPreviousDate(formData.release_date, 1),
             }));
         }
     }, [formData.release_date]);
@@ -409,8 +409,25 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                         {errors.release_date && <span className="error-text">{errors.release_date}</span>}
 
                     </div>
+
                 </div>
+                
                 <div className="inline-fields">
+                    {/* Kick Off date */}
+                    <div className="form-group">
+                        <label className="form-label">Kick Off Date</label>
+                        <input
+                            type="date"
+                            name="kick_off"
+                            onChange={handleChange}
+                            value={formData.kick_off || getPreviousDate(formData.release_date, 1)}
+                            className="form-input"
+                            min={new Date().toISOString().split("T")[0]}
+                            max={formData.release_date}
+                        //readOnly
+                        />
+                        {errors.kick_off && <span className="error-text">{errors.kick_off}</span>}
+                    </div>
                     {/* code freeze date */}
                     <div className="form-group">
                         <label className="form-label">Code Freeze Date</label>
@@ -418,7 +435,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                             type="date"
                             name="code_freeze"
                             onChange={handleChange}
-                            value={formData.code_freeze || getPreviousDate(formData.release_date, 5)}
+                            value={formData.code_freeze || getPreviousDate(formData.release_date, 1)}
                             className="form-input"
                             min={new Date().toISOString().split("T")[0]}
                             max={formData.release_date}
@@ -435,7 +452,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                             type="date"
                             name="platform_qa_build"
                             onChange={handleChange}
-                            value={formData.platform_qa_build || getPreviousDate(formData.release_date, 10)}
+                            value={formData.platform_qa_build || getPreviousDate(formData.release_date, 1)}
                             className="form-input"
                             min={new Date().toISOString().split("T")[0]}
                             max={formData.release_date}
@@ -452,7 +469,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                             type="date"
                             name="client_build_availability"
                             onChange={handleChange}
-                            value={formData.client_build_availability || getPreviousDate(formData.release_date, 3)}
+                            value={formData.client_build_availability || getPreviousDate(formData.release_date, 1)}
                             className="form-input"
                             min={new Date().toISOString().split("T")[0]}
                             max={formData.release_date}
@@ -461,21 +478,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                         {errors.client_build_availability && <span className="error-text">{errors.client_build_availability}</span>}
                     </div>
 
-                    {/* Kick Off date */}
-                    <div className="form-group">
-                        <label className="form-label">Kick Off Date</label>
-                        <input
-                            type="date"
-                            name="kick_off"
-                            onChange={handleChange}
-                            value={formData.kick_off || getPreviousDate(formData.release_date, 30)}
-                            className="form-input"
-                            min={new Date().toISOString().split("T")[0]}
-                            max={formData.release_date}
-                        //readOnly
-                        />
-                        {errors.kick_off && <span className="error-text">{errors.kick_off}</span>}
-                    </div>
+                    
                 </div>
                 <HighLevelScopeComponent
                     highLevelScope={highLevelScope}
