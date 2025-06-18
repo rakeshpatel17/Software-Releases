@@ -9,8 +9,8 @@ function JarSelector({ selectedJars, setSelectedJars, isEditing }) {
     const [dropdowns, setDropdowns] = useState([]);
     useEffect(() => {
         const fetchJars = async () => {
-        const jars = await get_jars();
-        setJarDataSuggestions(jars);
+            const jars = await get_jars();
+            setJarDataSuggestions(jars);
         };
         fetchJars();
     }, []);
@@ -120,13 +120,21 @@ function JarSelector({ selectedJars, setSelectedJars, isEditing }) {
                                         {focusedIndex === index && dropdowns[index]?.length > 0 && (
                                             <div className="jar-dropdown">
                                                 {dropdowns[index].map((suggestion, i) => (
+                                                    // <div
+                                                    //     key={i}
+                                                    //     className="jar-dropdown-item"
+                                                    //     onClick={() => handleSelectSuggestion(index, suggestion.name)}
+                                                    // >
+                                                    //     {suggestion.name}
+                                                    // </div>
                                                     <div
                                                         key={i}
                                                         className="jar-dropdown-item"
-                                                        onClick={() => handleSelectSuggestion(index, suggestion.name)}
+                                                        onMouseDown={() => handleSelectSuggestion(index, suggestion.name)} // ← change here
                                                     >
                                                         {suggestion.name}
                                                     </div>
+
                                                 ))}
                                             </div>
                                         )}
