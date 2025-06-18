@@ -77,13 +77,17 @@ function ImageTable({ images, patchname, searchTerm }) {
         return matchIndex !== -1 ? options[matchIndex] : 'Not Released'; // Default fallback
     };
 
+    const [filter, setFilter] = useState('all');
+    const severityOrder = { critical: 1, high: 2, medium: 3, low: 4 };
+    const levels = ['critical','high','medium','low'];
+    const [selected, setSelected] = useState(new Set(levels));
     const severityColors = {
-    low:      '#008000',
-    medium:   '#FFFF00',
-    high:     '#FFA500',
-    critical: '#FF0000',
+        low:      '#008000',   // green
+        medium:   '#FFD700',   // gold
+        high:     '#FF8C00',   // dark orange
+        critical: '#FF0000',   // red
     };
-
+    
 
     const [patchData, setPatchData] = useState(null);
     const [Productsdata, setProductsdata] = useState(null);
@@ -123,7 +127,18 @@ function ImageTable({ images, patchname, searchTerm }) {
                 </tr>
             </thead>
             <tbody>
-                {images.map((img, idx) => (
+                {images.map((img, idx) => {
+                    const displayed = img.security_issues
+                    .slice()
+                    .sort((a, b) => {
+                        const sa = severityOrder[a.severity.toLowerCase()];
+                        const sb = severityOrder[b.severity.toLowerCase()];
+                        if (sa !== sb) return sa - sb;               // severity order
+                        return b.cvss_score - a.cvss_score;          // then CVSS desc
+                    })
+                    .filter(issue => selected.has(issue.severity.toLowerCase()));
+            
+                 return (
                     <React.Fragment key={idx}>
                         <tr>
                             <td>{img.image_name}</td>
@@ -177,6 +192,43 @@ function ImageTable({ images, patchname, searchTerm }) {
                                         <div style={{ marginTop: '12px' }}>
                                             <strong>Security Issues:</strong>
                                             {img.security_issues.length > 0 ? (
+                                                <>
+                                                {/* buttons */}
+                                                <div style={{ marginBottom: 8 }}>
+                                                    {/* Select All / Clear All controls */}
+                                                    <button onClick={() => setSelected(new Set(levels))} style={{ marginRight: 12 }}>
+                                                        Select All
+                                                    </button>
+                                                    <button onClick={() => setSelected(new Set())}>
+                                                        Clear All
+                                                    </button>
+
+                                                    {/* Per‐level toggles */}
+                                                    {levels.map(level => {
+                                                        const isOn = selected.has(level);
+                                                        return (
+                                                        <button
+                                                            key={level}
+                                                            onClick={() => {
+                                                            const copy = new Set(selected);
+                                                            if (copy.has(level)) copy.delete(level);
+                                                            else copy.add(level);
+                                                            setSelected(copy);
+                                                            }}
+                                                            style={{
+                                                            marginLeft: 6,
+                                                            padding: '4px 8px',
+                                                            fontWeight: isOn ? 'bold' : 'normal',
+                                                            opacity: isOn ? 1 : 0.6,
+                                                            }}
+                                                        >
+                                                            {level.charAt(0).toUpperCase() + level.slice(1)}
+                                                        </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                                {/*rendering table if there are items after filtering */}
+                                                {displayed.length > 0 ? (
                                                 <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '8px' }}>
                                                     <thead>
                                                         <tr>
@@ -189,13 +241,17 @@ function ImageTable({ images, patchname, searchTerm }) {
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {img.security_issues.slice() // create a shallow copy to avoid mutating original data
-                                                                .sort((a, b) => b.cvss_score - a.cvss_score) // sort descending
-                                                                .map((issue, index) => (
+                                                        {
+                                                            displayed.map((issue, index) => (
                                                             <tr key={index}>
                                                                 <td>{issue.cve_id}</td>
                                                                 <td>{issue.cvss_score}</td>
-                                                                <td style={{ color: severityColors[issue.severity.toLowerCase()] }}>
+                                                                <td
+                                                                    style={{
+                                                                        color: severityColors[issue.severity.toLowerCase()],
+                                                                        fontWeight: 'bold',
+                                                                    }}
+                                                                    >
                                                                     {issue.severity}
                                                                 </td>
                                                                 <td>{issue.affected_libraries}</td>
@@ -242,6 +298,12 @@ function ImageTable({ images, patchname, searchTerm }) {
                                                         ))}
                                                     </tbody>
                                                 </table>
+                                                ) : (
+                                                <p style={{ marginTop: 8, fontStyle: 'italic' }}>
+                                                    No security issues...
+                                                </p>
+                                                )}
+                                                </>
                                             ) : (
                                                 <p>None</p>
                                             )}
@@ -251,7 +313,8 @@ function ImageTable({ images, patchname, searchTerm }) {
                             </tr>
                         )}
                     </React.Fragment>
-                ))}
+                 )
+                })}
                 {images.length === 0 && (
                     <tr>
                         <td colSpan="7" style={{ textAlign: 'center', padding: '1rem' }}>
