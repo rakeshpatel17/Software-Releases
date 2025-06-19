@@ -27,12 +27,16 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         platform_qa_build: '',
         description: '',
         patch_state: 'new',
+        kba:'',
+        functional_fixes:'',
+        security_issues:'',
         is_deleted: false,
         client_build_availability: '',
         scopes_data: [],
         kick_off: '',
         products_data: [],
         jars_data: [],
+
     });
 
 
@@ -498,9 +502,9 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                     <label className="form-label">KBA</label>
                     <input
                         type="text"
-                        name="KBA"
-                        // value={formData.description}
-                        // onChange={handleChange}
+                        name="kba"
+                        value={formData.kba}
+                        onChange={handleChange}
                         className="form-textarea"
                     />
                     {/* {errors.description && <span className="error-text">{errors.description}</span>} */}
@@ -510,9 +514,9 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                     <label className="form-label">Functional Fixes</label>
                     <input
                         type="text"
-                        name="FunctionalFixes"
-                        // value={formData.description}
-                        // onChange={handleChange}
+                        name="functional_fixes"
+                        value={formData.functional_fixes}
+                        onChange={handleChange}
                         className="form-textarea"
                     />
                     {/* {errors.description && <span className="error-text">{errors.description}</span>} */}
@@ -523,9 +527,9 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                     <label className="form-label">Security issues</label>
                     <input
                         type="text"
-                        name="SecurityIssues"
-                        // value={formData.description}
-                        // onChange={handleChange}
+                        name="security_issues"
+                        value={formData.security_issues}
+                        onChange={handleChange}
                         className="form-textarea"
                     />
                     {/* {errors.description && <span className="error-text">{errors.description}</span>} */}

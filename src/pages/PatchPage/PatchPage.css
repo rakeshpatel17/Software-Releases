@@ -294,6 +294,19 @@
     display: flex;
     justify-content: center;
   }
+
+  /* kba , fun fixes ,sec issues */
+.patch-form textarea.single-line-textarea {
+  min-height: 2em !important;       
+  max-height: 4.5em !important;           /* Allow growth up to ~4 lines */
+  overflow-y: auto !important;        /* Show scroll if exceeds max-height */
+  resize: none !important;
+  padding: 6px 10px !important;
+  line-height: 1.5em !important;
+  box-sizing: border-box !important;
+  white-space: pre-wrap !important;
+}
+
   
   
 

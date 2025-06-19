@@ -1,0 +1,29 @@
+.severity-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-top: 8px;
+    width: 100%;
+    text-align: center;
+margin-left: 4px;
+}
+
+.severity {
+    font-weight: 500;
+}
+
+.severity.critical {
+    color: red;
+}
+
+.severity.high {
+    color: orange;
+}
+
+.severity.medium {
+    color: goldenrod;
+}
+
+.severity.low {
+    color: green;
+}
