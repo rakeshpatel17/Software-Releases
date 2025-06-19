@@ -15,6 +15,8 @@ import exportToExcel from '../../api/exportToExcel';
 import post_patches from '../../api/post_patches';
 import put_patches from '../../api/put_patches';
 import get_patch_progress from '../../api/get_patch_progress';
+import { Pencil, X, Download } from 'lucide-react'; // Place this at the top of your file
+
 
 function PatchPage() {
     const { patchName } = useParams();
@@ -251,15 +253,21 @@ function PatchPage() {
 
             <div className="patch-page">
                 <div className="patch-header">
-                    <h2>Patch Details</h2>
-                    {/* Button to export data */}
-                    <div className='edit-export'>
-                        {/* <button
-                            className="export-btn"
-                            onClick={() => exportToExcel(patchData.products, `${patchName}_vulnerabilities_${getDate()}`)}
-                        >
-                            Export
-                        </button> */}
+                    <div className="left-header">
+
+                        <h2>Patch Details</h2>
+                        {patchData.patch_state !== 'released' && (
+                            <button className="edit-btn" onClick={toggleEdit}>
+                                {isEditing ? <X size={16} /> : <Pencil size={16} />}
+                            </button>
+                        )}
+                    </div>
+
+                    <div className="right-header">
+                        <div className="progress-container">
+                            <ProgressBar value={progress} label="Patch Progress" redirectTo={`/progress/${patchName}`} />
+                        </div>
+
                         {!loading && (
                             <button
                                 className="export-btn"
@@ -270,13 +278,9 @@ function PatchPage() {
                                     )
                                 }
                             >
-                                Export
+                                <Download size={16} />
                             </button>
-                        )}
-                        {patchData.patch_state !== 'released' && (
-                            <button className="edit-btn" onClick={toggleEdit}>
-                                {isEditing ? 'Cancel' : 'Edit'}
-                            </button>
+
                         )}
                     </div>
                 </div>
@@ -372,16 +376,14 @@ function PatchPage() {
                         isEditing={isEditing}
                     />
 
-                    <div className="progress-container">
-                        <ProgressBar value={progress} label="Patch Progress" redirectTo={`/progress/${patchName}`} />
-                    </div>
+
                     <label>KBA</label>
                     <textarea
                         className="single-line-textarea"
                         value={tempPatchData.kba || ''}
                         disabled={!isEditing || tempPatchData.patch_state === 'released'}
                         onChange={e => setTempPatchData({ ...tempPatchData, kba: e.target.value })}
-                         onInput={e => {
+                        onInput={e => {
                             e.target.style.height = 'auto';
                             e.target.style.height = `${e.target.scrollHeight}px`;
                         }}
@@ -405,7 +407,7 @@ function PatchPage() {
                         value={tempPatchData.security_issues || ''}
                         disabled={!isEditing || tempPatchData.patch_state === 'released'}
                         onChange={e => setTempPatchData({ ...tempPatchData, security_issues: e.target.value })}
-                         onInput={e => {
+                        onInput={e => {
                             e.target.style.height = 'auto';
                             e.target.style.height = `${e.target.scrollHeight}px`;
                         }}

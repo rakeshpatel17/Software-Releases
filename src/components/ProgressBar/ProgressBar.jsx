@@ -10,7 +10,7 @@ function ProgressBar({ value = 0, label, redirectTo = "/dashboard" }) {
   };
   return (
     <div className="progress-wrapper clickable" onClick={handleClick}>
-      {label && <div className="progress-label">{label}</div>}
+      {/* {label && <div className="progress-label">{label}</div>} */}
       <div className="progress-bar-background">
         <div
           className="progress-bar-fill"

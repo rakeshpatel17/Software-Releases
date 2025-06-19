@@ -2,7 +2,7 @@ import './Card.css';
 import { useNavigate } from 'react-router-dom';
 import { deletePatch } from '../../api/deletePatch';
 import { Trash2 } from 'lucide-react';
-import SeverityCount from '../../SeverityCount/SeverityCount';
+import SeverityCount from '../SeverityCount/SeverityCount';
 
 const Card = ({ info, setPatches, products = [], className = '', children, ...rest }) => {
   const { title, description, image, badge, footer } = info || {};
