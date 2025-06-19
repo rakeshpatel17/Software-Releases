@@ -1,6 +1,6 @@
 
 .progress-wrapper {
-    margin: 40px auto 20px auto; /* space from header + spacing below */
+    margin: 24px auto 0px auto; /* space from header + spacing below */
     width: 100%;
     max-width: 850px; /* matches typical centered content card width */
     padding: 16px 24px;

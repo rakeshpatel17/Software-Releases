@@ -3,7 +3,7 @@
     width: 90%;                /* Takes 90% of the screen width */
     max-width: 95vw;           /* Ensures it doesn’t exceed the viewport */
     margin: 2rem auto;
-    padding: 2rem;
+    padding: 20px 2rem 2rem 2rem; /* top right bottom left */
     
     background-color: #ffffff;
     border-radius: 12px;
@@ -13,7 +13,7 @@
     box-sizing: border-box;
 }
 
-.patch-header {
+/* .patch-header {
 
     display: flex;
 
@@ -24,6 +24,33 @@
     margin-bottom: 1.5rem;
     flex-wrap: wrap;
     gap: 1rem;
+} */
+.patch-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.left-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.right-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.edit-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    
+    color: #20338b;
 }
 
 .patch-header h2 {
@@ -37,7 +64,7 @@
     margin: 0;
 
 }
-
+/* 
 .edit-btn {
 
     background-color: #20338b;
@@ -56,11 +83,11 @@
 
     transition: background-color 0.3s ease;
 
-}
+} */
 
 .edit-btn:hover {
 
-    background-color: #3549c9;
+    color: #6979e0;
 
 }
 
@@ -290,11 +317,12 @@
   
 
 .progress-container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
-
+  width: 200px; /* Or whatever size suits your layout */
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  margin-right: 1rem;
+}
   /* kba , fun fixes ,sec issues */
 .patch-form textarea.single-line-textarea {
   min-height: 2em !important;       
@@ -326,6 +354,8 @@
         align-items: flex-start;
 
         gap: 0.5rem;
+
+        margin-top: -10%;
 
     }
 
