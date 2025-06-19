@@ -12,10 +12,8 @@ import LoadingSpinner from '../../components/Loading/LoadingSpinner';
 import HelmCharts from '../../components/HelmCharts/HelmCharts';
 import patch_product_jars from '../../api/patch_product_jars';
 import { update_patch_product_jar } from '../../api/update_patch_product_jar';
-import JarTable from '../../components/JarTable/JarTable';
 import RefreshButton from '../../components/Button/RefreshButton';
-
-
+import JarTable from '../../components/JarTable/JarTable';
 
 function PatchProgressPage() {
   const { searchTerm, setTitle } = useOutletContext();
@@ -249,15 +247,25 @@ function PatchProgressPage() {
 
                     </div>
                     {/* JarTable component */}
-                    <JarTable
+                    {/* <JarTable
                       id={id}
                       productKey={productKey}
                       jars={productObj.jars}
                       onJarsUpdate={(updatedJars) => handleJarsUpdate(productKey, updatedJars)}
-                    />
+                    /> */}
                     <div className="image-table-wrapper">
                       {/* now pass this product’s own images */}
-                      <ImageTable images={images} patchname={patch?.name} />
+                      {/* <ImageTable images={images} patchname={patch?.name} /> */}
+                      <ImageTable
+                        images={productObj.images}
+                        jars={productObj.jars} 
+                        productKey = {productKey}              
+                        patchname={patch?.name}
+                        searchTerm={searchTerm}
+                        onJarsUpdate={(updatedJars) =>
+                          handleJarsUpdate(productKey, updatedJars)
+                        }
+                     />
                     </div>
                     <div className="image-table-wrapper">
                       <HelmCharts product={productObj} />

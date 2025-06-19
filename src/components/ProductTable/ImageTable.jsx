@@ -8,6 +8,7 @@ import { securityIssuesUpdate } from '../../api/updateIssuesdes';
 import { getPatchById } from '../../api/getPatchById';
 import SeverityFilterButtons from '../Button/SeverityFilterButtons';
 import SecurityIssuesTable from '../SecurityIssuesTable/SecurityIssuesTable';
+import JarTable from '../JarTable/JarTable';
 
 function highlightMatch(text, term) {
     if (!term) return text;
@@ -21,7 +22,7 @@ function highlightMatch(text, term) {
     );
 }
 
-function ImageTable({ images, patchname, searchTerm }) {
+function ImageTable({ images, jars, productKey, patchname, searchTerm, onJarsUpdate }) {
     const [expandedRows, setExpandedRows] = useState({});
     // const [editingIndex, setEditingIndex] = useState(null);
     // const [editedDescription, setEditedDescription] = useState('');
@@ -216,6 +217,17 @@ function ImageTable({ images, patchname, searchTerm }) {
                                                             }}
                                                             img = {img}
                                                         />
+                                                     {/* 3. Render the shared JarTable under each image */}
+                                                        <div style={{ marginTop: '1rem' }}>
+                                                        <strong>Jars :</strong>
+                                                        <JarTable
+                                                            id={patchname}
+                                                            productKey={productKey}   
+                                                            jars={jars}               
+                                                            onJarsUpdate={onJarsUpdate} 
+                                                        />
+                                                        </div>
+
                                                 </>
                                             ) : (
                                                 <p>None</p>
