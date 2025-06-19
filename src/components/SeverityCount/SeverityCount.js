@@ -2,6 +2,7 @@ import React from 'react';
 import './SeverityCount.css'; // Create this CSS file or include styles in your existing one
 
 function SeverityCount({ products }) {
+    console.log("products to severity : ", products);
     const counts = { Critical: 0, High: 0, Medium: 0, Low: 0 };
 
     (products || []).forEach(product => {
