@@ -27,12 +27,16 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         platform_qa_build: '',
         description: '',
         patch_state: 'new',
+        kba:'',
+        functional_fixes:'',
+        security_issues:'',
         is_deleted: false,
         client_build_availability: '',
         scopes_data: [],
         kick_off: '',
         products_data: [],
         jars_data: [],
+
     });
 
 
@@ -411,6 +415,21 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                     </div>
                 </div>
                 <div className="inline-fields">
+                       {/* Kick Off date */}
+                    <div className="form-group">
+                        <label className="form-label">Kick Off Date</label>
+                        <input
+                            type="date"
+                            name="kick_off"
+                            onChange={handleChange}
+                            value={formData.kick_off || getPreviousDate(formData.release_date, 1)}
+                            className="form-input"
+                            min={new Date().toISOString().split("T")[0]}
+                            max={formData.release_date}
+                        //readOnly
+                        />
+                        {errors.kick_off && <span className="error-text">{errors.kick_off}</span>}
+                    </div>
                     {/* code freeze date */}
                     <div className="form-group">
                         <label className="form-label">Code Freeze Date</label>
@@ -461,21 +480,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                         {errors.client_build_availability && <span className="error-text">{errors.client_build_availability}</span>}
                     </div>
 
-                    {/* Kick Off date */}
-                    <div className="form-group">
-                        <label className="form-label">Kick Off Date</label>
-                        <input
-                            type="date"
-                            name="kick_off"
-                            onChange={handleChange}
-                            value={formData.kick_off || getPreviousDate(formData.release_date, 1)}
-                            className="form-input"
-                            min={new Date().toISOString().split("T")[0]}
-                            max={formData.release_date}
-                        //readOnly
-                        />
-                        {errors.kick_off && <span className="error-text">{errors.kick_off}</span>}
-                    </div>
+                 
                 </div>
                 <HighLevelScopeComponent
                     highLevelScope={highLevelScope}
@@ -495,9 +500,9 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                     <label className="form-label">KBA</label>
                     <input
                         type="text"
-                        name="KBA"
-                        // value={formData.description}
-                        // onChange={handleChange}
+                        name="kba"
+                        value={formData.kba}
+                        onChange={handleChange}
                         className="form-textarea"
                     />
                     {/* {errors.description && <span className="error-text">{errors.description}</span>} */}
@@ -507,9 +512,9 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                     <label className="form-label">Functional Fixes</label>
                     <input
                         type="text"
-                        name="FunctionalFixes"
-                        // value={formData.description}
-                        // onChange={handleChange}
+                        name="functional_fixes"
+                        value={formData.functional_fixes}
+                        onChange={handleChange}
                         className="form-textarea"
                     />
                     {/* {errors.description && <span className="error-text">{errors.description}</span>} */}
@@ -520,9 +525,9 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                     <label className="form-label">Security issues</label>
                     <input
                         type="text"
-                        name="SecurityIssues"
-                        // value={formData.description}
-                        // onChange={handleChange}
+                        name="security_issues"
+                        value={formData.security_issues}
+                        onChange={handleChange}
                         className="form-textarea"
                     />
                     {/* {errors.description && <span className="error-text">{errors.description}</span>} */}
