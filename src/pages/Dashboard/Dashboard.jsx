@@ -32,6 +32,8 @@ function Dashboard() {
         description: patch.description || "No description available",
         badge: patch.patch_state || "no patche state",
         footer: patch.release_date || "no release_date",
+          products: patch.products || [], 
+
       }));
       //console.log("fetched patches in dashboard : ", mappedData);
       setFetchedPatches(mappedData); 
@@ -90,6 +92,7 @@ function Dashboard() {
                     <Card
                       key={index}
                       info={patch}
+                      products={patch.products}
                       setPatches={setFetchedPatches} 
                       onClick={() => navigate(`/patches/${encodeURIComponent(patch.title)}`, {
                         state: { patch }

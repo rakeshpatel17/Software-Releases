@@ -192,7 +192,7 @@ function ImageTable({ images, patchname, searchTerm }) {
                                         </p>
                                         <div style={{ marginTop: '12px' }}>
                                             <strong>Security Issues:</strong>
-                                            {img.security_issues.length > 0 ? (
+                                            {Array.isArray(img.security_issues) && img.security_issues.length > 0 ? (
                                                 <>
                                                 {/* buttons */}
                                                     {(() => {

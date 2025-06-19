@@ -44,9 +44,9 @@ function PatchPage() {
     const [progress, setProgress] = useState(null);
     useEffect(() => {
         const fetchProgress = async () => {
-        const result = await get_patch_progress(patchName);
-        // console.log(`Patch ${patchName} progress: ${result}%`);
-        setProgress(result); // result should be a number like 33.33
+            const result = await get_patch_progress(patchName);
+            // console.log(`Patch ${patchName} progress: ${result}%`);
+            setProgress(result); // result should be a number like 33.33
         };
 
         if (patchName) fetchProgress();
@@ -262,15 +262,15 @@ function PatchPage() {
                         </button> */}
                         {!loading && (
                             <button
-                            className="export-btn"
-                            onClick={() =>
-                                exportToExcel(
-                                patchData.products,
-                                `${patchName}_vulnerabilities_${getDate()}`
-                                )
-                            }
+                                className="export-btn"
+                                onClick={() =>
+                                    exportToExcel(
+                                        patchData.products,
+                                        `${patchName}_vulnerabilities_${getDate()}`
+                                    )
+                                }
                             >
-                            Export
+                                Export
                             </button>
                         )}
                         {patchData.patch_state !== 'released' && (
@@ -305,9 +305,6 @@ function PatchPage() {
                                 onChange={e => setTempPatchData({ ...tempPatchData, name: e.target.value })}
                             />
                         </div>
-                    </div>
-
-                    <div className="form-row">
                         <div className="form-group">
                             <label>Release Date</label>
                             <input
@@ -316,6 +313,19 @@ function PatchPage() {
                                 disabled={!isEditing}
                                 onChange={e => setTempPatchData({ ...tempPatchData, release_date: e.target.value })}
                                 min={new Date().toISOString().split("T")[0]}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="form-row">
+
+                        <div className="form-group">
+                            <label>Kick Off </label>
+                            <input
+                                type="date"
+                                value={tempPatchData.kick_off || ''}
+                                disabled={!isEditing}
+                                onChange={e => setTempPatchData({ ...tempPatchData, kick_off: e.target.value })}
                             />
                         </div>
                         <div className="form-group">
@@ -336,6 +346,16 @@ function PatchPage() {
                                 onChange={e => setTempPatchData({ ...tempPatchData, platform_qa_build: e.target.value })}
                             />
                         </div>
+                        <div className="form-group">
+                            <label>Client Build </label>
+                            <input
+                                type="date"
+                                value={tempPatchData.client_build_availability || ''}
+                                disabled={!isEditing}
+                                onChange={e => setTempPatchData({ ...tempPatchData, client_build_availability: e.target.value })}
+                            />
+                        </div>
+
                     </div>
 
                     <HighLevelScopeComponent
@@ -355,6 +375,41 @@ function PatchPage() {
                     <div className="progress-container">
                         <ProgressBar value={progress} label="Patch Progress" redirectTo={`/progress/${patchName}`} />
                     </div>
+                    <label>KBA</label>
+                    <textarea
+                        className="single-line-textarea"
+                        value={tempPatchData.kba || ''}
+                        disabled={!isEditing || tempPatchData.patch_state === 'released'}
+                        onChange={e => setTempPatchData({ ...tempPatchData, kba: e.target.value })}
+                         onInput={e => {
+                            e.target.style.height = 'auto';
+                            e.target.style.height = `${e.target.scrollHeight}px`;
+                        }}
+                    />
+
+                    <label>Functional Fixes</label>
+                    <textarea
+                        className="single-line-textarea"
+                        value={tempPatchData.functional_fixes || ''}
+                        disabled={!isEditing || tempPatchData.patch_state === 'released'}
+                        onChange={e => setTempPatchData({ ...tempPatchData, functional_fixes: e.target.value })}
+                        onInput={e => {
+                            e.target.style.height = 'auto';
+                            e.target.style.height = `${e.target.scrollHeight}px`;
+                        }}
+                    />
+
+                    <label>Security Issues</label>
+                    <textarea
+                        className="single-line-textarea"
+                        value={tempPatchData.security_issues || ''}
+                        disabled={!isEditing || tempPatchData.patch_state === 'released'}
+                        onChange={e => setTempPatchData({ ...tempPatchData, security_issues: e.target.value })}
+                         onInput={e => {
+                            e.target.style.height = 'auto';
+                            e.target.style.height = `${e.target.scrollHeight}px`;
+                        }}
+                    />
                     <div className="form-group">
                         <label>Patch State</label>
                         <select
@@ -370,6 +425,7 @@ function PatchPage() {
                         </select>
                     </div>
 
+
                     <label>Description</label>
                     <textarea
                         value={tempPatchData.description || ''}
@@ -377,13 +433,15 @@ function PatchPage() {
                         onChange={e => setTempPatchData({ ...tempPatchData, description: e.target.value })}
                     />
 
+
+
                     {!isEditing ? (
                         // Read-only mode
                         <>
                             <label>Products</label>
 
                             <ProductImageSelector
-                                
+
                                 mode="read"
                                 products={transformedProducts}
                                 selectedProducts={selectedProducts} // images to show as selected
