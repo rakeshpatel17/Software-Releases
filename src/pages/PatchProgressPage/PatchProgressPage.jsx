@@ -15,6 +15,7 @@ import { update_patch_product_jar } from '../../api/update_patch_product_jar';
 import RefreshButton from '../../components/Button/RefreshButton';
 
 
+
 function PatchProgressPage() {
   const { searchTerm, setTitle } = useOutletContext();
   const { id } = useParams();
@@ -226,7 +227,7 @@ function PatchProgressPage() {
                       >
                         <i className="bi bi-arrow-clockwise fs-5"></i>
                       </button> */}
-                      <RefreshButton onRefresh={() => handleProductRefresh(productKey)} />
+                                   <RefreshButton onRefresh={() => handleProductRefresh(productKey)} />
 
                     </div>
 

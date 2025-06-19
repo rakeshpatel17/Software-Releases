@@ -25,7 +25,7 @@ function ImageTable({ images, patchname, searchTerm }) {
     // const [editedDescription, setEditedDescription] = useState('');
 
     // console.log("data",images)
-
+    const [loading, setLoading] = useState(true);
     const toggleRow = (idx) => {
         setExpandedRows((prev) => ({
             ...prev,
@@ -102,6 +102,7 @@ function ImageTable({ images, patchname, searchTerm }) {
                 setPatchData(data);
                 setProductsdata(products_data)
                 // console.log(' Products data:', products_data);
+                setLoading(false);
             } catch (error) {
                 console.error(' Error fetching patch data:', error);
             }
@@ -177,13 +178,13 @@ function ImageTable({ images, patchname, searchTerm }) {
                                 </button>
                             </td>
                         </tr>
-                        {expandedRows[idx] && (
+                        {expandedRows[idx] && !loading && (
                             <tr>
                                 <td colSpan="6">
                                     <div className="expanded-content">
 
                                         <p style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-                                            <span ><strong>Twist Lock Report: </strong><a href={img.twistlock_report_url} target="_blank" rel="noopener noreferrer">
+                                            <span ><strong>Twist Lock Report: </strong><a href={img.twistlock_report_url } target="_blank" rel="noopener noreferrer">
                                                 View Report
                                             </a></span>
                                             {/* <span><strong>Twistlock Report Clean:</strong> {img.twistlock_report_clean ? 'Yes' : 'No'}</span> */}
@@ -194,39 +195,62 @@ function ImageTable({ images, patchname, searchTerm }) {
                                             {Array.isArray(img.security_issues) && img.security_issues.length > 0 ? (
                                                 <>
                                                 {/* buttons */}
-                                                <div style={{ marginBottom: 8 }}>
-                                                    {/* Select All / Clear All controls */}
-                                                    <button onClick={() => setSelected(new Set(levels))} style={{ marginRight: 12 }}>
-                                                        Select All
-                                                    </button>
-                                                    <button onClick={() => setSelected(new Set())}>
-                                                        Clear All
-                                                    </button>
+                                                    {(() => {
+                                                    // 1) compute counts per severity
+                                                    const severityCounts = img.security_issues.reduce((acc, issue) => {
+                                                        const sev = issue.severity.toLowerCase();
+                                                        acc[sev] = (acc[sev] || 0) + 1;
+                                                        return acc;
+                                                    }, {});
+                                                    const totalCount = img.security_issues.length;
+                                                    const isAll = selected.size === levels.length;
 
-                                                    {/* Per‐level toggles */}
-                                                    {levels.map(level => {
-                                                        const isOn = selected.has(level);
-                                                        return (
+                                                    return (
+                                                        <div style={{ marginBottom: 8 }}>
+                                                        {/* All toggle */}
                                                         <button
-                                                            key={level}
-                                                            onClick={() => {
-                                                            const copy = new Set(selected);
-                                                            if (copy.has(level)) copy.delete(level);
-                                                            else copy.add(level);
-                                                            setSelected(copy);
-                                                            }}
+                                                            onClick={() =>
+                                                            setSelected(prev => (isAll ? new Set() : new Set(levels)))
+                                                            }
                                                             style={{
-                                                            marginLeft: 6,
+                                                            marginRight: 12,
                                                             padding: '4px 8px',
-                                                            fontWeight: isOn ? 'bold' : 'normal',
-                                                            opacity: isOn ? 1 : 0.6,
+                                                            fontWeight: isAll ? 'bold' : 'normal',
+                                                            opacity: isAll ? 1 : 0.6,
+                                                            color: '#20338b',
                                                             }}
                                                         >
-                                                            {level.charAt(0).toUpperCase() + level.slice(1)}
+                                                            All ({totalCount})
                                                         </button>
-                                                        );
-                                                    })}
-                                                </div>
+
+                                                        {/* Per‑level toggles with counts */}
+                                                        {levels.map(level => {
+                                                            const isOn = selected.has(level);
+                                                            const count = severityCounts[level] || 0;
+                                                            return (
+                                                            <button
+                                                                key={level}
+                                                                onClick={() => {
+                                                                const copy = new Set(selected);
+                                                                if (copy.has(level)) copy.delete(level);
+                                                                else copy.add(level);
+                                                                setSelected(copy);
+                                                                }}
+                                                                style={{
+                                                                marginLeft: 6,
+                                                                padding: '4px 8px',
+                                                                fontWeight: isOn ? 'bold' : 'normal',
+                                                                opacity: isOn ? 1 : 0.6,
+                                                                color: severityColors[level]
+                                                                }}
+                                                            >
+                                                                {level.charAt(0).toUpperCase() + level.slice(1)} ({count})
+                                                            </button>
+                                                            );
+                                                        })}
+                                                        </div>
+                                                    );
+                                                    })()}
                                                 {/*rendering table if there are items after filtering */}
                                                 {displayed.length > 0 ? (
                                                 <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '8px' }}>

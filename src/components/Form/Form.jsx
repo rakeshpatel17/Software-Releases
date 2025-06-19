@@ -413,9 +413,11 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                         {errors.release_date && <span className="error-text">{errors.release_date}</span>}
 
                     </div>
+
                 </div>
+                
                 <div className="inline-fields">
-                       {/* Kick Off date */}
+                    {/* Kick Off date */}
                     <div className="form-group">
                         <label className="form-label">Kick Off Date</label>
                         <input
@@ -480,7 +482,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                         {errors.client_build_availability && <span className="error-text">{errors.client_build_availability}</span>}
                     </div>
 
-                 
+                    
                 </div>
                 <HighLevelScopeComponent
                     highLevelScope={highLevelScope}
