@@ -87,8 +87,8 @@
  
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 280px); /* fixed width */
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 1.5rem;
   justify-content: center; /* keeps cards centered */
   padding: 1rem;
 }
@@ -106,16 +106,34 @@
   transform: translateY(-8px);
   box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2); /* Hover effect */
 }
- 
-/* For Mobile View, slightly larger gap and text size */
-@media (max-width: 768px) {
+
+
+/* 1 card per row on screen widths 1100px and below */
+@media (max-width: 1100px) {
   .card-grid {
-    grid-template-columns: 1fr; /* Stack cards vertically on smaller screens */
-    gap: 1.5rem; /* More space between cards on mobile */
+    grid-template-columns: 1fr;
   }
- 
+
   .search-input {
-    width: 100%; /* Makes the search bar responsive */
+    width: 100%;
   }
 }
+
+
+@media (max-width: 600px) {
+  .enhanced-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 0 1rem 0 !important;
+    box-sizing: border-box;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr !important;
+    padding: 1rem !important;
+    overflow-x: hidden;
+  }
+}
+
 
