@@ -12,6 +12,7 @@ import LoadingSpinner from '../../components/Loading/LoadingSpinner';
 import HelmCharts from '../../components/HelmCharts/HelmCharts';
 import patch_product_jars from '../../api/patch_product_jars';
 import { update_patch_product_jar } from '../../api/update_patch_product_jar';
+import JarTable from '../../components/JarTable/JarTable';
 
 
 function PatchProgressPage() {
@@ -66,7 +67,7 @@ function PatchProgressPage() {
     async function fetchData() {
         setLoading(true); 
       const data = await getPatchById(id);
-
+      
       // Create an empty map.
       const productMap = {};
 
@@ -185,6 +186,23 @@ function PatchProgressPage() {
     }
   };
 
+  const handleJarsUpdate = (productKey, updatedJars) => {
+    setProductJars(prev => ({
+      ...prev,
+      [productKey]: {
+        ...prev[productKey],
+        jars: updatedJars
+      }
+    }));
+    setFilteredProducts(prev => ({
+      ...prev,
+      [productKey]: {
+        ...prev[productKey],
+        jars: updatedJars
+      }
+    }));
+  };
+
 
 
   return (
@@ -226,68 +244,13 @@ function PatchProgressPage() {
                         <i className="bi bi-arrow-clockwise fs-5"></i>
                       </button>
                     </div>
-
-
-                    <table className="product-table">
-                      <thead>
-                        <tr>
-                          <th>Jar</th>
-                          <th>Current Version</th>
-                          <th>Version</th>
-                          <th>Remarks</th>
-                          <th>Updated</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {jars.length === 0 ? (
-                          <tr>
-                            <td colSpan={5} style={{ textAlign: 'center' }}>
-                              No jars available
-                            </td>
-                          </tr>
-                        ) :
-                        (jars.map((entry, jIdx) => (
-                          <tr key={jIdx}>
-                            <td>{entry.name}</td>
-                            <td>{entry.current_version}</td>
-                            <td>{entry.version}</td>
-                            <td>
-                              <EditableFieldComponent
-                                value={entry.remarks || '—'}
-                                onSave={async (newValue) => {
-                                  const updatedJars = [...jars];
-                                  updatedJars[jIdx].remarks = newValue;
-                                  // console.log(jars);
-                                  // console.log("updated jars : ", updatedJars);
-                                  try {
-                                    await update_patch_product_jar(id, productKey, entry.name, { "remarks": newValue }); // PATCH request
-                                    const updated = { ...productJars };
-                                    updated[productKey].jars[jIdx].remarks = newValue;
-                                    setProductJars(updated);
-                                  } catch (error) {
-                                    console.error('Error updating remarks:', error.message);
-                                    alert('Failed to update remarks.');
-                                  }
-                                }}
-                              />
-                            </td>
-                            <td>
-                              <ToggleButtonComponent
-                                options={['Yes', 'No']}
-                                value={entry.updated ? 'Yes' : 'No'}  // convert boolean → string
-                                onToggle={(newValue) => {
-                                  const booleanValue = newValue === 'Yes';  // convert string → boolean
-                                  const updated = { ...productJars };
-                                  updated[productKey].jars[jIdx].updated = booleanValue;
-                                  setProductJars(updated);
-                                }}
-                              />
-                            </td>
-                          </tr>
-                        )))}
-                      </tbody>
-                    </table>
-
+                    {/* JarTable component */}
+                    <JarTable
+                      id={id}
+                      productKey={productKey}
+                      jars={productObj.jars}
+                      onJarsUpdate={(updatedJars) => handleJarsUpdate(productKey, updatedJars)}
+                    />
                     <div className="image-table-wrapper">
                       {/* now pass this product’s own images */}
                       <ImageTable images={images} patchname={patch?.name} />

@@ -6,6 +6,8 @@ import ToggleButtonComponent from '../ToggleButton/ToggleButton';
 import get_security_issues from '../../api/securityIssues';
 import { securityIssuesUpdate } from '../../api/updateIssuesdes';
 import { getPatchById } from '../../api/getPatchById';
+import SeverityFilterButtons from '../Button/SeverityFilterButtons';
+import SecurityIssuesTable from '../SecurityIssuesTable/SecurityIssuesTable';
 
 function highlightMatch(text, term) {
     if (!term) return text;
@@ -77,17 +79,25 @@ function ImageTable({ images, patchname, searchTerm }) {
         return matchIndex !== -1 ? options[matchIndex] : 'Not Released'; // Default fallback
     };
 
-    const [filter, setFilter] = useState('all');
     const severityOrder = { critical: 1, high: 2, medium: 3, low: 4 };
     const levels = ['critical','high','medium','low'];
-    const [selected, setSelected] = useState(new Set(levels));
-    const severityColors = {
-        low:      '#008000',   // green
-        medium:   '#FFD700',   // gold
-        high:     '#FF8C00',   // dark orange
-        critical: '#FF0000',   // red
+    const [selectedLevels, setSelectedLevels] = useState(new Set(levels));
+
+    const toggleLevel = (level) => {
+        setSelectedLevels(prev => {
+            const copy = new Set(prev);
+            if (copy.has(level)) copy.delete(level);
+            else copy.add(level);
+            return copy;
+        });
     };
-    
+
+    const toggleAll = () => {
+        setSelectedLevels(prev =>
+            prev.size === 4 ? new Set() : new Set(['critical', 'high', 'medium', 'low'])
+        );
+    };
+
 
     const [patchData, setPatchData] = useState(null);
     const [Productsdata, setProductsdata] = useState(null);
@@ -137,7 +147,7 @@ function ImageTable({ images, patchname, searchTerm }) {
                         if (sa !== sb) return sa - sb;               // severity order
                         return b.cvss_score - a.cvss_score;          // then CVSS desc
                     })
-                    .filter(issue => selected.has(issue.severity.toLowerCase()));
+                    .filter(issue => selectedLevels.has(issue.severity.toLowerCase()));
             
                  return (
                     <React.Fragment key={idx}>
@@ -157,14 +167,8 @@ function ImageTable({ images, patchname, searchTerm }) {
                                     options={['Released', 'Not Released', 'Not Applicable']}
                                     value={toggleRegisteryValues[idx]}
                                     onToggle={(newValue) => handleRegisteryToggle(idx, newValue)}
-                                /></td>
-                            {/* <td>
-                                <ToggleButtonComponent
-                                    options={['Released', 'Not Released', 'Not Applicable']}
-                                    value={toggleHelmValues[idx]}
-                                    onToggle={(newValue) => handleHelmToggle(idx, newValue)}
                                 />
-                            </td> */}
+                            </td>
                             <td>
                                 { img.security_issues.length == 0 ? (
                                     <span style={{ color: 'green', fontWeight: 'bold' }}> ✔ Success </span>
@@ -194,139 +198,24 @@ function ImageTable({ images, patchname, searchTerm }) {
                                             <strong>Security Issues:</strong>
                                             {img.security_issues.length > 0 ? (
                                                 <>
-                                                {/* buttons */}
-                                                    {(() => {
-                                                    // 1) compute counts per severity
-                                                    const severityCounts = img.security_issues.reduce((acc, issue) => {
-                                                        const sev = issue.severity.toLowerCase();
-                                                        acc[sev] = (acc[sev] || 0) + 1;
-                                                        return acc;
-                                                    }, {});
-                                                    const totalCount = img.security_issues.length;
-                                                    const isAll = selected.size === levels.length;
-
-                                                    return (
-                                                        <div style={{ marginBottom: 8 }}>
-                                                        {/* All toggle */}
-                                                        <button
-                                                            onClick={() =>
-                                                            setSelected(prev => (isAll ? new Set() : new Set(levels)))
-                                                            }
-                                                            style={{
-                                                            marginRight: 12,
-                                                            padding: '4px 8px',
-                                                            fontWeight: isAll ? 'bold' : 'normal',
-                                                            opacity: isAll ? 1 : 0.6,
-                                                            color: '#20338b',
+                                                    {/* buttons */}
+                                                        <SeverityFilterButtons
+                                                            allIssues={img.security_issues}
+                                                            selectedLevels={selectedLevels}
+                                                            onToggleLevel={toggleLevel}
+                                                            onToggleAll={toggleAll}
+                                                        />
+                                                    {/*rendering security issue table */}
+                                                        <SecurityIssuesTable
+                                                            issues={displayed}
+                                                            Productsdata={Productsdata}
+                                                            patchname={patchname}
+                                                            refreshProductsData={async () => {
+                                                                const refreshed = await getPatchById(patchname);
+                                                                setProductsdata(refreshed.products);
                                                             }}
-                                                        >
-                                                            All ({totalCount})
-                                                        </button>
-
-                                                        {/* Per‑level toggles with counts */}
-                                                        {levels.map(level => {
-                                                            const isOn = selected.has(level);
-                                                            const count = severityCounts[level] || 0;
-                                                            return (
-                                                            <button
-                                                                key={level}
-                                                                onClick={() => {
-                                                                const copy = new Set(selected);
-                                                                if (copy.has(level)) copy.delete(level);
-                                                                else copy.add(level);
-                                                                setSelected(copy);
-                                                                }}
-                                                                style={{
-                                                                marginLeft: 6,
-                                                                padding: '4px 8px',
-                                                                fontWeight: isOn ? 'bold' : 'normal',
-                                                                opacity: isOn ? 1 : 0.6,
-                                                                color: severityColors[level]
-                                                                }}
-                                                            >
-                                                                {level.charAt(0).toUpperCase() + level.slice(1)} ({count})
-                                                            </button>
-                                                            );
-                                                        })}
-                                                        </div>
-                                                    );
-                                                    })()}
-                                                {/*rendering table if there are items after filtering */}
-                                                {displayed.length > 0 ? (
-                                                <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '8px' }}>
-                                                    <thead>
-                                                        <tr>
-                                                            <th>CVE ID</th>
-                                                            <th>CVSS Score</th>
-                                                            <th>Severity</th>
-                                                            <th>Affected Libraries</th>
-                                                            {/* <th>Library Path</th> */}
-                                                            <th>Description</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {
-                                                            displayed.map((issue, index) => (
-                                                            <tr key={index}>
-                                                                <td>{issue.cve_id}</td>
-                                                                <td>{issue.cvss_score}</td>
-                                                                <td
-                                                                    style={{
-                                                                        color: severityColors[issue.severity.toLowerCase()],
-                                                                        fontWeight: 'bold',
-                                                                    }}
-                                                                    >
-                                                                    {issue.severity}
-                                                                </td>
-                                                                <td>{issue.affected_libraries}</td>
-                                                                {/* <td>{issue.library_path}</td> */}
-                                                                <td>
-                                                                    <EditableFieldComponent
-                                                                        value={
-                                                                            Productsdata.find(p => p.name === img.product)?.product_security_des || '—'
-                                                                        }
-                                                                        onSave={async (newValue) => {
-                                                                            const updatedProducts = [...Productsdata]; // shallow copy
-
-                                                                            // Find product that contains this image
-                                                                            const productIndex = updatedProducts.findIndex(p =>
-                                                                                p.images.some(i =>
-                                                                                    i.image_name === img.image_name &&
-                                                                                    i.patch_build_number === img.patch_build_number
-                                                                                )
-                                                                            );
-
-                                                                            if (productIndex !== -1) {
-                                                                                updatedProducts[productIndex].product_security_des = newValue;
-
-                                                                                try {
-                                                                                    await securityIssuesUpdate(patchname, { products_data: updatedProducts });
-
-                                                                                    // 🔁 REFRESH DATA FROM BACKEND
-                                                                                    const refreshed = await getPatchById(patchname);
-                                                                                    setProductsdata(refreshed.products);
-                                                                                    console.log(" Refreshed Products:", refreshed.products);
-                                                                                } catch (error) {
-                                                                                    console.error("Error updating product_security_des:", error.message);
-                                                                                    alert("Update failed");
-                                                                                }
-                                                                            } else {
-                                                                                console.warn(" Product not found for image", img.image_name);
-                                                                            }
-                                                                        }}
-
-                                                                    />
-                                                                </td>
-
-                                                            </tr>
-                                                        ))}
-                                                    </tbody>
-                                                </table>
-                                                ) : (
-                                                <p style={{ marginTop: 8, fontStyle: 'italic' }}>
-                                                    No security issues...
-                                                </p>
-                                                )}
+                                                            img = {img}
+                                                        />
                                                 </>
                                             ) : (
                                                 <p>None</p>
