@@ -29,7 +29,7 @@ function SeverityCount({ products }) {
                 fontWeight: '500',
                 gap: '12px',
                 whiteSpace: 'nowrap',
-                marginLeft: '-1%'
+                // marginLeft: '-1%'
             }}
         >
             <span style={{ color: 'red' }}>Critical: {counts.Critical}</span>
