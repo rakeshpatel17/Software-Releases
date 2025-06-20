@@ -14,6 +14,7 @@ import patch_product_jars from '../../api/patch_product_jars';
 import { update_patch_product_jar } from '../../api/update_patch_product_jar';
 import RefreshButton from '../../components/Button/RefreshButton';
 import JarTable from '../../components/JarTable/JarTable';
+import getPatchProductDetail from '../../api/PatchProductDetail';
 
 function PatchProgressPage() {
   const { searchTerm, setTitle } = useOutletContext();
@@ -65,9 +66,9 @@ function PatchProgressPage() {
 
   useEffect(() => {
     async function fetchData() {
-        setLoading(true); 
+      setLoading(true);
       const data = await getPatchById(id);
-      
+
       // Create an empty map.
       const productMap = {};
 
@@ -95,7 +96,7 @@ function PatchProgressPage() {
       setProductJars(productMap);
       setFilteredProducts(productMap);
       setPatch(data);
-        setLoading(false);
+      setLoading(false);
     }
 
     fetchData();
@@ -137,39 +138,31 @@ function PatchProgressPage() {
   }, [id, setTitle]);
 
 
- 
+
 
   if (loading) return <LoadingSpinner />;
 
+
   const handleProductRefresh = async (productKey) => {
     try {
-      // Convert product key back to original case (if needed)
       const productName = productKey.toUpperCase();
 
-      // Fetch full patch data
-      const data = await getPatchById(id);
+      // Use patch name directly (assuming 'patchName' is available in scope)
+      const data = await getPatchProductDetail(id, productName);
 
-      // Find the product from the patch data
-      const prod = data.products.find(p => p.name.toLowerCase() === productKey.toLowerCase());
-      if (!prod) throw new Error(`Product ${productName} not found`);
-
-      // Fetch jars for this product
-      const ppj = await patch_product_jars(id, prod.name);
-
-      // Build updated product object
       const updatedProduct = {
-        images: prod.images,
-        jars: ppj.map(jar => ({
+        images: data.images || [],
+        jars: (data.jars || []).map(jar => ({
           name: jar.name,
           version: jar.version,
           current_version: jar.current_version,
           remarks: jar.remarks || "",
           updated: jar.updated || false
         })),
-        helm_charts: prod.helm_charts
+        helm_charts: data.helm_charts || []
       };
 
-      // Update only this product in the state
+      // Update state
       setProductJars(prev => ({
         ...prev,
         [productKey]: updatedProduct
@@ -185,6 +178,7 @@ function PatchProgressPage() {
       alert(`Failed to refresh ${productKey}`);
     }
   };
+
 
   const handleJarsUpdate = (productKey, updatedJars) => {
     setProductJars(prev => ({
@@ -210,32 +204,32 @@ function PatchProgressPage() {
       <div className="filter-menu-container">
         <FilterMenu setFilter={setFilter} />
       </div>
-          {loading ? (
-      <LoadingSpinner />
-    ) : Object.keys(productsToShow).length === 0 && Object.keys(productJars).length > 0 ? (
-      <div style={{ marginTop: '100px', textAlign: 'center', fontSize: '18px' }}>
-        No products to show.
-      </div>
-    ) : (
-
-      <div className="dashboard-main">
-        <div className="dashboard-header">
-          {/* <h2 className="dashboard-title">{id} Progress</h2> */}
+      {loading ? (
+        <LoadingSpinner />
+      ) : Object.keys(productsToShow).length === 0 && Object.keys(productJars).length > 0 ? (
+        <div style={{ marginTop: '100px', textAlign: 'center', fontSize: '18px' }}>
+          No products to show.
         </div>
-        <div className="table-scroll-wrapper">
-          {Object.entries(productsToShow)
-            .filter(([productKey]) => productKey.toLowerCase().includes(searchTerm.toLowerCase()))
-            .map(([productKey, productObj], index) => {
+      ) : (
 
-              const { jars, images } = productObj;
-              return (
-                <div className='patchProgress' key={index}>
-                  <div className="product-table-container">
-                    <div className="d-flex align-items-center mb-3" style={{ position: 'relative' }}>
-                      <h2 className="mb-0 mx-auto">
-                        {highlightText(productKey.toUpperCase(), searchTerm)}
-                      </h2>
-                      {/* <button
+        <div className="dashboard-main">
+          <div className="dashboard-header">
+            {/* <h2 className="dashboard-title">{id} Progress</h2> */}
+          </div>
+          <div className="table-scroll-wrapper">
+            {Object.entries(productsToShow)
+              .filter(([productKey]) => productKey.toLowerCase().includes(searchTerm.toLowerCase()))
+              .map(([productKey, productObj], index) => {
+
+                const { jars, images } = productObj;
+                return (
+                  <div className='patchProgress' key={index}>
+                    <div className="product-table-container">
+                      <div className="d-flex align-items-center mb-3" style={{ position: 'relative' }}>
+                        <h2 className="mb-0 mx-auto">
+                          {highlightText(productKey.toUpperCase(), searchTerm)}
+                        </h2>
+                        {/* <button
                         onClick={() => handleProductRefresh(productKey)}
                         className="btn p-0 bg-transparent border-0"
                         title="Refresh"
@@ -243,39 +237,39 @@ function PatchProgressPage() {
                       >
                         <i className="bi bi-arrow-clockwise fs-5"></i>
                       </button> */}
-                                   <RefreshButton onRefresh={() => handleProductRefresh(productKey)} />
+                        <RefreshButton onRefresh={() => handleProductRefresh(productKey)} />
 
-                    </div>
-                    {/* JarTable component */}
-                    {/* <JarTable
+                      </div>
+                      {/* JarTable component */}
+                      {/* <JarTable
                       id={id}
                       productKey={productKey}
                       jars={productObj.jars}
                       onJarsUpdate={(updatedJars) => handleJarsUpdate(productKey, updatedJars)}
                     /> */}
-                    <div className="image-table-wrapper">
-                      {/* now pass this product’s own images */}
-                      {/* <ImageTable images={images} patchname={patch?.name} /> */}
-                      <ImageTable
-                        images={productObj.images}
-                        jars={productObj.jars} 
-                        productKey = {productKey}              
-                        patchname={patch?.name}
-                        searchTerm={searchTerm}
-                        onJarsUpdate={(updatedJars) =>
-                          handleJarsUpdate(productKey, updatedJars)
-                        }
-                     />
-                    </div>
-                    <div className="image-table-wrapper">
-                      <HelmCharts product={productObj} />
+                      <div className="image-table-wrapper">
+                        {/* now pass this product’s own images */}
+                        {/* <ImageTable images={images} patchname={patch?.name} /> */}
+                        <ImageTable
+                          images={productObj.images}
+                          jars={productObj.jars}
+                          productKey={productKey}
+                          patchname={patch?.name}
+                          searchTerm={searchTerm}
+                          onJarsUpdate={(updatedJars) =>
+                            handleJarsUpdate(productKey, updatedJars)
+                          }
+                        />
+                      </div>
+                      <div className="image-table-wrapper">
+                        <HelmCharts product={productObj} />
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-        </div>
-      </div>)}</div>
+                );
+              })}
+          </div>
+        </div>)}</div>
   );
 }
 
