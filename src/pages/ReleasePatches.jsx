@@ -13,12 +13,12 @@ function ReleasePatches() {
   const [showForm, setShowForm] = useState(false);
   // const [selectedPatch, setSelectedPatch] = useState(null);
 
-  const { searchTerm, setTitle,setPatchVersion  } = useOutletContext();
+  const { searchTerm, setTitle, setPatchVersion } = useOutletContext();
 
   useEffect(() => {
     setTitle(`Patches for ${id}`);
     setPatchVersion(id);
-  }, [id, setTitle,setPatchVersion ]);
+  }, [id, setTitle, setPatchVersion]);
 
 
   useEffect(() => {
@@ -30,6 +30,7 @@ function ReleasePatches() {
         description: patch.description || "No description available",
         badge: patch.patch_state || "no patche state",
         footer: patch.release_date || "no release_date",
+        products: patch.products || [], 
       }));
       //console.log("fetched patches in dashboard : ", mappedData);
       setPatches(mappedData);
@@ -62,8 +63,8 @@ function ReleasePatches() {
   return (
     <div className="dashboard-main">
       {/* <div className="dashboard-header"> */}
-        {/* <h2 className="dashboard-title">Patches for {id}</h2> */}
-        {/* {!showForm && !selectedPatch && (
+      {/* <h2 className="dashboard-title">Patches for {id}</h2> */}
+      {/* {!showForm && !selectedPatch && (
           <button
             className="add-patch-button"
             onClick={() => navigate('/addpatch')}
@@ -83,15 +84,16 @@ function ReleasePatches() {
               <div className="card-scrollable">
                 <div className="card-grid">
                   {group.items.map((patch, index) => (
-                   <Card
-                   key={index}
-                   info={patch}
-                   onClick={() =>
-                     navigate(`/patches/${encodeURIComponent(patch.title)}`, {
-                       state: { patch, lockedRelease: id } 
-                     })
-                   }
-                 />                 
+                    <Card
+                      key={index}
+                      info={patch}
+                      products={patch.products}
+                      onClick={() =>
+                        navigate(`/patches/${encodeURIComponent(patch.title)}`, {
+                          state: { patch, lockedRelease: id }
+                        })
+                      }
+                    />
                   ))}
                 </div>
               </div>
