@@ -15,6 +15,7 @@ import { update_patch_product_jar } from '../../api/update_patch_product_jar';
 import RefreshButton from '../../components/Button/RefreshButton';
 import JarTable from '../../components/JarTable/JarTable';
 import getPatchProductDetail from '../../api/PatchProductDetail';
+import CompletionFilter from '../../components/Button/CompletionFilter';
 
 function PatchProgressPage() {
   const { searchTerm, setTitle } = useOutletContext();
@@ -196,13 +197,20 @@ function PatchProgressPage() {
       }
     }));
   };
+  const counts = {
+    completed: completedProducts.length,
+    not_completed: notCompletedProducts.length,
+  };
 
 
 
   return (
     <div>
-      <div className="filter-menu-container">
+      {/* <div className="filter-menu-container">
         <FilterMenu setFilter={setFilter} />
+      </div> */}
+      <div className="filter-menu-container">
+        <CompletionFilter filter={filter} setFilter={setFilter} counts={counts} />
       </div>
       {loading ? (
         <LoadingSpinner />
