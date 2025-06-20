@@ -7,16 +7,18 @@ function CompletionFilter({ filter, setFilter, counts }) {
     }
   };
 
-  const baseStyle = {
-    padding: '8px 14px',
-    border: '1px solid #ccc',
-    borderRadius: '6px',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-    backgroundColor: '#f7f7f7',
-    color: '#333',
-    transition: 'all 0.2s ease',
-  };
+ const baseStyle = {
+  padding: '8px 14px',
+  borderWidth: '1px',
+  borderStyle: 'solid',
+  borderColor: '#ccc',
+  borderRadius: '6px',
+  fontWeight: 'bold',
+  cursor: 'pointer',
+  backgroundColor: '#f7f7f7',
+  color: '#333',
+  transition: 'all 0.2s ease',
+};
 
   const activeStyle = {
     borderColor: '#000',

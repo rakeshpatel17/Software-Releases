@@ -146,10 +146,10 @@ function PatchProgressPage() {
 
   const handleProductRefresh = async (productKey) => {
     try {
-      const productName = productKey.toUpperCase();
+      // const productName = productKey.toUpperCase();
 
       // Use patch name directly (assuming 'patchName' is available in scope)
-      const data = await getPatchProductDetail(id, productName);
+      const data = await getPatchProductDetail(id, productKey);
 
       const updatedProduct = {
         images: data.images || [],
