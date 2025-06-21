@@ -152,7 +152,7 @@ export default function SecurityIssuesTable({
                     key={label}
                     align={label === 'CVSS Score' || label === 'Severity' ? 'center' : 'left'}
                     sx={{
-                      backgroundColor: theme.palette.primary.dark,
+                      backgroundColor: '#20338b',
                       color: theme.palette.common.white,
                       fontWeight: 'bold'
                     }}
