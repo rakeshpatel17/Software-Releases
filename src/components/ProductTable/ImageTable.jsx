@@ -283,6 +283,7 @@ import JarTable               from '../JarTable/JarTable';
 
 import { getPatchById }         from '../../api/getPatchById';
 import { securityIssuesUpdate } from '../../api/updateIssuesdes';
+import ExpandableSection from '../ExpandableSection/ExpandableSection';
 
 function highlightMatch(text, term) {
   if (!term) return text;
@@ -507,10 +508,10 @@ export default function ImageTable({
 
                         {/* Security Issues */}
                         <Box sx={{ mb: 2 }}>
-                          <Typography variant="subtitle1" gutterBottom>
+                          {/* <Typography variant="subtitle1" gutterBottom>
                             <strong>Security Issues:</strong>
-                          </Typography>
-                          <SeverityFilterButtons
+                          </Typography> */}
+                          {/* <SeverityFilterButtons
                             allIssues={img.security_issues}
                             selectedLevels={selectedLevels}
                             onToggleLevel={toggleLevel}
@@ -526,20 +527,47 @@ export default function ImageTable({
                               setProductsdata(fresh.products);
                             }}
                             img={img}
-                          />
+                          /> */}
+                          <ExpandableSection title={"Security Issues"}>
+                                <SeverityFilterButtons
+                                    allIssues={img.security_issues}
+                                    selectedLevels={selectedLevels}
+                                    onToggleLevel={toggleLevel}
+                                    onToggleAll={toggleAll}
+                                />
+
+                                <SecurityIssuesTable
+                                    issues={displayed}
+                                    Productsdata={Productsdata}
+                                    patchname={patchname}
+                                    refreshProductsData={async ()=>{
+                                    const fresh = await getPatchById(patchname);
+                                    setProductsdata(fresh.products);
+                                    }}
+                                    img={img}
+                                />
+                          </ExpandableSection>
                         </Box>
 
                         {/* Jars */}
                         <Box>
-                          <Typography variant="subtitle1" gutterBottom>
+                          {/* <Typography variant="subtitle1" gutterBottom>
                             <strong>Jars:</strong>
-                          </Typography>
-                          <JarTable
+                          </Typography> */}
+                          {/* <JarTable
                             id={patchname}
                             productKey={productKey}
                             jars={jars}
                             onJarsUpdate={onJarsUpdate}
-                          />
+                          /> */}
+                          <ExpandableSection title={"Jars"}>
+                                <JarTable
+                                    id={patchname}
+                                    productKey={productKey}
+                                    jars={jars}
+                                    onJarsUpdate={onJarsUpdate}
+                                />
+                          </ExpandableSection>
                         </Box>
                       </Box>
                     </Collapse>
