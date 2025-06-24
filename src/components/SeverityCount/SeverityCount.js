@@ -27,7 +27,7 @@ function SeverityCount({ products }) {
                 justifyContent: 'space-between',
                 fontSize: '1rem',
                 fontWeight: '500',
-                gap: '12px',
+                gap: '2px',
                 whiteSpace: 'nowrap',
                 // marginLeft: '-1%'
             }}

@@ -132,6 +132,63 @@ export default function SecurityIssuesTable({
     high: '#FF8C00',
     critical: '#FF0000'
   };
+  console.log("issues", issues)
+  console.log("products", Productsdata)
+
+const handleSaveDescription = async (issue, newValue) => {
+  if (!img || !img.image_name) {
+    console.error("❌ img is missing or invalid");
+    return;
+  }
+
+  const matchedProduct = Productsdata.find(product =>
+    product.images.some(image =>
+      image.image_name === img.image_name &&
+      image.security_issues.some(secIssue => secIssue.cve_id === issue.cve_id)
+    )
+  );
+
+  if (!matchedProduct) {
+    console.error("❌ No matching product/image/issue found");
+    return;
+  }
+
+  const payload = {
+    products_data: [
+      {
+        name: matchedProduct.name,
+        images: [
+          {
+            image_name: img.image_name,
+            security_issues: [
+              {
+                cve_id: issue.cve_id,
+                product_security_des: newValue
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  };
+
+  try {
+    await securityIssuesUpdate(patchname, payload);
+    refreshProductsData();
+    console.log("✅ Saved successfully");
+  } catch (err) {
+    console.error("❌ API error:", err.message);
+  }
+};
+
+
+
+
+
+
+
+
+
 
   return (
     <Paper
@@ -187,31 +244,32 @@ export default function SecurityIssuesTable({
                   <TableCell>{libs}</TableCell>
                   <TableCell align="center">
                     <EditableFieldComponent
-                      value={
-                        Productsdata.find(p => p.name === img.product)
-                          ?.product_security_des || '—'
-                      }
-                      onSave={async (newValue) => {
-                        const updated = [...Productsdata];
-                        const idxProd = updated.findIndex(p =>
-                          p.images.some(i =>
-                            i.image_name === img.image_name &&
-                            i.patch_build_number === img.patch_build_number
-                          )
-                        );
-                        if (idxProd !== -1) {
-                          updated[idxProd].product_security_des = newValue;
-                          try {
-                            await securityIssuesUpdate(patchname, {
-                              products_data: updated
-                            });
-                            await refreshProductsData();
-                          } catch (err) {
-                            console.error(err);
-                            alert('Update failed');
-                          }
-                        }
-                      }}
+                     value={
+                      issue.product_security_des || '—'
+                    }
+
+                      // onSave={async (newValue) => {
+                      //   const updated = [...Productsdata];
+                      //   const idxProd = updated.findIndex(p =>
+                      //     p.images.some(i =>
+                      //       i.image_name === img.image_name &&
+                      //       i.patch_build_number === img.patch_build_number
+                      //     )
+                      //   );
+                      //   if (idxProd !== -1) {
+                      //     updated[idxProd].product_security_des = newValue;
+                      //     try {
+                      //       await securityIssuesUpdate(patchname, {
+                      //         products_data: updated
+                      //       });
+                      //       await refreshProductsData();
+                      //     } catch (err) {
+                      //       console.error(err);
+                      //       alert('Update failed');
+                      //     }
+                      //   }
+                      // }}
+                                          onSave={(newValue) => handleSaveDescription(issue, newValue)} 
                     />
                   </TableCell>
                 </TableRow>
