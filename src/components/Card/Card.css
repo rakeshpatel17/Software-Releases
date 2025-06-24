@@ -110,11 +110,12 @@
 .severity-grid {
   display: flex;
   justify-content: space-between;
-  width: 100%;
+  width: 90%;
   margin-top: 0.5rem;
   padding-left: 0;   /* No shift needed */
   padding-right: 0;
   box-sizing: border-box;
+  /* gap: 1px; */
   
 }
 .severity-grid span {
