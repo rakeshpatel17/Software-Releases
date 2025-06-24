@@ -148,7 +148,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
     // };
 
 
-
+ 
 
 
     //jars
@@ -243,6 +243,11 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
 
 
     const navigate = useNavigate();
+      useEffect(() => {
+    if (lockedRelease) {
+        setSelectedRelease(lockedRelease);
+    }
+}, [lockedRelease]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

@@ -258,7 +258,7 @@ function PatchPage() {
                         <h2>Patch Details</h2>
                         {patchData.patch_state !== 'released' && (
                             <button className="edit-btn" onClick={toggleEdit}>
-                                {isEditing ? <X size={16} /> : <Pencil size={16} />}
+                                {isEditing ? <X size={16} /> : <Pencil size={18} />}
                             </button>
                         )}
                     </div>
@@ -278,7 +278,7 @@ function PatchPage() {
                                     )
                                 }
                             >
-                                <Download size={16} />
+                                <Download size={20} />
                             </button>
 
                         )}
@@ -471,7 +471,7 @@ function PatchPage() {
                             <CancelButton />
                             <SaveButton />
                         </div>
-                    )}
+                    )}  
                 </form>
             </div>
         </>

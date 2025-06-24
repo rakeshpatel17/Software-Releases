@@ -1,8 +1,11 @@
 import './Card.css';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { deletePatch } from '../../api/deletePatch';
 import { Trash2 } from 'lucide-react';
 import SeverityCount from '../SeverityCount/SeverityCount';
+import ProgressBar from '../ProgressBar/ProgressBar';
+import get_patch_progress from '../../api/get_patch_progress';
 
 const Card = ({ info, setPatches, products = [], className = '', children, ...rest }) => {
   const { title, description, image, badge, footer } = info || {};
@@ -31,13 +34,30 @@ const Card = ({ info, setPatches, products = [], className = '', children, ...re
     // Navigate to the PatchPage with the patch title as the identifier
     navigate(`/patches/${encodeURIComponent(title)}`);
   };
+
+   const [progress, setProgress] = useState(null);
+    useEffect(() => {
+        const fetchProgress = async () => {
+            const result = await get_patch_progress(title);
+            // console.log(`Patch ${patchName} progress: ${result}%`);
+            setProgress(result); // result should be a number like 33.33
+        };
+
+        if (title) fetchProgress();
+    }, [title]);
+
   return (
     <div className={cardClasses} onClick={handleClick} {...rest}>
       {image && <img src={image} alt={title} className="card-image" />}
 
       <div className="card-body">
+        <div className='card-header'>
         {badge && (
           <span className={`card-badge ${badge.toLowerCase()}`}>{(badge[0].toUpperCase() + badge.slice(1))}</span>)}
+          <div className="progress-container"  onClick={(e) => e.stopPropagation()}>
+          <ProgressBar value={progress} label="Patch Progress" redirectTo={`/progress/${title}`} />
+        </div>
+        </div>
         <h3 className="card-title">{title}</h3>
         {/* <p className="card-description">{description}</p> */}
         <p className="card-description">
@@ -53,8 +73,9 @@ const Card = ({ info, setPatches, products = [], className = '', children, ...re
         </p>
         <div className="severity-grid">
           <SeverityCount products={products} />
-        </div>     
-            {children && <div className="card-children">{children}</div>}
+        </div>
+        
+        {children && <div className="card-children">{children}</div>}
       </div>
 
       {footer && (

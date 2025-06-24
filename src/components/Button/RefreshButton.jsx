@@ -17,6 +17,7 @@ export default function RefreshButton({ onRefresh }) {
   return (
     <>
       <button
+        type="button"
         onClick={handleClick}
         className="btn p-0 bg-transparent border-0"
         title="Refresh"

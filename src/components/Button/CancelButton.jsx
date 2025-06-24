@@ -4,7 +4,7 @@ function CancelButton() {
   const navigate = useNavigate();
 
   const handleCancel = () => {
-    navigate(-1); 
+    navigate(0); 
     
   };
 
