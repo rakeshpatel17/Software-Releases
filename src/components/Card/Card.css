@@ -122,6 +122,17 @@
   margin-right: 20px; /* or adjust as needed */
 }
 
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0px;
+
+}
+.progress-container {
+    margin-right: -3% !important;
+    margin-top: -4% !important;
+}
 
 
 /* Mobile Fix */
