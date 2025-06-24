@@ -278,6 +278,7 @@ import KeyboardArrowUpIcon   from '@mui/icons-material/KeyboardArrowUp';
 import EditableFieldComponent from '../EditableFieldComponent';
 import ToggleButtonComponent  from '../ToggleButton/ToggleButton';
 import SeverityFilterButtons  from '../Button/SeverityFilterButtons';
+import JarFilterButtons from '../Button/JarFilterButtons';
 import SecurityIssuesTable    from '../SecurityIssuesTable/SecurityIssuesTable';
 import JarTable               from '../JarTable/JarTable';
 
@@ -338,6 +339,29 @@ export default function ImageTable({
     return idx >= 0 ? options[idx] : 'Not Released';
   };
   const severityOrder = { critical:1, high:2, medium:3, low:4 };
+
+  //jars filtering
+    const [selectedJarStatuses, setSelectedJarStatuses] = useState(new Set(['updated','not updated']));
+    const toggleJarStatus = status => {
+        setSelectedJarStatuses(s => {
+            const copy = new Set(s);
+            copy.has(status) ? copy.delete(status) : copy.add(status);
+            return copy;
+        });
+    };
+    const toggleAllJars = () => {
+        setSelectedJarStatuses(s =>
+            s.size === 2
+            ? new Set()
+            : new Set(['updated','not updated'])
+        );
+    };
+
+  // Compute filteredJars
+    const filteredJars = jars.filter(j => {
+    const status = j.updated ? 'updated' : 'not updated';
+    return selectedJarStatuses.has(status);
+    });
 
   // load products_data
   useEffect(() => {
@@ -528,13 +552,16 @@ export default function ImageTable({
                             }}
                             img={img}
                           /> */}
-                          <ExpandableSection title={"Security Issues"}>
+                          <ExpandableSection 
+                            title={"Security Issues"}
+                            actions={
                                 <SeverityFilterButtons
                                     allIssues={img.security_issues}
                                     selectedLevels={selectedLevels}
                                     onToggleLevel={toggleLevel}
                                     onToggleAll={toggleAll}
                                 />
+                            }>
 
                                 <SecurityIssuesTable
                                     issues={displayed}
@@ -560,14 +587,24 @@ export default function ImageTable({
                             jars={jars}
                             onJarsUpdate={onJarsUpdate}
                           /> */}
-                          <ExpandableSection title={"Jars"}>
-                                <JarTable
-                                    id={patchname}
-                                    productKey={productKey}
-                                    jars={jars}
-                                    onJarsUpdate={onJarsUpdate}
+                          <ExpandableSection
+                            title="Jars"
+                            actions={
+                                <JarFilterButtons
+                                allJars={jars}
+                                selectedStatuses={selectedJarStatuses}
+                                onToggleStatus={toggleJarStatus}
+                                onToggleAll={toggleAllJars}
                                 />
-                          </ExpandableSection>
+                            }
+                            >
+                            <JarTable
+                                jars={filteredJars}
+                                id={patchname}
+                                productKey={productKey}
+                                onJarsUpdate={onJarsUpdate}
+                            />
+                            </ExpandableSection>
                         </Box>
                       </Box>
                     </Collapse>

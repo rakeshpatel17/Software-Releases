@@ -4,7 +4,7 @@ import { Box, IconButton, Typography, Collapse } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
-export default function ExpandableSection({ title, children }) {
+export default function ExpandableSection({ title, actions, children }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -26,6 +26,15 @@ export default function ExpandableSection({ title, children }) {
         <Typography variant="subtitle1" gutterBottom>
             <strong>{title}</strong>
         </Typography>
+        {/* Render actions */}
+        {actions && (
+          <Box 
+            sx={{ display: 'flex', gap: 1, alignItems: 'center' }}
+            onClick={e => e.stopPropagation()}
+          >
+            {actions}
+          </Box>
+        )}
         <IconButton size="small">
           {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
         </IconButton>
