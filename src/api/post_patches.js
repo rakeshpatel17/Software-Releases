@@ -11,7 +11,7 @@ const common_headers = {
  
 const post_patches = async (formData) => {
    
-    // console.log("Posting data:", formData);
+    console.log("Posting data:", formData);
  
     const response = await fetch(`${base_url}/patches/`, {
         method: 'POST',

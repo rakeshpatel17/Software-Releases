@@ -67,7 +67,11 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
     useEffect(() => {
         setTitle(`Add New Patch`);
     }, []);
-
+    useEffect(() => {
+        if (lockedRelease) {
+            setSelectedRelease(lockedRelease);
+        }
+    }, [lockedRelease]);
 
     const staticJarData = [
         { name: 'commons-cli' },
