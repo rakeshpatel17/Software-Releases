@@ -27,7 +27,7 @@ function ImageTable({ images, jars, productKey, patchname, searchTerm, onJarsUpd
     // const [editingIndex, setEditingIndex] = useState(null);
     // const [editedDescription, setEditedDescription] = useState('');
 
-    // console.log("data",images)
+    console.log("data in image table",images)
     const [loading, setLoading] = useState(true);
     const toggleRow = (idx) => {
         setExpandedRows((prev) => ({

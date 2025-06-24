@@ -3,13 +3,70 @@ import PropTypes from 'prop-types';
 import EditableFieldComponent from '../EditableFieldComponent';
 import { securityIssuesUpdate } from '../../api/updateIssuesdes';
 
-function SecurityIssuesTable({ issues, Productsdata, patchname, refreshProductsData, img}) {
+function SecurityIssuesTable({ issues, Productsdata, patchname, refreshProductsData, img }) {
   const severityColors = {
     low: '#008000',
     medium: '#FFD700',
     high: '#FF8C00',
     critical: '#FF0000'
   };
+  console.log("issues", issues)
+  console.log("products", Productsdata)
+
+const handleSaveDescription = async (issue, newValue) => {
+  if (!img || !img.image_name) {
+    console.error("❌ img is missing or invalid");
+    return;
+  }
+
+  const matchedProduct = Productsdata.find(product =>
+    product.images.some(image =>
+      image.image_name === img.image_name &&
+      image.security_issues.some(secIssue => secIssue.cve_id === issue.cve_id)
+    )
+  );
+
+  if (!matchedProduct) {
+    console.error("❌ No matching product/image/issue found");
+    return;
+  }
+
+  const payload = {
+    products_data: [
+      {
+        name: matchedProduct.name,
+        images: [
+          {
+            image_name: img.image_name,
+            security_issues: [
+              {
+                cve_id: issue.cve_id,
+                product_security_des: newValue
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  };
+
+  try {
+    await securityIssuesUpdate(patchname, payload);
+    refreshProductsData();
+    console.log("✅ Saved successfully");
+  } catch (err) {
+    console.error("❌ API error:", err.message);
+  }
+};
+
+
+
+
+
+
+
+
+
 
   return (
     <div className="security-issues-table">
@@ -38,28 +95,10 @@ function SecurityIssuesTable({ issues, Productsdata, patchname, refreshProductsD
                 <td>
                   <EditableFieldComponent
                     value={
-                      Productsdata.find(p => p.name === img.product)?.product_security_des || '—'
+                      issue.product_security_des || '—'
                     }
-                    onSave={async (newValue) => {
-                        const updatedProducts = [...Productsdata]; // shallow copy
-                        // Find product that contains this image
-                        const productIndex = updatedProducts.findIndex(p =>
-                            p.images.some(i =>
-                                i.image_name === img.image_name &&
-                                i.patch_build_number === img.patch_build_number
-                            )
-                        );
-                      if (productIndex !== -1) {
-                        updatedProducts[productIndex].product_security_des = newValue;
-                        try {
-                          await securityIssuesUpdate(patchname, { products_data: updatedProducts});
-                          await refreshProductsData();
-                        } catch (err) {
-                          console.error(err);
-                          alert('Update failed');
-                        }
-                      }
-                    }}
+                    onSave={(newValue) => handleSaveDescription(issue, newValue)} // ✅ Correct order
+
                   />
                 </td>
               </tr>
@@ -75,8 +114,8 @@ function SecurityIssuesTable({ issues, Productsdata, patchname, refreshProductsD
 
 SecurityIssuesTable.propTypes = {
   issues: PropTypes.array.isRequired,
-  productsData: PropTypes.array.isRequired,
-  patchName: PropTypes.string.isRequired,
+  Productsdata: PropTypes.array.isRequired,
+  patchname: PropTypes.string.isRequired,
   refreshProductsData: PropTypes.func.isRequired
 };
 

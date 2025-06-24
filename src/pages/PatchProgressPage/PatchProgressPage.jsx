@@ -147,12 +147,14 @@ function PatchProgressPage() {
   const handleProductRefresh = async (productKey) => {
     try {
       // const productName = productKey.toUpperCase();
+        console.log("Refreshing product:", productKey); // ADD THIS
 
       // Use patch name directly (assuming 'patchName' is available in scope)
       const data = await getPatchProductDetail(id, productKey);
+              console.log("AFTER REFRESH: ", data.images); // <-- Confirm security_issues are []
 
       const updatedProduct = {
-        images: data.images || [],
+images: JSON.parse(JSON.stringify(data.images || [])),
         jars: (data.jars || []).map(jar => ({
           name: jar.name,
           version: jar.version,
@@ -162,6 +164,10 @@ function PatchProgressPage() {
         })),
         helm_charts: data.helm_charts || []
       };
+
+      console.log("issues",updatedProduct.images);
+
+      
 
       // Update state
       setProductJars(prev => ({
