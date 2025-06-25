@@ -110,11 +110,11 @@ import {
 } from '@mui/material';
 import EditableFieldComponent from '../EditableFieldComponent';
 import ToggleButtonComponent  from '../ToggleButton/ToggleButton';
-import { update_patch_product_jar } from '../../api/update_patch_product_jar';
+import { update_patch_image_jar } from '../../api/update_patch_image_jar';
 
 export default function JarTable({
-  id,
-  productKey,
+  patchName,
+  imageName,
   jars,
   onJarsUpdate
 }) {
@@ -133,7 +133,7 @@ export default function JarTable({
   const handleSaveRemarks = async (jIdx, newValue) => {
     try {
       const jarName = jars[jIdx].name;
-      await update_patch_product_jar(id, productKey, jarName, { remarks: newValue });
+      await update_patch_image_jar(patchName, imageName, jarName, { remarks: newValue });
       const updated = jars.map((jar, i) =>
         i === jIdx ? { ...jar, remarks: newValue } : jar
       );
@@ -144,11 +144,14 @@ export default function JarTable({
     }
   };
 
-  const handleToggleUpdated = (jIdx, newValue) => {
-    const booleanValue = newValue === 'Yes';
-    const updated = jars.map((jar, i) =>
-      i === jIdx ? { ...jar, updated: booleanValue } : jar
-    );
+  const handleToggleUpdated = async(jIdx, newValue) => {
+    // const booleanValue = newValue === 'Yes';
+    // const updated = jars.map((jar, i) =>
+    //   i === jIdx ? { ...jar, updated: booleanValue } : jar
+    // );
+    const jarName = jars[jIdx].name;
+    const updated = newValue === 'Yes';
+    await update_patch_image_jar(patchName, imageName, jarName, { updated });
     onJarsUpdate(updated);
   };
 

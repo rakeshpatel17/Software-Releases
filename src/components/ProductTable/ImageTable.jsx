@@ -281,7 +281,7 @@ import SeverityFilterButtons  from '../Button/SeverityFilterButtons';
 import JarFilterButtons from '../Button/JarFilterButtons';
 import SecurityIssuesTable    from '../SecurityIssuesTable/SecurityIssuesTable';
 import JarTable               from '../JarTable/JarTable';
-
+import patch_image_jars from '../../api/patch_image_jars';
 import { getPatchById }         from '../../api/getPatchById';
 import { securityIssuesUpdate } from '../../api/updateIssuesdes';
 import ExpandableSection from '../ExpandableSection/ExpandableSection';
@@ -298,17 +298,61 @@ function highlightMatch(text, term) {
 
 export default function ImageTable({
   images,
-  jars,
+  patchJars,
   productKey,
   patchname,
   searchTerm,
-  onJarsUpdate,
+//   onJarsUpdate,
+  onImageJarsUpdate
 }) {
   const theme = useTheme();
   const [expanded, setExpanded] = useState({});
   const [loading, setLoading]   = useState(true);
   const [Productsdata, setProductsdata] = useState([]);
+  const [imageJarsMap, setImageJarsMap] = useState({});
+//   console.log("patch jars are : ", patchJars);
+  // whenever images or patchname changes, fetch jars per image
+  useEffect(() => {
+    if (!images.length || !patchJars.length) return;
 
+    // 0) Build jarName → version lookup
+    const versionLookup = Object.fromEntries(
+      patchJars.map(pj => [pj.name, pj.version])
+    );
+    // console.log('versionLookup:', versionLookup);
+
+    // 1) Fetch and merge per-image
+    const fetches = images.map(img =>
+      patch_image_jars(patchname, img.image_name)
+        .then(rawJars => {
+          console.log(`rawJars for ${img.image_name}:`, rawJars);
+
+          // 2) Keep only jars present in versionLookup
+          const merged = (rawJars || [])
+            .filter(rj => versionLookup.hasOwnProperty(rj.name))
+            .map(rj => ({
+              ...rj,
+              version: versionLookup[rj.name]
+            }));
+        //   console.log(`merged for ${img.image_name}:`, merged);
+
+          return { image_name: img.image_name, jars: merged };
+        })
+        .catch(err => {
+          console.error(`Error fetching jars for ${img.image_name}:`, err);
+          return { image_name: img.image_name, jars: [] };
+        })
+    );
+
+    // 3) One state update when all done
+    Promise.all(fetches).then(results => {
+      const map = Object.fromEntries(
+        results.map(({ image_name, jars }) => [image_name, jars])
+      );
+      console.log('final imageJarsMap:', map);
+      setImageJarsMap(map);
+    });
+  }, [images, patchJars, patchname]);
   // Toggles for Registry, OT2, Helm
   const [toggleRegistry, setToggleRegistry] = useState([]);
   const [toggleOT2,      setToggleOT2]      = useState([]);
@@ -358,10 +402,10 @@ export default function ImageTable({
     };
 
   // Compute filteredJars
-    const filteredJars = jars.filter(j => {
-    const status = j.updated ? 'updated' : 'not updated';
-    return selectedJarStatuses.has(status);
-    });
+    // const filteredJars = jars.filter(j => {
+    // const status = j.updated ? 'updated' : 'not updated';
+    // return selectedJarStatuses.has(status);
+    // });
 
   // load products_data
   useEffect(() => {
@@ -439,6 +483,14 @@ export default function ImageTable({
 
         <TableBody>
           {images.map((img, idx) => {
+            // pull this image's own jars array:
+            // const imageJars = img.jars || [];
+            const imageJars = imageJarsMap[img.image_name] || [];
+            // filter if you still need statuses:
+            const filteredJars = imageJars.filter(j => {
+                const status = j.updated ? 'updated' : 'not updated';
+                return selectedJarStatuses.has(status);
+            });
             // sort & filter security issues
             const displayed = img.security_issues
               .slice()
@@ -591,19 +643,27 @@ export default function ImageTable({
                             title="Jars"
                             actions={
                                 <JarFilterButtons
-                                allJars={jars}
+                                allJars={filteredJars}
                                 selectedStatuses={selectedJarStatuses}
                                 onToggleStatus={toggleJarStatus}
                                 onToggleAll={toggleAllJars}
                                 />
                             }
                             >
-                            <JarTable
+                            {/* <JarTable
                                 jars={filteredJars}
                                 id={patchname}
                                 productKey={productKey}
                                 onJarsUpdate={onJarsUpdate}
-                            />
+                            /> */}
+                            <JarTable
+                              jars={filteredJars}
+                              patchName={patchname}
+                              imageName={img.image_name}
+                              onJarsUpdate={(updatedJars) =>
+                                onImageJarsUpdate(img.image_name, updatedJars)
+                              }
+                            />         
                             </ExpandableSection>
                         </Box>
                       </Box>

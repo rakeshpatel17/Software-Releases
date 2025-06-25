@@ -10,8 +10,8 @@ import FilterMenu from '../../components/Filter/FilterMenu';
 import getProductCompletion from '../../api/productCompletion';
 import LoadingSpinner from '../../components/Loading/LoadingSpinner';
 import HelmCharts from '../../components/HelmCharts/HelmCharts';
-import patch_product_jars from '../../api/patch_product_jars';
-import { update_patch_product_jar } from '../../api/update_patch_product_jar';
+import patch_image_jars from '../../api/patch_image_jars';
+import { update_patch_image_jar } from '../../api/update_patch_image_jar';
 import RefreshButton from '../../components/Button/RefreshButton';
 import JarTable from '../../components/JarTable/JarTable';
 import getPatchProductDetail from '../../api/PatchProductDetail';
@@ -69,41 +69,61 @@ function PatchProgressPage() {
 
 
   useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
-      const data = await getPatchById(id);
+    // async function fetchData() {
+    //   setLoading(true);
+    //   const data = await getPatchById(id);
 
-      // Create an empty map.
-      const productMap = {};
+    //   // Create an empty map.
+    //   const productMap = {};
 
-      // Loop over each product and fetch its jars.
-      for (const prod of data.products) {
-        const key = prod.name;
+    //   // Loop over each product and fetch its jars.
+    //   for (const prod of data.products) {
+    //     const key = prod.name;
 
-        // Wait for patch_product_jars to resolve for this (patch, product).
-        const ppj = await patch_product_jars(id, prod.name);
+    //     // Wait for patch_product_jars to resolve for this (patch, product).
+    //     const ppj = await patch_product_jars(id, prod.name);
 
-        // Build the entry for this product.
-        productMap[key] = {
-          images: prod.images,
-          jars: ppj.map(jar => ({
-            name: jar.name,
-            version: jar.version,
-            current_version: jar.current_version,
-            remarks: jar.remarks || "",
-            updated: jar.updated || false
-          })),
-          helm_charts: prod.helm_charts
-        };
-      }
+    //     // Build the entry for this product.
+    //     productMap[key] = {
+    //       images: prod.images,
+    //       jars: ppj.map(jar => ({
+    //         name: jar.name,
+    //         version: jar.version,
+    //         current_version: jar.current_version,
+    //         remarks: jar.remarks || "",
+    //         updated: jar.updated || false
+    //       })),
+    //       helm_charts: prod.helm_charts
+    //     };
+    //   }
 
-      setProductJars(productMap);
-      setFilteredProducts(productMap);
-      setPatch(data);
-      setLoading(false);
-    }
+    //   setProductJars(productMap);
+    //   setFilteredProducts(productMap);
+    //   setPatch(data);
+    //   setLoading(false);
+    // }
 
-    fetchData();
+    // fetchData();
+  async function fetchData() {
+    setLoading(true);
+    const data = await getPatchById(id);
+
+    // Now props.images includes a `.jars` array under each image.
+    const productMap = data.products.reduce((map, prod) => {
+      map[prod.name] = {
+        images: prod.images,
+        helm_charts: prod.helm_charts
+      };
+      return map;
+    }, {});
+
+    setProductJars(productMap);
+    setFilteredProducts(productMap);
+    setPatch(data);
+    setLoading(false);
+  }
+
+  fetchData();
   }, [id]);
 
 
@@ -229,22 +249,48 @@ function PatchProgressPage() {
             const data = await getPatchProductDetail(id);
             const progressresult=get_patch_progress(id);
             const productMap = {};
+            // for (const prod of data.products) {
+            //     const key = prod.name;
+            //     const ppj = await patch_product_jars(id, prod.name);
+            //     productMap[key] = {
+            //         images: prod.images,
+            //         jars: ppj.map(jar => ({
+            //             name: jar.name,
+            //             version: jar.version,
+            //             current_version: jar.current_version,
+            //             remarks: jar.remarks || "",
+            //             updated: jar.updated || false
+            //         })),
+            //         helm_charts: prod.helm_charts
+            //     };
+            // }
             for (const prod of data.products) {
-                const key = prod.name;
-                const ppj = await patch_product_jars(id, prod.name);
-                productMap[key] = {
-                    images: prod.images,
-                    jars: ppj.map(jar => ({
-                        name: jar.name,
-                        version: jar.version,
-                        current_version: jar.current_version,
-                        remarks: jar.remarks || "",
-                        updated: jar.updated || false
-                    })),
-                    helm_charts: prod.helm_charts
-                };
-            }
-
+                    const key = prod.name;
+                    const images = prod.images;
+            
+                    // Fetch jars per‐image, then flatten them into one array for this product
+                    let allJars = [];
+                    await Promise.all(images.map(async img => {
+                        const ijs = await patch_image_jars(id, img.image_name);
+                        if (Array.isArray(ijs)) {
+                            allJars = allJars.concat(
+                                ijs.map(jar => ({
+                                    name: jar.name,
+                                    version: jar.version,
+                                    current_version: jar.current_version,
+                                    remarks: jar.remarks || "",
+                                    updated: jar.updated || false
+                                }))
+                            );
+                        }
+                    }));
+            
+                    productMap[key] = {
+                        images,
+                        jars: allJars,
+                        helm_charts: prod.helm_charts
+                    };
+             }
             setProductJars(productMap);
             setFilteredProducts(productMap);
             setPatch(data);
@@ -353,12 +399,26 @@ function PatchProgressPage() {
                         <ImageTable
                           key={productObj.name + JSON.stringify(productObj.images)}
                           images={productObj.images}
-                          jars={productObj.jars}
+                          patchJars={patch.jars}
                           productKey={productKey}
                           patchname={patch?.name}
                           searchTerm={searchTerm}
-                          onJarsUpdate={(updatedJars) =>
-                            handleJarsUpdate(productKey, updatedJars)
+                          // onJarsUpdate={(updatedJars) =>
+                          //   handleJarsUpdate(productKey, updatedJars)
+                          // }
+                          onImageJarsUpdate={(imageName, updatedJars) =>
+                            // bubble up so PatchProgressPage can merge into state
+                            setProductJars(prev => ({
+                              ...prev,
+                              [productKey]: {
+                                ...prev[productKey],
+                                images: prev[productKey].images.map(img =>
+                                  img.image_name === imageName
+                                    ? { ...img, jars: updatedJars }
+                                    : img
+                                )
+                              }
+                            }))
                           }
                         />
                       </div>

@@ -7,7 +7,10 @@ const HelmCharts = ({ product }) => {
 
   const getToggleValue = (dbValue) => {
     const options = ['Released', 'Not Released', 'Not Applicable'];
-    const matchIndex = options.findIndex(opt => opt.toLowerCase() === dbValue?.toLowerCase());
+    // const matchIndex = options.findIndex(opt => opt.toLowerCase() === dbValue?.toLowerCase());
+    const matchIndex = options.findIndex(opt => 
+      opt.toLowerCase() === String(dbValue).toLowerCase()
+    );
     return matchIndex !== -1 ? options[matchIndex] : 'Not Released';
   };
 //   console.log("product in helm",product)
