@@ -249,22 +249,48 @@ function PatchProgressPage() {
             const data = await getPatchDetailsById(id);
             const progressresult=get_patch_progress(id);
             const productMap = {};
+            // for (const prod of data.products) {
+            //     const key = prod.name;
+            //     const ppj = await patch_product_jars(id, prod.name);
+            //     productMap[key] = {
+            //         images: prod.images,
+            //         jars: ppj.map(jar => ({
+            //             name: jar.name,
+            //             version: jar.version,
+            //             current_version: jar.current_version,
+            //             remarks: jar.remarks || "",
+            //             updated: jar.updated || false
+            //         })),
+            //         helm_charts: prod.helm_charts
+            //     };
+            // }
             for (const prod of data.products) {
-                const key = prod.name;
-                const ppj = await patch_product_jars(id, prod.name);
-                productMap[key] = {
-                    images: prod.images,
-                    jars: ppj.map(jar => ({
-                        name: jar.name,
-                        version: jar.version,
-                        current_version: jar.current_version,
-                        remarks: jar.remarks || "",
-                        updated: jar.updated || false
-                    })),
-                    helm_charts: prod.helm_charts
-                };
-            }
-
+                    const key = prod.name;
+                    const images = prod.images;
+            
+                    // Fetch jars per‐image, then flatten them into one array for this product
+                    let allJars = [];
+                    await Promise.all(images.map(async img => {
+                        const ijs = await patch_image_jars(id, img.image_name);
+                        if (Array.isArray(ijs)) {
+                            allJars = allJars.concat(
+                                ijs.map(jar => ({
+                                    name: jar.name,
+                                    version: jar.version,
+                                    current_version: jar.current_version,
+                                    remarks: jar.remarks || "",
+                                    updated: jar.updated || false
+                                }))
+                            );
+                        }
+                    }));
+            
+                    productMap[key] = {
+                        images,
+                        jars: allJars,
+                        helm_charts: prod.helm_charts
+                    };
+             }
             setProductJars(productMap);
             setFilteredProducts(productMap);
             setPatch(data);
