@@ -10,7 +10,7 @@ import PatchProgressPage from "./pages/PatchProgressPage/PatchProgressPage";
 import MainLayout from "./Layouts/MainLayout";
 import Form from "./components/Form/Form";
 import CompareImage from "./pages/ImageCompare/CompareImage"
-
+import { RouteProvider } from "./components/RouteContext/RouteContext"; 
 
 
 // PrivateRoute component: checks if authenticated
@@ -82,12 +82,15 @@ function App() {
 
   return (
     <BrowserRouter>
+    <RouteProvider>
       <AppRoutes
         isLoggedIn={isLoggedIn}
         handleLoginSuccess={handleLoginSuccess}
         handleLogout={handleLogout}
       />
+      </RouteProvider>
     </BrowserRouter>
+    
   );
 }
 

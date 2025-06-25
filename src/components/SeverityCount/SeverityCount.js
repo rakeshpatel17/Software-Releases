@@ -6,7 +6,7 @@ function SeverityCount({ products }) {
     (products || []).forEach(product => {
         // console.log(`Product: ${product.name}`);
         (product.images || []).forEach(image => {
-            console.log(`  Image: ${image.image_name}, Build: ${image.build_number}`);
+            // console.log(`  Image: ${image.image_name}, Build: ${image.build_number}`);
             (image.security_issues || []).forEach(issue => {
                 // console.log(
                 //     `    Security Issue -> Severity: ${issue?.severity || 'N/A'}, CVE: ${issue?.cve_id || 'N/A'}`
