@@ -7,7 +7,7 @@ import Heading from '../Side-nav/Heading/Heading';
 import AddPatchButton from '../Button/AddPatchButton';
 
 
-function TopNavbar({ onSearch, onLogout,title,  patchVersion}) {
+function TopNavbar({ onSearch, onLogout,title,  patchVersion,searchTerm}) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef();
 
@@ -41,7 +41,7 @@ function TopNavbar({ onSearch, onLogout,title,  patchVersion}) {
   
     <div className="right-controls">
       <AddPatchButton className="add-patch-button" release={patchVersion} />
-      <SearchBar onSearch={onSearch} />
+      <SearchBar onSearch={onSearch}  value={searchTerm} />
       <div ref={dropdownRef} className="profile-container">
         <div onClick={toggleDropdown} className="profile-toggle">
           <span>Profile</span>

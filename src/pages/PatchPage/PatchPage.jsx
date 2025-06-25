@@ -16,6 +16,7 @@ import post_patches from '../../api/post_patches';
 import put_patches from '../../api/put_patches';
 import get_patch_progress from '../../api/get_patch_progress';
 import { Pencil, X, Download } from 'lucide-react'; // Place this at the top of your file
+import Tooltip from '../../components/ToolTip/ToolTip';
 
 
 function PatchPage() {
@@ -258,7 +259,8 @@ function PatchPage() {
                         <h2>Patch Details</h2>
                         {patchData.patch_state !== 'released' && (
                             <button className="edit-btn" onClick={toggleEdit}>
-                                {isEditing ? <X size={16} /> : <Pencil size={16} />}
+                                {isEditing ? <X size={16} /> : <Tooltip text="Edit" position="down">
+                                    <Pencil size={18} /></Tooltip>}
                             </button>
                         )}
                     </div>
@@ -278,7 +280,9 @@ function PatchPage() {
                                     )
                                 }
                             >
-                                <Download size={16} />
+                                <Tooltip text="Export Security issues" position="down">
+
+                                    <Download size={20} /></Tooltip>
                             </button>
 
                         )}

@@ -132,12 +132,12 @@ export default function SecurityIssuesTable({
     high: '#FF8C00',
     critical: '#FF0000'
   };
-  console.log("issues", issues)
-  console.log("products", Productsdata)
+  // console.log("issues", issues)
+  // console.log("products", Productsdata)
 
 const handleSaveDescription = async (issue, newValue) => {
   if (!img || !img.image_name) {
-    console.error("❌ img is missing or invalid");
+    console.error(" img is missing or invalid");
     return;
   }
 
@@ -149,7 +149,7 @@ const handleSaveDescription = async (issue, newValue) => {
   );
 
   if (!matchedProduct) {
-    console.error("❌ No matching product/image/issue found");
+    console.error(" No matching product/image/issue found");
     return;
   }
 
@@ -175,9 +175,9 @@ const handleSaveDescription = async (issue, newValue) => {
   try {
     await securityIssuesUpdate(patchname, payload);
     refreshProductsData();
-    console.log("✅ Saved successfully");
+    console.log(" Saved successfully");
   } catch (err) {
-    console.error("❌ API error:", err.message);
+    console.error(" API error:", err.message);
   }
 };
 

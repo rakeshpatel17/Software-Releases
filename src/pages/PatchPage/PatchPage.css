@@ -93,27 +93,20 @@
 
 .export-btn {
 
-    background-color: #20338b;
-
-    color: white;
-
-    padding: 8px 14px;
-
-    border: none;
-
-    border-radius: 6px;
-
-    font-size: 0.95rem;
-
+     all: unset;
+    color: #20338b;
     cursor: pointer;
-
-    transition: background-color 0.3s ease;
+    font-size: 0.95rem;
+    padding: 4px;
+      margin-left: -3%;
+      margin-top: 4%;
 
 }
 
 .export-btn:hover {
 
-    background-color: #3549c9;
+    /* background-color: #3549c9; */
+     color: #6979e0;
 
 }
 

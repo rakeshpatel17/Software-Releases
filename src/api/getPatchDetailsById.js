@@ -6,9 +6,9 @@ const common_headers = {
   "Content-Type": "application/json",
   'Authorization': authHeader
 };
-const getPatchById = async (patchName) => {
+const getPatchDetailsById = async (patchName) => {
   try {
-    const endpoint = `${base_url}/patches/${patchName}`; // Endpoint to fetch all patches
+    const endpoint = `${base_url}/patches/${patchName}/details`; // Endpoint to fetch all patches
 
     const response = await fetch(endpoint, {
       method: "GET",
@@ -37,4 +37,4 @@ const getPatchById = async (patchName) => {
   }
 };
 
-export { getPatchById };
+export { getPatchDetailsById };

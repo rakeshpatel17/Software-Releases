@@ -19,6 +19,7 @@ import { useOutletContext } from 'react-router-dom';
 function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) {
     const location = useLocation();
     const lockedRelease = lockedReleaseProp || location.state?.lockedRelease;
+    console.log("locked release", lockedRelease)
     const [formData, setFormData] = useState({
         name: '',
         release: lockedRelease || '',
@@ -27,9 +28,9 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         platform_qa_build: '',
         description: '',
         patch_state: 'new',
-        kba:'',
-        functional_fixes:'',
-        security_issues:'',
+        kba: '',
+        functional_fixes: '',
+        security_issues: '',
         is_deleted: false,
         client_build_availability: '',
         scopes_data: [],
@@ -56,7 +57,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
     ]);
 
 
-    
+
 
 
     //error
@@ -167,6 +168,16 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         }
     }, [jarSearchTerm]);
 
+    useEffect(() => {
+        if (lockedRelease) {
+            setFormData(prev => ({
+                ...prev,
+                release: lockedRelease,
+            }));
+        }
+    }, [lockedRelease]);
+
+
     // const handleChange = (e) => {
     //     const { name, value, type, checked } = e.target;
     //     setFormData((prevData) => ({
@@ -215,7 +226,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
             setSelectedRelease(value);
         }
 
-    
+
 
         // Clear error for changed field
         if (errors[name]) {
@@ -247,6 +258,11 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
 
 
     const navigate = useNavigate();
+    useEffect(() => {
+        if (lockedRelease) {
+            setSelectedRelease(lockedRelease);
+        }
+    }, [lockedRelease]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -419,7 +435,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                     </div>
 
                 </div>
-                
+
                 <div className="inline-fields">
                     {/* Kick Off date */}
                     <div className="form-group">
@@ -486,7 +502,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                         {errors.client_build_availability && <span className="error-text">{errors.client_build_availability}</span>}
                     </div>
 
-                    
+
                 </div>
                 <HighLevelScopeComponent
                     highLevelScope={highLevelScope}

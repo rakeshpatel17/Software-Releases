@@ -577,8 +577,8 @@ export default function ImageTable({
                           </Typography>
 
                           <Typography>
-                            <strong>Created At:</strong>{' '}
-                            {new Date(img.created_at).toLocaleString()}
+                            <strong>Updated At:</strong>{' '}
+                            {new Date(img.updated_at).toLocaleString()}
                           </Typography>
                         </Box>
 
