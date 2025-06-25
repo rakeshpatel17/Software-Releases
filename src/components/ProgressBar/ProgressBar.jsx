@@ -14,7 +14,7 @@ function ProgressBar({ value = 0, label, redirectTo = "/dashboard" }) {
   return (
     <div className="progress-wrapper clickable" onClick={handleClick}>
       {/* {label && <div className="progress-label">{label}</div>} */}
-      <Tooltip text="Click to view patch progress" position="down">
+      <Tooltip text="patch progress" position="down">
 
         <div className="progress-label">progress</div>
       </Tooltip>

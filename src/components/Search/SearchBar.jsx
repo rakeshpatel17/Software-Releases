@@ -1,10 +1,13 @@
-// SearchBar.jsx
 import { useState, useEffect } from 'react';
 import './SearchBar.css';
 import { FaSearch, FaTimes } from 'react-icons/fa';
 
-export default function SearchBar({ onSearch }) {
+export default function SearchBar({ onSearch, value = '' }) {
   const [query, setQuery] = useState('');
+  
+  useEffect(() => {
+    setQuery(value);
+  }, [value]);
 
   useEffect(() => {
     if (onSearch) onSearch(query);

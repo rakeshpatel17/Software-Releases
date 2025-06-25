@@ -16,6 +16,9 @@ import RefreshButton from '../../components/Button/RefreshButton';
 import JarTable from '../../components/JarTable/JarTable';
 import getPatchProductDetail from '../../api/PatchProductDetail';
 import CompletionFilter from '../../components/Button/CompletionFilter';
+import ProgressBar from '../../components/ProgressBar/ProgressBar';
+import get_patch_progress from '../../api/get_patch_progress';
+import { getPatchDetailsById } from '../../api/getPatchDetailsById';
 
 function PatchProgressPage() {
   const { searchTerm, setTitle } = useOutletContext();
@@ -138,118 +141,124 @@ function PatchProgressPage() {
     setTitle(`${id} Progress`);
   }, [id, setTitle]);
 
+  const [progress, setProgress] = useState(null);
+  useEffect(() => {
+    const fetchProgress = async () => {
+      const result = await get_patch_progress(id);
+      // console.log(`Patch ${patchName} progress: ${result}%`);
+      setProgress(result); // result should be a number like 33.33
+    };
+
+    if (id) fetchProgress();
+  }, [id]);
 
 
 
   if (loading) return <LoadingSpinner />;
 
 
-  //   const handleProductRefresh = async (productKey) => {
-  //     try {
-  //       // const productName = productKey.toUpperCase();
-  //         console.log("Refreshing product:", productKey); // ADD THIS
+  const handleProductRefresh = async (productKey) => {
+    // event.preventDefault();
+    try {
+      console.log("Refreshing product:", productKey);
 
-  //       // Use patch name directly (assuming 'patchName' is available in scope)
-  //       const data = await getPatchProductDetail(id, productKey);
-  //               console.log("AFTER REFRESH: ", data.images); // <-- Confirm security_issues are []
+      const responseData = await getPatchProductDetail(id, productKey);
 
-  //       const updatedProduct = {
-  // images: JSON.parse(JSON.stringify(data.images || [])),
-  //         jars: (data.jars || []).map(jar => ({
-  //           name: jar.name,
-  //           version: jar.version,
-  //           current_version: jar.current_version,
-  //           remarks: jar.remarks || "",
-  //           updated: jar.updated || false
-  //         })),
-  //         helm_charts: data.helm_charts || []
-  //       };
+      if (!Array.isArray(responseData) || responseData.length === 0) {
+        console.error("Invalid response format:", responseData);
+        alert(`Failed to refresh ${productKey}: Invalid server response.`);
+        return;
+      }
 
-  //       console.log("issues",updatedProduct.images);
+      const patchData = responseData[0];
+      const product = (patchData.products || []).find(
+        (p) => p.name.toLowerCase() === productKey.toLowerCase()
+      );
 
+      if (!product) {
+        console.error("Product not found in patch:", productKey);
+        alert(`Product ${productKey} not found in response.`);
+        return;
+      }
 
+      // Clean and format security issues
+      product.images.forEach((img) => {
+        img.security_issues = (img.security_issues || []).map((issue) => ({
+          ...issue,
+          product_security_des:
+            issue.product_security_des ||
+            issue.product_security_description ||
+            "",
+        }));
+      });
 
-  //       // Update state
-  //       setProductJars(prev => ({
-  //         ...prev,
-  //         [productKey]: updatedProduct
-  //       }));
+      const updatedProduct = {
+        images: JSON.parse(JSON.stringify(product.images || [])),
+        jars: (patchData.jars || []).map((jar) => ({
+          name: jar.name,
+          version: jar.version,
+          current_version: jar.current_version,
+          remarks: jar.remarks || "",
+          updated: jar.updated || false,
+        })),
+        helm_charts: product.helm_charts || "Not Released",
+      };
 
-  //       setFilteredProducts(prev => ({
-  //         ...prev,
-  //         [productKey]: updatedProduct
-  //       }));
-
-  //     } catch (error) {
-  //       console.error(`Error refreshing ${productKey}:`, error.message);
-  //       alert(`Failed to refresh ${productKey}`);
-  //     }
-  //   };
-
-const handleProductRefresh = async (productKey) => {
-  // event.preventDefault();
-  try {
-    console.log("Refreshing product:", productKey);
-
-    const responseData = await getPatchProductDetail(id, productKey);
-
-    if (!Array.isArray(responseData) || responseData.length === 0) {
-      console.error("Invalid response format:", responseData);
-      alert(`Failed to refresh ${productKey}: Invalid server response.`);
-      return;
-    }
-
-    const patchData = responseData[0];
-    const product = (patchData.products || []).find(
-      (p) => p.name.toLowerCase() === productKey.toLowerCase()
-    );
-
-    if (!product) {
-      console.error("Product not found in patch:", productKey);
-      alert(`Product ${productKey} not found in response.`);
-      return;
-    }
-
-    // Clean and format security issues
-    product.images.forEach((img) => {
-      img.security_issues = (img.security_issues || []).map((issue) => ({
-        ...issue,
-        product_security_des:
-          issue.product_security_des ||
-          issue.product_security_description ||
-          "",
+      setProductJars((prev) => ({
+        ...prev,
+        [productKey]: updatedProduct,
       }));
-    });
 
-    const updatedProduct = {
-      images: JSON.parse(JSON.stringify(product.images || [])),
-      jars: (patchData.jars || []).map((jar) => ({
-        name: jar.name,
-        version: jar.version,
-        current_version: jar.current_version,
-        remarks: jar.remarks || "",
-        updated: jar.updated || false,
-      })),
-      helm_charts: product.helm_charts || "Not Released",
+      setFilteredProducts((prev) => ({
+        ...prev,
+        [productKey]: updatedProduct,
+      }));
+
+      console.log(` Successfully refreshed ${productKey}`, updatedProduct);
+    } catch (error) {
+      console.error(` Error refreshing ${productKey}:`, error);
+      alert(`Failed to refresh ${productKey}: ${error.message}`);
+    }
+  };
+
+
+ const handlePageRefresh = async (id) => {
+        // setLoading(true);
+
+        try {
+            const data = await getPatchDetailsById(id);
+            const progressresult=get_patch_progress(id);
+            const productMap = {};
+            for (const prod of data.products) {
+                const key = prod.name;
+                const ppj = await patch_product_jars(id, prod.name);
+                productMap[key] = {
+                    images: prod.images,
+                    jars: ppj.map(jar => ({
+                        name: jar.name,
+                        version: jar.version,
+                        current_version: jar.current_version,
+                        remarks: jar.remarks || "",
+                        updated: jar.updated || false
+                    })),
+                    helm_charts: prod.helm_charts
+                };
+            }
+
+            setProductJars(productMap);
+            setFilteredProducts(productMap);
+            setPatch(data);
+            // setProgress(progressresult);
+            setProgress(isNaN(progressresult) ? 0 : progressresult);
+
+
+        } catch (err) {
+            console.error("Failed to refresh patch data:", err);
+        }
+        // finally {
+        //     setLoading(false);
+        // }
     };
-
-    setProductJars((prev) => ({
-      ...prev,
-      [productKey]: updatedProduct,
-    }));
-
-    setFilteredProducts((prev) => ({
-      ...prev,
-      [productKey]: updatedProduct,
-    }));
-
-    console.log(` Successfully refreshed ${productKey}`, updatedProduct);
-  } catch (error) {
-    console.error(` Error refreshing ${productKey}:`, error);
-    alert(`Failed to refresh ${productKey}: ${error.message}`);
-  }
-};
-
 
   const handleJarsUpdate = (productKey, updatedJars) => {
     setProductJars(prev => ({
@@ -267,10 +276,12 @@ const handleProductRefresh = async (productKey) => {
       }
     }));
   };
+
   const counts = {
     completed: completedProducts.length,
     not_completed: notCompletedProducts.length,
   };
+
 
 
 
@@ -279,9 +290,18 @@ const handleProductRefresh = async (productKey) => {
       {/* <div className="filter-menu-container">
         <FilterMenu setFilter={setFilter} />
       </div> */}
-      <div className="filter-menu-container">
-        <CompletionFilter filter={filter} setFilter={setFilter} counts={counts} />
+      <div className="top-bar">
+        <div className="progress-refresh">
+          <div className="progress-container" style={{ pointerEvents: "none" }}>
+            <ProgressBar value={progress} label="Patch Progress" />
+          </div>
+          <RefreshButton onRefresh={() => handlePageRefresh(id)} />
+        </div>
+        <div className="filter-menu-container">
+          <CompletionFilter filter={filter} setFilter={setFilter} counts={counts} />
+        </div>
       </div>
+
       {loading ? (
         <LoadingSpinner />
       ) : Object.keys(productsToShow).length === 0 && Object.keys(productJars).length > 0 ? (
@@ -329,7 +349,7 @@ const handleProductRefresh = async (productKey) => {
                         {/* now pass this product’s own images */}
                         {/* <ImageTable images={images} patchname={patch?.name} /> */}
                         <ImageTable
-                         key={productObj.name + JSON.stringify(productObj.images)}
+                          key={productObj.name + JSON.stringify(productObj.images)}
                           images={productObj.images}
                           jars={productObj.jars}
                           productKey={productKey}
