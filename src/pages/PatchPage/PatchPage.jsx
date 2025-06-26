@@ -151,12 +151,12 @@ function PatchPage() {
         const transformedProducts = selectedProducts.map(product => ({
             name: product.name,
             // helm_charts: "Not Released",
-            // images: product.images.map(img => ({
-            //     ...img,
+             images: product.images.map(img => ({
+                 ...img,
             //     ot2_pass: "Not Released",
             //     registry: "Not Released",
             //     // patch_build_number: tempPatchData.name
-            // }))
+            }))
         }));
 
         try {
