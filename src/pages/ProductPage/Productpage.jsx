@@ -4,6 +4,7 @@ import getProductDetails from '../../api/image';
 import ImageTable from '../../components/ProductTable/ImageTable';
 import './ProductPage.css';
 import { useOutletContext } from 'react-router-dom';
+import ActionTable from '../../components/ProductImageTable/ActionTable';
 
 
 // function highlightMatch(text, term) {
@@ -64,8 +65,11 @@ function ProductPage() {
 
         <div className="dashboard-main" >
             {/* <h2>Images for Product: {productName}</h2> */}
-            <ImageTable images={images} searchTerm={searchTerm} />
+            {/* <ImageTable images={images} searchTerm={searchTerm} /> */}
+            {console.log("images in product page",images)}
+            <ActionTable images={images}/>
         </div>
+        
     );
 }
 
