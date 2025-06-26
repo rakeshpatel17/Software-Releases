@@ -39,6 +39,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         jars_data: [],
 
     });
+    
 
 
     const [releaseList, setReleaseList] = useState([]);
@@ -108,6 +109,23 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         }
     }, [formData.release]);
 
+
+    
+useEffect(() => {
+    if (lockedRelease) {
+        console.log(`Syncing state with new lockedRelease: ${lockedRelease}`);
+
+        setFormData(prevData => ({
+            ...prevData,
+            release: lockedRelease,
+            name: '', 
+        }));
+
+        setSelectedRelease(lockedRelease);
+    }
+
+}, [lockedRelease]); 
+
     useEffect(() => {
         const fetchReleases = async () => {
             const data = await get_release();
@@ -168,33 +186,6 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         }
     }, [jarSearchTerm]);
 
-    useEffect(() => {
-        if (lockedRelease) {
-            setFormData(prev => ({
-                ...prev,
-                release: lockedRelease,
-            }));
-        }
-    }, [lockedRelease]);
-
-
-    // const handleChange = (e) => {
-    //     const { name, value, type, checked } = e.target;
-    //     setFormData((prevData) => ({
-    //         ...prevData,
-    //         [name]: type === 'checkbox' ? checked : value,
-    //     }));
-    //     if (name === "release") {
-    //         setSelectedRelease(value);
-    //     }
-
-    //     if (errors[name]) {
-    //         setErrors((prevErrors) => ({
-    //             ...prevErrors,
-    //             [name]: '',
-    //         }));
-    //     }
-    // };
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -269,7 +260,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
 
         const patchedFormData = {
             ...formData,
-            release: selectedRelease || formData.release, // Fallback to selectedRelease
+            release: selectedRelease || formData.release, 
         };
 
         console.log("Form Data before validation:", patchedFormData);
