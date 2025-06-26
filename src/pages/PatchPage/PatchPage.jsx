@@ -150,13 +150,13 @@ function PatchPage() {
         // console.log("final their set ,", highLevelScope);
         const transformedProducts = selectedProducts.map(product => ({
             name: product.name,
-            helm_charts: "Not Released",
-            images: product.images.map(img => ({
-                ...img,
-                ot2_pass: "Not Released",
-                registry: "Not Released",
-                patch_build_number: tempPatchData.name
-            }))
+            // helm_charts: "Not Released",
+            // images: product.images.map(img => ({
+            //     ...img,
+            //     ot2_pass: "Not Released",
+            //     registry: "Not Released",
+            //     // patch_build_number: tempPatchData.name
+            // }))
         }));
 
         try {
@@ -168,8 +168,7 @@ function PatchPage() {
             };
             console.log("PUT payload:", payload);
 
-            await put_patches(patchName, payload); // <-- Make sure this API function is correct
-
+            await put_patches(patchName, payload); 
             setPatchData(payload); // update local state with saved data
             setSelectedJars(tempSelectedJars);
             setHighLevelScope(tempHighLevelScope);

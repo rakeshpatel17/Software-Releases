@@ -11,8 +11,9 @@ const common_headers = {
 
 const getPatchProductDetail = async (patchName, productName) => {
   try {
+    const safeProductName = productName ?? 'null';
     const response = await fetch(
-      `${base_url}/patches/${encodeURIComponent(patchName)}/products/${encodeURIComponent(productName)}/`,
+      `${base_url}/patches/${encodeURIComponent(patchName)}/products/${encodeURIComponent(safeProductName)}/details/`,
       {
         method: "GET",
         headers: {

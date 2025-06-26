@@ -14,20 +14,22 @@ function ProgressBar({ value = 0, label, redirectTo = "/dashboard" }) {
   return (
     <div className="progress-wrapper clickable" onClick={handleClick}>
       {/* {label && <div className="progress-label">{label}</div>} */}
-      <Tooltip text="patch progress" position="down">
-
-        <div className="progress-label">progress</div>
-      </Tooltip>
-
+      
       <div className="progress-row" >
+           <Tooltip text="patch progress" position="top">
+        <div className="progress-percent">{clampedValue}%</div>
+        </Tooltip>
         <div className="progress-bar-background">
+          
           <div
             className="progress-bar-fill"
             style={{ width: `${clampedValue}%` }}
           />
         </div>
-        <div className="progress-percent">{clampedValue}%</div>
-      </div></div>
+        
+      </div>  
+      
+      </div>
 
   );
 }

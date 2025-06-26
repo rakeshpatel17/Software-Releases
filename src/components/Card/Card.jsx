@@ -51,14 +51,17 @@ const Card = ({ info, setPatches, products = [], className = '', children, ...re
       {image && <img src={image} alt={title} className="card-image" />}
 
       <div className="card-body">
-        <div className='card-header'>
+     
         {badge && (
           <span className={`card-badge ${badge.toLowerCase()}`}>{(badge[0].toUpperCase() + badge.slice(1))}</span>)}
-          <div className="progress-container"  onClick={(e) => e.stopPropagation()}>
+          
+       
+           <div className='card-header'>
+        <h3 className="card-title">{title}</h3>
+        <div className="progress-container"  onClick={(e) => e.stopPropagation()}>
           <ProgressBar value={progress} label="Patch Progress" redirectTo={`/progress/${title}`} />
         </div>
-        </div>
-        <h3 className="card-title">{title}</h3>
+         </div>
         {/* <p className="card-description">{description}</p> */}
         <p className="card-description">
           {badge?.toLowerCase() === 'released' ? (

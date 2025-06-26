@@ -246,7 +246,7 @@ function PatchProgressPage() {
         // setLoading(true);
 
         try {
-            const data = await getPatchDetailsById(id);
+            const data = await getPatchProductDetail(id);
             const progressresult=get_patch_progress(id);
             const productMap = {};
             // for (const prod of data.products) {
@@ -347,6 +347,8 @@ function PatchProgressPage() {
           <CompletionFilter filter={filter} setFilter={setFilter} counts={counts} />
         </div>
       </div>
+
+      {/* <div style={{ height: '56px' }}></div> */}
 
       {loading ? (
         <LoadingSpinner />
