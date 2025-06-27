@@ -188,7 +188,7 @@ function PatchProgressPage() {
         console.error("Invalid response format:", responseData);
         alert(`Failed to refresh ${productKey}: Invalid server response.`);
         return;
-      }
+      }  
 
       const patchData = responseData[0];
       const product = (patchData.products || []).find(
