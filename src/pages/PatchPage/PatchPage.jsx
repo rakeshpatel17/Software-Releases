@@ -142,7 +142,7 @@ function PatchPage() {
                 setProductData([]);
             }
 
-           
+
             setPatchData(patch);
             setTempPatchData(patch);
 
@@ -163,13 +163,13 @@ function PatchPage() {
                 remarks: jar.remarks
             })));
 
-            setLoading(false); 
+            setLoading(false);
         };
 
         if (patchName) {
             fetchAndPopulatePatchData();
         }
-    }, [patchName]); 
+    }, [patchName]);
 
     useEffect(() => {
         if (isEditing) {
@@ -215,9 +215,9 @@ function PatchPage() {
             images: product.images.map(img => ({
                 // ...img,
                 image_name: img.image_name
-            //     ot2_pass: "Not Released",
-            //     registry: "Not Released",
-            //     // patch_build_number: tempPatchData.name
+                //     ot2_pass: "Not Released",
+                //     registry: "Not Released",
+                //     // patch_build_number: tempPatchData.name
             }))
         }));
 
@@ -249,16 +249,16 @@ function PatchPage() {
 
         // If changing to "released" from a different state
         if (newState === 'released' && tempPatchData.patch_state !== 'released') {
-            const desc = window.prompt('Enter KBA link:');
-            if (desc !== null && desc.trim() !== '') {
+            const kbaLink = window.prompt('Enter KBA link:');
+            if (kbaLink !== null && kbaLink.trim() !== '') {
                 setTempPatchData({
                     ...tempPatchData,
                     patch_state: newState,
-                    description: desc.trim(),
+                    kba: kbaLink.trim(), // Save to `kba` instead of `description`
                 });
             } else {
                 // Cancel the selection back to original state
-                alert('Release description is required.');
+                alert('KBA link is required.');
             }
         } else {
             // For other state transitions
