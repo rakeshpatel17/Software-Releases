@@ -17,7 +17,7 @@ import put_patches from '../../api/put_patches';
 import get_patch_progress from '../../api/get_patch_progress';
 import { Pencil, X, Download } from 'lucide-react'; // Place this at the top of your file
 import Tooltip from '../../components/ToolTip/ToolTip';
-
+import { AllReleaseProductImage } from '../../api/AllReleaseProductImage';
 
 function PatchPage() {
     const { patchName } = useParams();
@@ -55,60 +55,121 @@ function PatchPage() {
         if (patchName) fetchProgress();
     }, [patchName]);
 
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         const products = await getAllProducts();
+    //         // console.log("all products getting :  ",products);
+    //         if (products && products.length > 0) {
+    //             let releaseObj;
+    //             if (selectedRelease) {
+    //                 releaseObj = products.find(obj => Object.keys(obj)[0] === selectedRelease);
+    //             }
+    //             if (!releaseObj) releaseObj = products[0]; // fallback
+
+    //             const releaseKey = Object.keys(releaseObj)[0];
+    //             const releaseProducts = releaseObj[releaseKey];
+
+    //             setSelectedRelease(releaseKey);
+    //             setProductData(releaseProducts);
+
+    //             const patchData = await getPatchById(patchName);
+    //             // console.log("The updated backend patch data is : ", patchData);
+    //             if (patchData) {
+    //                 const patch = patchData;
+    //                 setPatchData(patch);
+    //                 setTempPatchData(patch);
+
+
+    //                 const productImageMap = patch.products || [];
+    //                 const highLevelScopes = patch.scopes || [];
+    //                 const selectedJars = patch.jars || [];
+
+    //                 setSelectedProducts(productImageMap);
+    //                 // console.log("the current selected products : ", selectedProducts);
+    //                 // console.log("the current selected productimagemap : ", productImageMap);
+
+
+    //                 //  Set high level scope labels
+    //                 const HighLevelScope = highLevelScopes.map(scope => ({
+    //                     name: scope.name,
+    //                     version: scope.version,
+    //                     // remarks : scope.remarks
+    //                 }));
+    //                 setHighLevelScope(HighLevelScope);
+
+    //                 //set jars
+    //                 setSelectedJars(selectedJars.map(jar => ({
+    //                     name: jar.name,
+    //                     version: jar.version,
+    //                     remarks: jar.remarks
+    //                 })));
+    //             }
+    //         }
+    //         setLoading(false); // Making loading false when total patch data loads
+    //     };
+    //     fetchData();
+    // }, [patchName]);
+
     useEffect(() => {
-        const fetchData = async () => {
-            const products = await getAllProducts();
-            // console.log("all products getting :  ",products);
-            if (products && products.length > 0) {
-                let releaseObj;
-                if (selectedRelease) {
-                    releaseObj = products.find(obj => Object.keys(obj)[0] === selectedRelease);
-                }
-                if (!releaseObj) releaseObj = products[0]; // fallback
-
-                const releaseKey = Object.keys(releaseObj)[0];
-                const releaseProducts = releaseObj[releaseKey];
-
-                setSelectedRelease(releaseKey);
-                setProductData(releaseProducts);
-
-                const patchData = await getPatchById(patchName);
-                // console.log("The updated backend patch data is : ", patchData);
-                if (patchData) {
-                    const patch = patchData;
-                    setPatchData(patch);
-                    setTempPatchData(patch);
-
-
-                    const productImageMap = patch.products || [];
-                    const highLevelScopes = patch.scopes || [];
-                    const selectedJars = patch.jars || [];
-
-                    setSelectedProducts(productImageMap);
-                    // console.log("the current selected products : ", selectedProducts);
-                    // console.log("the current selected productimagemap : ", productImageMap);
-
-
-                    //  Set high level scope labels
-                    const HighLevelScope = highLevelScopes.map(scope => ({
-                        name: scope.name,
-                        version: scope.version,
-                        // remarks : scope.remarks
-                    }));
-                    setHighLevelScope(HighLevelScope);
-
-                    //set jars
-                    setSelectedJars(selectedJars.map(jar => ({
-                        name: jar.name,
-                        version: jar.version,
-                        remarks: jar.remarks
-                    })));
-                }
+        const fetchAndPopulatePatchData = async () => {
+            setLoading(true);
+            const patch = await getPatchById(patchName);
+            if (!patch) {
+                console.error(`Patch with name "${patchName}" not found.`);
+                setLoading(false);
+                return;
             }
-            setLoading(false); // Making loading false when total patch data loads
+            const releaseForThisPatch = patch.release;
+
+            const allImages = await AllReleaseProductImage();
+            if (allImages) {
+                const imagesForRelease = allImages.filter(img => img.release === releaseForThisPatch);
+
+                const groupedByProduct = imagesForRelease.reduce((accumulator, currentImage) => {
+                    const product = currentImage.product;
+                    if (!accumulator[product]) accumulator[product] = [];
+                    accumulator[product].push({ imagename: currentImage.image_name });
+                    return accumulator;
+                }, {});
+
+                const finalProductData = Object.keys(groupedByProduct).map(productName => ({
+                    name: productName,
+                    images: groupedByProduct[productName]
+                }));
+
+                setProductData(finalProductData);
+            } else {
+                setProductData([]);
+            }
+
+           
+            setPatchData(patch);
+            setTempPatchData(patch);
+
+            const previouslySelectedProducts = patch.products || [];
+            const highLevelScopes = patch.scopes || [];
+            const selectedJarsData = patch.jars || [];
+
+            setSelectedProducts(previouslySelectedProducts);
+
+            setHighLevelScope(highLevelScopes.map(scope => ({
+                name: scope.name,
+                version: scope.version,
+            })));
+
+            setSelectedJars(selectedJarsData.map(jar => ({
+                name: jar.name,
+                version: jar.version,
+                remarks: jar.remarks
+            })));
+
+            setLoading(false); 
         };
-        fetchData();
-    }, [patchName]);
+
+        if (patchName) {
+            fetchAndPopulatePatchData();
+        }
+    }, [patchName]); 
 
     useEffect(() => {
         if (isEditing) {
@@ -151,11 +212,11 @@ function PatchPage() {
         const transformedProducts = selectedProducts.map(product => ({
             name: product.name,
             // helm_charts: "Not Released",
-             images: product.images.map(img => ({
-                 ...img,
-            //     ot2_pass: "Not Released",
-            //     registry: "Not Released",
-            //     // patch_build_number: tempPatchData.name
+            images: product.images.map(img => ({
+                ...img,
+                //     ot2_pass: "Not Released",
+                //     registry: "Not Released",
+                //     // patch_build_number: tempPatchData.name
             }))
         }));
 
@@ -168,7 +229,7 @@ function PatchPage() {
             };
             console.log("PUT payload:", payload);
 
-            await put_patches(patchName, payload); 
+            await put_patches(patchName, payload);
             setPatchData(payload); // update local state with saved data
             setSelectedJars(tempSelectedJars);
             setHighLevelScope(tempHighLevelScope);
@@ -235,9 +296,16 @@ function PatchPage() {
     }
 
 
+    // const transformedProducts = productData.map(item => ({
+    //     name: item.products_data.name,
+    //     images: item.products_data.images.map(img => ({
+    //         image_name: img.imagename
+    //     }))
+    // }));
+    // Corrected version
     const transformedProducts = productData.map(item => ({
-        name: item.products_data.name,
-        images: item.products_data.images.map(img => ({
+        name: item.name, // Access item.name directly
+        images: (item.images || []).map(img => ({ // Access item.images directly, with a safety fallback
             image_name: img.imagename
         }))
     }));

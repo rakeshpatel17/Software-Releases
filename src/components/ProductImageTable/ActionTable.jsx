@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import {
     Table, TableBody, TableCell, TableContainer, TableHead,
@@ -9,8 +10,10 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import ImageDialog from './ImageDialog';
+import { createReleaseProductImage } from '../../api/createReleaseProductImage';
+import { updateReleaseProductImage } from '../../api/ReleaseProductImage';
 
-const ImageTable = ({ images = [] }) => {
+const ImageTable = ({ images = [], release, product, onImageUpdate, onImageAdd }) => {
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -24,7 +27,6 @@ const ImageTable = ({ images = [] }) => {
     const [dialogMode, setDialogMode] = useState('view');
     const [dialogData, setDialogData] = useState({});
 
-    // ✅ Reset image data when images prop changes
     useEffect(() => {
         setImageData(images);
         setPage(0);
@@ -47,30 +49,84 @@ const ImageTable = ({ images = [] }) => {
 
     const handleAddImage = () => {
         setDialogMode('add');
-        setDialogData({});
+        setDialogData({ release, product });
         setDialogOpen(true);
     };
 
     const handleOpenDialog = (row) => {
+        const latest = imageData.find(img => img.image_name === row.image_name) || row;
+
+        setDialogData({
+            release,
+            product,
+            ...latest
+        });
         setDialogMode(editMode ? 'edit' : 'view');
-        setDialogData(row);
         setDialogOpen(true);
     };
 
-    const handleDialogSave = (newData) => {
+
+    const handleDialogSave = async (newData) => {
         if (dialogMode === 'add') {
-            setImageData([...imageData, newData]);
-        } else if (dialogMode === 'edit') {
-            setImageData(prev =>
-                prev.map(item =>
-                    item.image_name === newData.image_name ? newData : item
-                )
-            );
+            try {
+                const createdImage = await createReleaseProductImage({
+                    release,
+                    product,
+                    ...newData
+                });
+                console.log("data to add image", createdImage)
+                if (createdImage) {
+                    setImageData(prevImageData => [...prevImageData, createdImage]);
+                }
+            } catch (err) {
+                console.error("Failed to add image:", err);
+            }
+        } else {
+            onImageUpdate(release, dialogData.image_name, newData);
         }
         setDialogOpen(false);
     };
 
-    const handleEditToggle = () => setEditMode(prev => !prev);
+
+
+
+    const handleEditToggle = async () => {
+    if (editMode) {
+        // Save: update backend with edited image names
+        for (const img of imageData) {
+            if (img.original_image_name && img.original_image_name !== img.image_name) {
+                try {
+                    await updateReleaseProductImage(
+                        release,
+                        product,
+                        img.original_image_name,
+                        {
+                            ...img,
+                            release,
+                            product
+                        }
+                    );
+                } catch (error) {
+                    console.error("Error updating image:", error);
+                }
+            }
+        }
+
+        // Clear original names after saving
+        const updated = imageData.map(({ original_image_name, ...rest }) => rest);
+        setImageData(updated);
+    } else {
+        // On entering edit mode: store original image_name
+        const updated = imageData.map((img) => ({
+            ...img,
+            original_image_name: img.image_name
+        }));
+        setImageData(updated);
+    }
+
+    setEditMode(prev => !prev);
+};
+
 
     const paginated = imageData.slice(
         page * rowsPerPage,
@@ -85,76 +141,52 @@ const ImageTable = ({ images = [] }) => {
                         <TableRow sx={{ backgroundColor: '#1a237e' }}>
                             <TableCell sx={{ color: 'white' }} />
                             <TableCell sx={{ color: 'white' }}>Image Name</TableCell>
-                            <TableCell sx={{ color: 'white' }}>Build Number</TableCell>
                             <TableCell sx={{ color: 'white' }}>Action</TableCell>
                         </TableRow>
                     </TableHead>
 
                     <TableBody>
-                        {paginated.map((row, index) => {
-                            console.log('Rendering row:', row);
-                            return (
-                                <TableRow key={index} hover>
-                                    <TableCell padding="checkbox">
-                                        <Checkbox
-                                            color="primary"
-                                            checked={selected.includes(row.image_name)}
-                                            onChange={() => handleSelect(row.image_name)}
+                        {paginated.map((row, index) => (
+                            <TableRow key={index} hover>
+                                <TableCell padding="checkbox">
+                                    <Checkbox
+                                        color="primary"
+                                        checked={selected.includes(row.image_name)}
+                                        onChange={() => handleSelect(row.image_name)}
+                                    />
+                                </TableCell>
+                                <TableCell>
+                                    {editMode ? (
+                                        <TextField
+                                            variant="standard"
+                                            value={row.image_name}
+                                            onChange={(e) => {
+                                                const updated = [...imageData];
+                                                const globalIndex = imageData.findIndex(
+                                                    (img) => img.image_name === row.image_name
+                                                );
+                                                if (globalIndex !== -1) {
+                                                    updated[globalIndex].image_name = e.target.value;
+                                                    setImageData(updated);
+                                                }
+                                            }}
+                                            fullWidth
                                         />
-                                    </TableCell>
-                                    <TableCell>
-                                        {editMode ? (
-                                            <TextField
-                                                variant="standard"
-                                                value={row.image_name}
-                                                onChange={(e) => {
-                                                    const updated = [...imageData];
-                                                    const globalIndex = imageData.findIndex(
-                                                        (img) => img.image_name === row.image_name
-                                                    );
-                                                    if (globalIndex !== -1) {
-                                                        updated[globalIndex].image_name = e.target.value;
-                                                        setImageData(updated);
-                                                    }
-                                                }}
-                                                fullWidth
-                                            />
-                                        ) : (
-                                            row.image_name
-                                        )}
-                                    </TableCell>
-                                    <TableCell>
-                                        {editMode ? (
-                                            <TextField
-                                                variant="standard"
-                                                value={row.build_number}
-                                                onChange={(e) => {
-                                                    const updated = [...imageData];
-                                                    const globalIndex = imageData.findIndex(
-                                                        (img) => img.image_name === row.image_name
-                                                    );
-                                                    if (globalIndex !== -1) {
-                                                        updated[globalIndex].build_number = e.target.value;
-                                                        setImageData(updated);
-                                                    }
-                                                }}
-                                                fullWidth
-                                            />
-                                        ) : (
-                                            row.build_number
-                                        )}
-                                    </TableCell>
-                                    <TableCell>
-                                        <IconButton onClick={() => handleOpenDialog(row)}>
-                                            <AddCircleOutlineIcon />
-                                        </IconButton>
-                                    </TableCell>
-                                </TableRow>
-                            );
-                        })}
+                                    ) : (
+                                        row.image_name
+                                    )}
+                                </TableCell>
+                                <TableCell>
+                                    <IconButton onClick={() => handleOpenDialog(row)}>
+                                        <AddCircleOutlineIcon />
+                                    </IconButton>
+                                </TableCell>
+                            </TableRow>
+                        ))}
                     </TableBody>
                 </Table>
             </TableContainer>
+
 
             <Box
                 sx={{

@@ -1,75 +1,84 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import getProductDetails from '../../api/image';
-import ImageTable from '../../components/ProductTable/ImageTable';
-import './ProductPage.css';
-import { useOutletContext } from 'react-router-dom';
+import { useParams, useOutletContext } from 'react-router-dom';
 import ActionTable from '../../components/ProductImageTable/ActionTable';
-
-
-// function highlightMatch(text, term) {
-//     if (!term) return text;
-//     const regex = new RegExp(`(${term})`, 'gi');
-//     return text.split(regex).map((part, i) =>
-//         part.toLowerCase() === term.toLowerCase() ? (
-//             <span key={i} className="highlight">{part}</span>
-//         ) : (
-//             part
-//         )
-//     );
-// }
-
+import './ProductPage.css';
+import { AllReleaseProductImage } from '../../api/AllReleaseProductImage';
 
 function ProductPage() {
-
-    const { searchTerm, setTitle } = useOutletContext(); 
+    const { searchTerm, setTitle } = useOutletContext();
     const { productName } = useParams();
-    const [images, setImages] = useState([]);
-    // const [searchTerm, setSearchTerm] = useState('');
-    const [expandedRows, setExpandedRows] = useState({});
-    /*text area */
-    // const [editingIndex, setEditingIndex] = useState(null);
-    // const [editedDescription, setEditedDescription] = useState('');
+    const [groupedImages, setGroupedImages] = useState({});
+
     useEffect(() => {
-        setTitle(`Images for ${productName}`);  
+        setTitle(`Images for ${productName}`);
     }, [productName, setTitle]);
 
-    const toggleRow = (idx) => {
-        setExpandedRows((prev) => ({
-            ...prev,
-            [idx]: !prev[idx],
-        }));
-    };
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const data = await getProductDetails(`${productName}`);
-                if (data && Array.isArray(data.images)) {
-                    const filteredImages = data.images.filter((img) =>
-                        img.build_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        img.ot2_pass.toLowerCase().includes(searchTerm.toLowerCase())
-                    );
-                    setImages(filteredImages);
-                } else {
-                    setImages([]);
-                }
-            } catch (err) {
-                console.error('Error fetching images for product:', err);
-                setImages([]);
+                const data = await AllReleaseProductImage();
+                const filtered = data.filter(img => img.product === productName);
+                const grouped = filtered.reduce((acc, img) => {
+                    const release = img.release;
+                    if (!acc[release]) acc[release] = [];
+                    acc[release].push(img);
+                    return acc;
+                }, {});
+                setGroupedImages(grouped);
+            } catch (error) {
+                console.error('Error fetching release images:', error);
             }
         };
         fetchData();
-    }, [productName, searchTerm]);
+    }, [productName]);
+
+    const handleImageUpdate = (release, originalImageName, updatedImage) => {
+        setGroupedImages(prevGrouped => {
+            const newGroupedData = { ...prevGrouped };
+            const imagesInRelease = [...newGroupedData[release]];
+            
+            const imageIndex = imagesInRelease.findIndex(
+                img => img.image_name === originalImageName
+            );
+
+            if (imageIndex !== -1) {
+                // Replace the old image object with the new one
+                imagesInRelease[imageIndex] = updatedImage;
+                newGroupedData[release] = imagesInRelease;
+            }
+
+            return newGroupedData;
+        });
+    };
+
+    const handleImageAdd = (release, newImage) => {
+        setGroupedImages(prevGrouped => {
+            const newGroupedData = { ...prevGrouped };
+            const imagesInRelease = newGroupedData[release] ? [...newGroupedData[release]] : [];
+            
+            imagesInRelease.push(newImage);
+            newGroupedData[release] = imagesInRelease;
+
+            return newGroupedData;
+        });
+    };
 
     return (
-
-        <div className="dashboard-main" >
-            {/* <h2>Images for Product: {productName}</h2> */}
-            {/* <ImageTable images={images} searchTerm={searchTerm} /> */}
-            {console.log("images in product page",images)}
-            <ActionTable images={images}/>
+        <div className="dashboard-main">
+            {Object.entries(groupedImages).map(([release, images]) => (
+                <div key={release} className="release-group">
+                    <h3>Release: {release}</h3>
+                    <ActionTable
+                        images={images}
+                        release={release}
+                        product={productName}
+                        // Pass the update function down as a prop
+                        onImageUpdate={handleImageUpdate}
+                        onImageAdd={handleImageAdd} 
+                    />
+                </div>
+            ))}
         </div>
-        
     );
 }
 

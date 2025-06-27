@@ -12,7 +12,7 @@ import HighLevelScopeComponent from '../HighLevelScope/HighLevelScope';
 import CancelButton from '../Button/CancelButton';
 import SaveButton from '../Button/SaveButton';
 import { useOutletContext } from 'react-router-dom';
-
+import { AllReleaseProductImage } from '../../api/AllReleaseProductImage';
 
 
 
@@ -39,7 +39,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         jars_data: [],
 
     });
-    
+
 
 
     const [releaseList, setReleaseList] = useState([]);
@@ -110,21 +110,21 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
     }, [formData.release]);
 
 
-    
-useEffect(() => {
-    if (lockedRelease) {
-        console.log(`Syncing state with new lockedRelease: ${lockedRelease}`);
 
-        setFormData(prevData => ({
-            ...prevData,
-            release: lockedRelease,
-            name: '', 
-        }));
+    useEffect(() => {
+        if (lockedRelease) {
+            console.log(`Syncing state with new lockedRelease: ${lockedRelease}`);
 
-        setSelectedRelease(lockedRelease);
-    }
+            setFormData(prevData => ({
+                ...prevData,
+                release: lockedRelease,
+                name: '',
+            }));
 
-}, [lockedRelease]); 
+            setSelectedRelease(lockedRelease);
+        }
+
+    }, [lockedRelease]);
 
     useEffect(() => {
         const fetchReleases = async () => {
@@ -141,34 +141,70 @@ useEffect(() => {
     }, [lockedRelease]);
 
     //  product
+    // useEffect(() => {
+    //     const fetchProducts = async () => {
+    //         const data = await getAllProducts();
+    //         if (data && data.length > 0) {
+    //             let releaseObj;
+    //             if (selectedRelease) {
+    //                 releaseObj = data.find(obj => Object.keys(obj)[0] === selectedRelease);
+    //             }
+    //             if (!releaseObj) releaseObj = data[0]; // fallback
+
+    //             const releaseKey = Object.keys(releaseObj)[0];
+    //             const releaseProducts = releaseObj[releaseKey];
+
+    //             setSelectedRelease(releaseKey); setProductData(releaseProducts);
+    //             console.log("productdata", releaseProducts)
+
+    //         }
+
+    //     }
+    //     fetchProducts();
+    // }, [selectedRelease]);
+
     useEffect(() => {
-        const fetchProducts = async () => {
-            const data = await getAllProducts();
-            if (data && data.length > 0) {
-                let releaseObj;
-                if (selectedRelease) {
-                    releaseObj = data.find(obj => Object.keys(obj)[0] === selectedRelease);
-                }
-                if (!releaseObj) releaseObj = data[0]; // fallback
-
-                const releaseKey = Object.keys(releaseObj)[0];
-                const releaseProducts = releaseObj[releaseKey];
-
-                setSelectedRelease(releaseKey); setProductData(releaseProducts);
-                console.log("productdata", data)
-
+        const fetchAndProcessImages = async () => {
+            
+            if (!selectedRelease) {
+                setProductData([]);
+                return;
             }
 
-        }
+            const allImages = await AllReleaseProductImage();
+            if (!allImages) {
+                console.error("Failed to fetch release images.");
+                setProductData([]);
+                return;
+            }
 
+            const imagesForRelease = allImages.filter(img => img.release === selectedRelease);
 
-        fetchProducts();
-    }, [selectedRelease]);
+            const groupedByProduct = imagesForRelease.reduce((accumulator, currentImage) => {
+                const product = currentImage.product;
 
-    // const handleChange = (e) => {
-    //   setSelectedRelease(e.target.value);
-    //   // also update formData if you use it
-    // };
+                if (!accumulator[product]) {
+                    accumulator[product] = [];
+                }
+                accumulator[product].push({
+                    imagename: currentImage.image_name
+                });
+
+                return accumulator;
+            }, {}); 
+            const finalProductData = Object.keys(groupedByProduct).map(productName => {
+                return {
+                    name: productName,
+                    images: groupedByProduct[productName]
+                };
+            });
+
+            setProductData(finalProductData);
+            console.log("Final processed productData:", finalProductData);
+        };
+
+        fetchAndProcessImages();
+    }, [selectedRelease]); 
 
 
 
@@ -260,7 +296,7 @@ useEffect(() => {
 
         const patchedFormData = {
             ...formData,
-            release: selectedRelease || formData.release, 
+            release: selectedRelease || formData.release,
         };
 
         console.log("Form Data before validation:", patchedFormData);
@@ -364,13 +400,19 @@ useEffect(() => {
         }
     }, [formData.release_date]);
 
+    // const transformedProducts = productData.map(item => ({
+    //     name: item.products_data.name,
+    //     images: item.products_data.images.map(img => ({
+    //         image_name: img.imagename
+    //     }))
+    // }));
+    // Corrected version
     const transformedProducts = productData.map(item => ({
-        name: item.products_data.name,
-        images: item.products_data.images.map(img => ({
+        name: item.name, 
+        images: item.images.map(img => ({ 
             image_name: img.imagename
         }))
     }));
-
 
     return (
         <>

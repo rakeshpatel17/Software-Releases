@@ -55,3 +55,8 @@ Container for horizontal scrolling on small screens
   height: 100%;
   overflow-y: auto;
 }
+
+
+.release-group {
+  margin-bottom: 2rem;
+}
