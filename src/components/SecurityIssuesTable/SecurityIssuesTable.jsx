@@ -122,8 +122,8 @@ export default function SecurityIssuesTable({
 
   // slice the issues for current page
   const paginated = rowsPerPage > 0
-  ? issues.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-  : issues;
+    ? issues.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+    : issues;
 
   // your existing severity colors
   const severityColors = {
@@ -135,52 +135,45 @@ export default function SecurityIssuesTable({
   // console.log("issues", issues)
   // console.log("products", Productsdata)
 
-const handleSaveDescription = async (issue, newValue) => {
-  if (!img || !img.image_name) {
-    console.error(" img is missing or invalid");
-    return;
-  }
+  const handleSaveDescription = async (issue, newValue) => {
+    if (!img || !img.image_name) {
+      console.error("img is missing or invalid. Cannot determine context for saving.");
+      return;
+    }
 
-  const matchedProduct = Productsdata.find(product =>
-    product.images.some(image =>
-      image.image_name === img.image_name &&
-      image.security_issues.some(secIssue => secIssue.cve_id === issue.cve_id)
-    )
-  );
 
-  if (!matchedProduct) {
-    console.error(" No matching product/image/issue found");
-    return;
-  }
+    const matchedProduct = Productsdata.find(product =>
+      product.images.some(image =>
+        image.image_name === img.image_name &&
+        image.security_issues.some(secIssue => secIssue.cve_id === issue.cve_id)
+      )
+    );
 
-  const payload = {
-    products_data: [
-      {
-        name: matchedProduct.name,
-        images: [
-          {
-            image_name: img.image_name,
-            security_issues: [
-              {
-                cve_id: issue.cve_id,
-                product_security_des: newValue
-              }
-            ]
-          }
-        ]
-      }
-    ]
+    if (!matchedProduct) {
+      console.error("Could not find a matching product for this issue in the local data.");
+      return;
+    }
+
+
+    const payload = {
+      productName: matchedProduct.name,    
+      cveId: issue.cve_id,                  
+      product_security_des: newValue        
+    };
+
+    console.log("Payload being sent to securityIssuesUpdate:", payload);
+
+    try {
+
+      await securityIssuesUpdate(patchname, payload);
+
+      refreshProductsData();
+      console.log("Description saved successfully!");
+
+    } catch (err) {
+      console.error("API error while saving description:", err.message);
+    }
   };
-
-  try {
-    await securityIssuesUpdate(patchname, payload);
-    refreshProductsData();
-    console.log(" Saved successfully");
-  } catch (err) {
-    console.error(" API error:", err.message);
-  }
-};
-
 
 
 
@@ -244,9 +237,9 @@ const handleSaveDescription = async (issue, newValue) => {
                   <TableCell>{libs}</TableCell>
                   <TableCell align="center">
                     <EditableFieldComponent
-                     value={
-                      issue.product_security_des || '—'
-                    }
+                      value={
+                        issue.product_security_des || '—'
+                      }
 
                       // onSave={async (newValue) => {
                       //   const updated = [...Productsdata];
@@ -269,7 +262,7 @@ const handleSaveDescription = async (issue, newValue) => {
                       //     }
                       //   }
                       // }}
-                                          onSave={(newValue) => handleSaveDescription(issue, newValue)} 
+                      onSave={(newValue) => handleSaveDescription(issue, newValue)}
                     />
                   </TableCell>
                 </TableRow>
