@@ -33,7 +33,7 @@ function Dashboard() {
         badge: patch.patch_state || "no patche state",
         footer: patch.release_date || "no release_date",
           products: patch.products || [], 
-
+         
       }));
       //console.log("fetched patches in dashboard : ", mappedData);
       setFetchedPatches(mappedData); 
