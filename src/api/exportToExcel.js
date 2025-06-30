@@ -278,11 +278,45 @@ function exportToExcel(products, fileName) {
   worksheet.addRow([]);
   currentRow++;
 
-  // Add a note about using Excel's outline controls
+  // 1'st note about using Excel's outline controls
   const noteRow = worksheet.addRow(['Note: Use Excel\'s +/- buttons in the left margin to expand/collapse groups, or select rows and right-click to unhide/hide.']);
   noteRow.font = { italic: true };
   worksheet.mergeCells(currentRow, 1, currentRow, 7);
 
+  // 2) Spacer row
+  const spacer = worksheet.addRow([]);
+  // no merge needed for blank row
+
+  // 3) Header for mode selection
+  const headerModeRow = worksheet.addRow([ 'Click the numbers in the left margin to switch views:' ]);
+  headerModeRow.font      = { bold: true };
+  headerModeRow.alignment = { vertical: 'middle' };
+  worksheet.mergeCells(headerModeRow.number, 1, headerModeRow.number, 7);
+
+  // 4) Mode 1: Clean view
+  const mode1Row = worksheet.addRow([
+    '1. Show only images with no security issues (Clean view).'
+  ]);
+  mode1Row.font      = { italic: true };
+  mode1Row.alignment = { wrapText: true, vertical: 'middle' };
+  worksheet.mergeCells(mode1Row.number, 1, mode1Row.number, 7);
+
+  // 5) Mode 2: Summary view
+  const mode2Row = worksheet.addRow([
+    '2. Show all images and list every issue, but collapsed by default (Summary view).'
+  ]);
+  mode2Row.font      = { italic: true };
+  mode2Row.alignment = { wrapText: true, vertical: 'middle' };
+  worksheet.mergeCells(mode2Row.number, 1, mode2Row.number, 7);
+
+  // 6) Mode 3: Detailed view
+  const mode3Row = worksheet.addRow([
+    '3. Show all images with every issue expanded (Detailed view).'
+  ]);
+  mode3Row.font      = { italic: true };
+  mode3Row.alignment = { wrapText: true, vertical: 'middle' };
+  worksheet.mergeCells(mode3Row.number, 1, mode3Row.number, 7);
+  
   // Save the workbook
   workbook.xlsx.writeBuffer().then(buffer => {
     const blob = new Blob([buffer], {
