@@ -1,9 +1,8 @@
-
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { updateReleaseProductImage } from '../../api/ReleaseProductImage';
 import {
     Dialog, DialogTitle, DialogContent, DialogActions,
-    Grid, TextField, Typography, Button
+    Grid, TextField, Typography, Button, Box
 } from '@mui/material';
 
 const fields = [
@@ -18,24 +17,22 @@ const fields = [
     { key: 'local_image_name', label: 'Local Image Name', group: 'Local' }
 ];
 
-const ImageDialog = ({ open, mode = 'view', onClose, data = {}, onSave }) => {
+const ImageDialog = ({ open, mode = 'view', onClose, data = {}, onSave, renderInline = false }) => {
     const [formData, setFormData] = React.useState({});
     const [localEditMode, setLocalEditMode] = React.useState(false);
 
     React.useEffect(() => {
-        if (open) {
+        if (open || renderInline) {
             setFormData(data || {});
-            setLocalEditMode(mode === 'edit'); // Enter edit mode if opened in edit mode
+            setLocalEditMode(mode === 'edit' || mode === 'add');
         }
-    }, [open, data, mode]);
- 
-    console.log("data in dialog ",data)
+    }, [open, data, mode, renderInline]);
+
     const handleChange = (key, value) => {
         setFormData(prev => ({ ...prev, [key]: value }));
     };
 
     const isViewOnly = mode === 'view' && !localEditMode;
-
     const groupedFields = {
         Registry: fields.filter(f => f.group === 'Registry'),
         OT2PaaS: fields.filter(f => f.group === 'OT2PaaS'),
@@ -44,111 +41,44 @@ const ImageDialog = ({ open, mode = 'view', onClose, data = {}, onSave }) => {
 
     const handleToggleEdit = async () => {
         if (localEditMode) {
-            // Save clicked
-            console.log(" Saving data to backend:", formData);
-
             const { release, product, image_name } = data;
             try {
                 const response = await updateReleaseProductImage(release, product, image_name, formData);
                 if (response) {
-                    console.log(" Save successful:", response);
-
-
                     onSave(response);
-                } else {
-                    console.error("Save failed: Empty response");
                 }
-            } catch (error) {
-                console.error("Error while saving:", error);
-            }
+            } catch (error) { console.error("Error while saving:", error); }
         } else {
-            // Edit clicked
             setLocalEditMode(true);
         }
     };
 
-    return (
-        <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-            <DialogTitle>
-                {mode === 'add'
-                    ? 'Add Image'
-                    : localEditMode
-                        ? 'Edit Image'
-                        : 'View Image'}
-            </DialogTitle>
-
+    const DialogFormContent = (
+        <>
+            {/* <DialogTitle>{mode === 'add' ? 'Add Image' : localEditMode ? 'Edit Image' : `View Image: ${data.image_name}`}</DialogTitle> */}
             <DialogContent dividers>
-                {mode === 'add' && (
-                    <Grid container spacing={2} sx={{ mb: 2 }}>
-                        <Grid item xs={12}>
-                            <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                                Image Name
-                            </Typography>
-                            <TextField
-                                label="Image Name"
-                                value={formData.image_name || ''}
-                                onChange={(e) => handleChange('image_name', e.target.value)}
-                                fullWidth
-                                margin="dense"
-                                required
-                            />
-                        </Grid>
-                    </Grid>
-                )}
-
-
-                <Grid container spacing={2}>
+                {mode === 'add' && ( <TextField label="Image Name" value={formData.image_name || ''} onChange={(e) => handleChange('image_name', e.target.value)} fullWidth margin="dense" required /> )}
+                <Grid container spacing={2} sx={{ mt: mode === 'add' ? 1 : 0 }}>
                     {['Registry', 'OT2PaaS', 'Local'].map(group => (
                         <Grid item xs={12} md={4} key={group}>
                             <Typography variant="subtitle1" fontWeight="bold" gutterBottom>{group}</Typography>
-                            {groupedFields[group].map(field => (
-                                <TextField
-                                    key={field.key}
-                                    label={field.label}
-                                    value={formData[field.key] || ''}
-                                    onChange={(e) => handleChange(field.key, e.target.value)}
-                                    fullWidth
-                                    margin="dense"
-                                    InputProps={{ readOnly: isViewOnly }}
-                                />
-                            ))}
+                            {groupedFields[group].map(field => ( <TextField key={field.key} label={field.label} value={formData[field.key] || ''} onChange={(e) => handleChange(field.key, e.target.value)} fullWidth margin="dense" InputProps={{ readOnly: isViewOnly }} /> ))}
                         </Grid>
                     ))}
                 </Grid>
             </DialogContent>
-
             <DialogActions>
                 <Button onClick={onClose}>Cancel</Button>
-                {mode === 'view' && (
-                    <Button
-                        variant="contained"
-                        onClick={handleToggleEdit}
-                        color={localEditMode ? 'success' : 'primary'}
-                    >
-                        {localEditMode ? 'Save' : 'Edit'}
-                    </Button>
-                )}
-                {mode !== 'view' && (
-                    <Button
-                        variant="contained"
-                        onClick={() => {
-                            const finalData = {
-                                ...formData,
-                                release: data.release,
-                                product: data.product,
-                                image_name: formData.image_name || data.image_name,
-                            };
-                            console.log("Sending data for ADD:", finalData);
-                            onSave(finalData);
-                        }}
-                    >
-                        Save
-                    </Button>
-                )}
-
+                {mode === 'view' && (<Button variant="contained" onClick={handleToggleEdit} color={localEditMode ? 'success' : 'primary'}>{localEditMode ? 'Save' : 'Edit'}</Button>)}
+                {mode !== 'view' && (<Button variant="contained" onClick={() => onSave(formData)}>Save</Button>)}
             </DialogActions>
-        </Dialog>
+        </>
     );
+
+    if (renderInline) {
+        return <Box sx={{ borderTop: '1px solid', borderColor: 'divider' }}>{DialogFormContent}</Box>;
+    }
+    return <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>{DialogFormContent}</Dialog>;
 };
 
 export default ImageDialog;
