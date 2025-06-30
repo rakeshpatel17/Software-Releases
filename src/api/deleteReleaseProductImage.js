@@ -6,25 +6,25 @@ const common_headers = {
   "Content-Type": "application/json",
   'Authorization': authHeader
 };
-const updateReleaseProductImage = async (release, productName, imageName, updateData) => {
+const deleteReleaseProductImage = async (release, productName, imageName, updateData) => {
   try {
     const endpoint = `${base_url}/release-images/${release}/${productName}/${imageName}/`;
 
     const response = await fetch(endpoint, {
-      method: "PUT", // or PATCH if partial update
+      method: "DELETE", 
       headers: common_headers,
       body: JSON.stringify(updateData)
     });
 
     if (!response.ok) {
-      throw new Error("Failed to update image");
+      throw new Error("Failed to delete image");
     }
 
     return await response.json();
   } catch (error) {
-    console.error("Error updating ReleaseProductImage:", error);
+    console.error("Error :", error);
     return null;
   }
 };
 
-export { updateReleaseProductImage };
+export { deleteReleaseProductImage };

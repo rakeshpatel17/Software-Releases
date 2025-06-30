@@ -9,17 +9,34 @@ export const securityIssuesUpdate = async (patchName, payload) => {
     'Authorization': authHeader,
   };
 
-  const fullUrl = `${base_url}/patches/${patchName}/`;
+
+  const { productName, cveId } = payload;
+
+  if (!productName || !cveId) {
+      throw new Error("Payload must include 'productName' and 'cveId' for the API request.");
+  }
+
+  const fullUrl = `${base_url}/patches/${patchName}/products/${productName}/security-issues/${cveId}/`;
+  
+  const requestBody = {
+      product_security_des: payload.product_security_des
+  };
+
 
   const response = await fetch(fullUrl, {
     method: 'PATCH',
     headers,
-    body: JSON.stringify(payload),
+    body: JSON.stringify(requestBody), 
   });
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(errorText || 'Failed to update security issue');
+    try {
+        const errorJson = JSON.parse(errorText);
+        throw new Error(errorJson.error || 'Failed to update security issue');
+    } catch (e) {
+        throw new Error(errorText || 'Failed to update security issue');
+    }
   }
 
   const text = await response.text();

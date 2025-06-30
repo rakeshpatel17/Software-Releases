@@ -1,75 +1,154 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import getProductDetails from '../../api/image';
-import ImageTable from '../../components/ProductTable/ImageTable';
-import './ProductPage.css';
-import { useOutletContext } from 'react-router-dom';
+import { useParams, useOutletContext } from 'react-router-dom';
 import ActionTable from '../../components/ProductImageTable/ActionTable';
-
-
-// function highlightMatch(text, term) {
-//     if (!term) return text;
-//     const regex = new RegExp(`(${term})`, 'gi');
-//     return text.split(regex).map((part, i) =>
-//         part.toLowerCase() === term.toLowerCase() ? (
-//             <span key={i} className="highlight">{part}</span>
-//         ) : (
-//             part
-//         )
-//     );
-// }
+import './ProductPage.css';
+import { AllReleaseProductImage } from '../../api/AllReleaseProductImage';
+import { deleteReleaseProductImage } from '../../api/deleteReleaseProductImage';
+import { Button, Box ,IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 
 function ProductPage() {
-
-    const { searchTerm, setTitle } = useOutletContext(); 
+    const { searchTerm, setTitle } = useOutletContext();
     const { productName } = useParams();
-    const [images, setImages] = useState([]);
-    // const [searchTerm, setSearchTerm] = useState('');
-    const [expandedRows, setExpandedRows] = useState({});
-    /*text area */
-    // const [editingIndex, setEditingIndex] = useState(null);
-    // const [editedDescription, setEditedDescription] = useState('');
+    const [groupedImages, setGroupedImages] = useState({});
+    const [selectedImages, setSelectedImages] = useState({});
+
+
     useEffect(() => {
-        setTitle(`Images for ${productName}`);  
+        setTitle(`Images for ${productName}`);
     }, [productName, setTitle]);
 
-    const toggleRow = (idx) => {
-        setExpandedRows((prev) => ({
-            ...prev,
-            [idx]: !prev[idx],
-        }));
-    };
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const data = await getProductDetails(`${productName}`);
-                if (data && Array.isArray(data.images)) {
-                    const filteredImages = data.images.filter((img) =>
-                        img.build_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        img.ot2_pass.toLowerCase().includes(searchTerm.toLowerCase())
-                    );
-                    setImages(filteredImages);
-                } else {
-                    setImages([]);
-                }
-            } catch (err) {
-                console.error('Error fetching images for product:', err);
-                setImages([]);
+                const data = await AllReleaseProductImage();
+                const filtered = data.filter(img => img.product === productName);
+                const grouped = filtered.reduce((acc, img) => {
+                    const release = img.release;
+                    if (!acc[release]) acc[release] = [];
+                    acc[release].push(img);
+                    return acc;
+                }, {});
+                setGroupedImages(grouped);
+            } catch (error) {
+                console.error('Error fetching release images:', error);
             }
         };
         fetchData();
-    }, [productName, searchTerm]);
+    }, [productName]);
+
+    const handleSelectionChange = (release, newSelection) => {
+        setSelectedImages(prev => ({
+            ...prev,
+            [release]: newSelection
+        }));
+    };
+
+
+    const handleDeleteSelected = async (release) => {
+        const selectionToDelete = selectedImages[release] || [];
+        if (selectionToDelete.length === 0) {
+            alert("No images selected for this release.");
+            return;
+        }
+
+        if (window.confirm(`Are you sure you want to delete ${selectionToDelete.length} selected image(s) from release ${release}?`)) {
+            // Create an array of delete promises
+            const deletePromises = selectionToDelete.map(imageName =>
+                deleteReleaseProductImage(release, productName, imageName)
+            );
+
+            try {
+                // Wait for all delete operations to complete
+                await Promise.all(deletePromises);
+
+                // If successful, update the UI state all at once
+                setGroupedImages(prev => ({
+                    ...prev,
+                    [release]: prev[release].filter(image => !selectionToDelete.includes(image.image_name))
+                }));
+
+                // Clear the selection for this release
+                setSelectedImages(prev => ({ ...prev, [release]: [] }));
+
+                alert("Selected images deleted successfully.");
+
+            } catch (error) {
+                console.error("Error during batch deletion:", error);
+                alert(`An error occurred: ${error.message}`);
+            }
+        }
+    };
+
+    const handleImageDelete = (release, imageNameToDelete) => {
+        setGroupedImages(prev => ({
+            ...prev,
+            [release]: prev[release].filter(image => image.image_name !== imageNameToDelete)
+        }));
+    };
+
+
+
+
+    const handleImageUpdate = (release, originalImageName, updatedImage) => {
+        setGroupedImages(prevGrouped => {
+            const newGroupedData = { ...prevGrouped };
+            const imagesInRelease = [...(newGroupedData[release] || [])];
+
+            const imageIndex = imagesInRelease.findIndex(
+                img => img.image_name === originalImageName
+            );
+
+            if (imageIndex !== -1) {
+                // Replace the old image object with the new one
+                imagesInRelease[imageIndex] = updatedImage;
+                newGroupedData[release] = imagesInRelease;
+            }
+
+            return newGroupedData;
+        });
+    };
+
+    const handleImageAdd = (release, newImage) => {
+        setGroupedImages(prev => ({
+            ...prev,
+            [release]: [...(prev[release] || []), newImage]
+        }));
+    };
 
     return (
+        <div className="dashboard-main">
+            {Object.entries(groupedImages).map(([release, images]) => (
+                <div key={release} className="release-group">
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                        <h3>Release: {release}</h3>
+                        <IconButton
+                            color="error"
+                            onClick={() => handleDeleteSelected(release)}
+                            disabled={!selectedImages[release] || selectedImages[release].length === 0}
+                            aria-label="delete selected" 
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </Box>
+                    <ActionTable
+                        images={images}
+                        release={release}
+                        product={productName}
+                        // These props now correctly trigger the robust state updates
+                        onImageUpdate={handleImageUpdate}
+                        onImageAdd={handleImageAdd}
 
-        <div className="dashboard-main" >
-            {/* <h2>Images for Product: {productName}</h2> */}
-            {/* <ImageTable images={images} searchTerm={searchTerm} /> */}
-            {console.log("images in product page",images)}
-            <ActionTable images={images}/>
+                        selected={selectedImages[release] || []}
+                        onSelectionChange={(newSelection) => handleSelectionChange(release, newSelection)}
+
+                        onImageDelete={handleImageDelete}
+
+                    />
+                </div>
+            ))}
         </div>
-        
     );
 }
 

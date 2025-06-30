@@ -6,25 +6,26 @@ const common_headers = {
   "Content-Type": "application/json",
   'Authorization': authHeader
 };
-const updateReleaseProductImage = async (release, productName, imageName, updateData) => {
+const createReleaseProductImage = async (data) => {
   try {
-    const endpoint = `${base_url}/release-images/${release}/${productName}/${imageName}/`;
-
-    const response = await fetch(endpoint, {
-      method: "PUT", // or PATCH if partial update
+    const response = await fetch(`${base_url}/release-images/`, {
+      method: "POST",
       headers: common_headers,
-      body: JSON.stringify(updateData)
+      body: JSON.stringify(data),
     });
 
     if (!response.ok) {
-      throw new Error("Failed to update image");
+      const errorText = await response.text(); 
+      console.error("Backend response:", errorText); 
+      throw new Error("Failed to create entry");
     }
 
     return await response.json();
   } catch (error) {
-    console.error("Error updating ReleaseProductImage:", error);
+    console.error("Error creating ReleaseProductImage:", error);
     return null;
   }
 };
 
-export { updateReleaseProductImage };
+
+export { createReleaseProductImage };

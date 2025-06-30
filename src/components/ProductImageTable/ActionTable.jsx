@@ -1,81 +1,101 @@
 import React, { useState, useEffect } from 'react';
 import {
     Table, TableBody, TableCell, TableContainer, TableHead,
-    TableRow, Paper, Checkbox, TablePagination, Button, Box, IconButton, TextField
+    TableRow, Paper, Checkbox, TablePagination, Button, Box, IconButton, TextField, Collapse
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
+import CloseIcon from '@mui/icons-material/Close';
+import DeleteIcon from '@mui/icons-material/Delete'; // Import Delete Icon
 import ImageDialog from './ImageDialog';
+import { createReleaseProductImage } from '../../api/createReleaseProductImage';
+import { updateReleaseProductImage } from '../../api/ReleaseProductImage';
+import { deleteReleaseProductImage } from '../../api/deleteReleaseProductImage'; // Import Delete API
 
-const ImageTable = ({ images = [] }) => {
+const ImageTable = ({
+    images = [], release, product,
+    onImageUpdate, onImageAdd, onImageDelete,
+    selected = [], onSelectionChange
+}) => {
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
     const [imageData, setImageData] = useState([]);
-    const [selected, setSelected] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [editMode, setEditMode] = useState(false);
-
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogMode, setDialogMode] = useState('view');
     const [dialogData, setDialogData] = useState({});
+    const [expandedRowKey, setExpandedRowKey] = useState(null);
 
-    // ✅ Reset image data when images prop changes
-    useEffect(() => {
-        setImageData(images);
-        setPage(0);
-    }, [images]);
+    useEffect(() => { setImageData(images); setPage(0); }, [images]);
 
     const handleSelect = (imageName) => {
-        setSelected(prev =>
-            prev.includes(imageName)
-                ? prev.filter(name => name !== imageName)
-                : [...prev, imageName]
-        );
+        const newSelection = selected.includes(imageName)
+            ? selected.filter(name => name !== imageName)
+            : [...selected, imageName];
+        onSelectionChange(newSelection);
+    };
+    
+    const handleSelectAllClick = (event) => {
+        if (event.target.checked) {
+            onSelectionChange(images.map(img => img.image_name));
+        } else {
+            onSelectionChange([]);
+        }
+    };
+
+    const handleDelete = async (imageToDelete) => {
+        if (window.confirm(`Are you sure you want to delete the image "${imageToDelete.image_name}"?`)) {
+            try {
+                await deleteReleaseProductImage(release, product, imageToDelete.image_name);
+                onImageDelete(release, imageToDelete.image_name);
+            } catch (error) {
+                console.error("Failed to delete image:", error);
+                alert(`Could not delete the image: ${error.message}`);
+            }
+        }
     };
 
     const handleChangePage = (_, newPage) => setPage(newPage);
-
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
-
-    const handleAddImage = () => {
-        setDialogMode('add');
-        setDialogData({});
-        setDialogOpen(true);
-    };
-
-    const handleOpenDialog = (row) => {
-        setDialogMode(editMode ? 'edit' : 'view');
-        setDialogData(row);
-        setDialogOpen(true);
-    };
-
-    const handleDialogSave = (newData) => {
+    const handleChangeRowsPerPage = (event) => { setRowsPerPage(parseInt(event.target.value, 10)); setPage(0); };
+    const handleAddImage = () => { setDialogMode('add'); setDialogData({ release, product }); setDialogOpen(true); };
+    const handleDialogSave = async (newData) => {
         if (dialogMode === 'add') {
-            setImageData([...imageData, newData]);
-        } else if (dialogMode === 'edit') {
-            setImageData(prev =>
-                prev.map(item =>
-                    item.image_name === newData.image_name ? newData : item
-                )
-            );
+            try {
+                const createdImage = await createReleaseProductImage({ release, product, ...newData });
+                if (createdImage) { onImageAdd(release, createdImage); }
+            } catch (err) { console.error("Failed to add image:", err); }
         }
         setDialogOpen(false);
     };
+    const handleToggleExpandRow = (rowKey) => { setExpandedRowKey(prevKey => (prevKey === rowKey ? null : rowKey)); };
+    const handleInlineSave = (updatedData) => { onImageUpdate(release, expandedRowKey, updatedData); setExpandedRowKey(null); };
 
-    const handleEditToggle = () => setEditMode(prev => !prev);
+    const handleEditToggle = async () => {
+        if (editMode) {
+            for (const img of imageData) {
+                if (img.original_image_name && img.original_image_name !== img.image_name) {
+                    try {
+                        const originalName = img.original_image_name;
+                        const updatedImg = { ...img };
+                        delete updatedImg.original_image_name;
+                        await updateReleaseProductImage(release, product, originalName, updatedImg);
+                        onImageUpdate(release, originalName, updatedImg);
+                    } catch (error) { console.error("Error updating image:", error); }
+                }
+            }
+        }
+        setEditMode(prev => !prev);
+        if (!editMode) {
+            setImageData(imgs => imgs.map(img => ({ ...img, original_image_name: img.image_name })));
+        }
+    };
 
-    const paginated = imageData.slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
-    );
+    const paginated = imageData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
     return (
         <Paper sx={{ width: '100%', mt: 2, borderRadius: 2 }}>
@@ -83,120 +103,81 @@ const ImageTable = ({ images = [] }) => {
                 <Table size={isSmallScreen ? 'small' : 'medium'}>
                     <TableHead>
                         <TableRow sx={{ backgroundColor: '#1a237e' }}>
-                            <TableCell sx={{ color: 'white' }} />
+                            <TableCell padding="checkbox">
+                                <Checkbox
+                                    color="primary" sx={{ color: 'white', '&.Mui-checked': { color: 'white' }, '&.MuiCheckbox-indeterminate': { color: 'white' } }}
+                                    indeterminate={selected.length > 0 && selected.length < images.length}
+                                    checked={images.length > 0 && selected.length === images.length}
+                                    onChange={handleSelectAllClick}
+                                />
+                            </TableCell>
                             <TableCell sx={{ color: 'white' }}>Image Name</TableCell>
-                            <TableCell sx={{ color: 'white' }}>Build Number</TableCell>
-                            <TableCell sx={{ color: 'white' }}>Action</TableCell>
+                            <TableCell sx={{ color: 'white', textAlign: 'center' }}>Details</TableCell>
+                            <TableCell sx={{ color: 'white', textAlign: 'center' }}>Delete</TableCell>
                         </TableRow>
                     </TableHead>
-
                     <TableBody>
-                        {paginated.map((row, index) => {
-                            console.log('Rendering row:', row);
+                        {paginated.map((row) => {
+                            const rowKey = row.original_image_name || row.image_name;
+                            const isExpanded = expandedRowKey === rowKey;
+                            const isSelected = selected.includes(row.image_name);
+
                             return (
-                                <TableRow key={index} hover>
-                                    <TableCell padding="checkbox">
-                                        <Checkbox
-                                            color="primary"
-                                            checked={selected.includes(row.image_name)}
-                                            onChange={() => handleSelect(row.image_name)}
-                                        />
-                                    </TableCell>
-                                    <TableCell>
-                                        {editMode ? (
-                                            <TextField
-                                                variant="standard"
-                                                value={row.image_name}
-                                                onChange={(e) => {
-                                                    const updated = [...imageData];
-                                                    const globalIndex = imageData.findIndex(
-                                                        (img) => img.image_name === row.image_name
-                                                    );
-                                                    if (globalIndex !== -1) {
-                                                        updated[globalIndex].image_name = e.target.value;
-                                                        setImageData(updated);
-                                                    }
-                                                }}
-                                                fullWidth
-                                            />
-                                        ) : (
-                                            row.image_name
-                                        )}
-                                    </TableCell>
-                                    <TableCell>
-                                        {editMode ? (
-                                            <TextField
-                                                variant="standard"
-                                                value={row.build_number}
-                                                onChange={(e) => {
-                                                    const updated = [...imageData];
-                                                    const globalIndex = imageData.findIndex(
-                                                        (img) => img.image_name === row.image_name
-                                                    );
-                                                    if (globalIndex !== -1) {
-                                                        updated[globalIndex].build_number = e.target.value;
-                                                        setImageData(updated);
-                                                    }
-                                                }}
-                                                fullWidth
-                                            />
-                                        ) : (
-                                            row.build_number
-                                        )}
-                                    </TableCell>
-                                    <TableCell>
-                                        <IconButton onClick={() => handleOpenDialog(row)}>
-                                            <AddCircleOutlineIcon />
-                                        </IconButton>
-                                    </TableCell>
-                                </TableRow>
+                                <React.Fragment key={rowKey}>
+                                    <TableRow hover selected={isSelected} sx={{ '& > *': { borderBottom: 'unset' } }}>
+                                        <TableCell padding="checkbox">
+                                            <Checkbox color="primary" checked={isSelected} onChange={() => handleSelect(row.image_name)} />
+                                        </TableCell>
+                                        <TableCell>
+                                            {editMode ? (
+                                                // Your original edit logic - RESTORED
+                                                <TextField
+                                                    variant="standard" value={row.image_name}
+                                                    onChange={(e) => {
+                                                        setImageData(currentData => currentData.map(img =>
+                                                            (img.original_image_name || img.image_name) === rowKey
+                                                                ? { ...img, image_name: e.target.value }
+                                                                : img
+                                                        ));
+                                                    }}
+                                                    fullWidth
+                                                />
+                                            ) : (row.image_name)}
+                                        </TableCell>
+                                        <TableCell align="center">
+                                            <IconButton onClick={() => handleToggleExpandRow(rowKey)}>
+                                                {isExpanded ? <CloseIcon /> : <AddCircleOutlineIcon />}
+                                            </IconButton>
+                                        </TableCell>
+                                        <TableCell align="center">
+                                            <IconButton color="error" onClick={() => handleDelete(row)}>
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
+                                            <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+                                                <ImageDialog renderInline={true} mode="view" data={{ release, product, ...row }} onClose={() => setExpandedRowKey(null)} onSave={handleInlineSave} />
+                                            </Collapse>
+                                        </TableCell>
+                                    </TableRow>
+                                </React.Fragment>
                             );
                         })}
                     </TableBody>
                 </Table>
             </TableContainer>
 
-            <Box
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    px: 2,
-                    py: 1
-                }}
-            >
-                <TablePagination
-                    component="div"
-                    count={imageData.length}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    rowsPerPage={rowsPerPage}
-                    rowsPerPageOptions={[5, 10, 25]}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 2, py: 1 }}>
+                <TablePagination component="div" count={imageData.length} page={page} onPageChange={handleChangePage} rowsPerPage={rowsPerPage} rowsPerPageOptions={[5, 10, 25]} onRowsPerPageChange={handleChangeRowsPerPage} />
                 <Box>
-                    <Button
-                        variant="contained"
-                        startIcon={editMode ? <SaveIcon /> : <EditIcon />}
-                        onClick={handleEditToggle}
-                        sx={{ mr: 2 }}
-                    >
-                        {editMode ? 'Save' : 'Edit'}
-                    </Button>
-                    <Button variant="contained" onClick={handleAddImage}>
-                        Add Image
-                    </Button>
+                    <Button variant="contained" startIcon={editMode ? <SaveIcon /> : <EditIcon />} onClick={handleEditToggle} sx={{ mr: 2 }}>{editMode ? 'Save Names' : 'Edit'}</Button>
+                    <Button variant="contained" onClick={handleAddImage}>Add Image</Button>
                 </Box>
             </Box>
 
-            <ImageDialog
-                open={dialogOpen}
-                mode={dialogMode}
-                data={dialogData}
-                onClose={() => setDialogOpen(false)}
-                onSave={handleDialogSave}
-            />
+            <ImageDialog open={dialogOpen} mode={dialogMode} data={dialogData} onClose={() => setDialogOpen(false)} onSave={handleDialogSave} />
         </Paper>
     );
 };

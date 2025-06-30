@@ -8,8 +8,9 @@ import ProgressBar from '../ProgressBar/ProgressBar';
 import get_patch_progress from '../../api/get_patch_progress';
 
 const Card = ({ info, setPatches, products = [], className = '', children, ...rest }) => {
-  const { title, description, image, badge, footer } = info || {};
+  const { title, description, image, badge, footer,kba  } = info || {};
   const cardClasses = `enhanced-card float = 'float' ${className}`.trim();
+console.log('KBA link for patch:', title, '=>', kba); // Log the kba value
 
   //function to delete patches
   const handleDelete = async (patchName) => {
@@ -35,37 +36,41 @@ const Card = ({ info, setPatches, products = [], className = '', children, ...re
     navigate(`/patches/${encodeURIComponent(title)}`);
   };
 
-   const [progress, setProgress] = useState(null);
-    useEffect(() => {
-        const fetchProgress = async () => {
-            const result = await get_patch_progress(title);
-            // console.log(`Patch ${patchName} progress: ${result}%`);
-            setProgress(result); // result should be a number like 33.33
-        };
+  const [progress, setProgress] = useState(null);
+  useEffect(() => {
+    const fetchProgress = async () => {
+      const result = await get_patch_progress(title);
+      // console.log(`Patch ${patchName} progress: ${result}%`);
+      setProgress(result); // result should be a number like 33.33
+    };
 
-        if (title) fetchProgress();
-    }, [title]);
+    if (title) fetchProgress();
+  }, [title]);
 
   return (
     <div className={cardClasses} onClick={handleClick} {...rest}>
       {image && <img src={image} alt={title} className="card-image" />}
 
       <div className="card-body">
-     
+
         {badge && (
           <span className={`card-badge ${badge.toLowerCase()}`}>{(badge[0].toUpperCase() + badge.slice(1))}</span>)}
-          
-       
-           <div className='card-header'>
-        <h3 className="card-title">{title}</h3>
-        <div className="progress-container"  onClick={(e) => e.stopPropagation()}>
-          <ProgressBar value={progress} label="Patch Progress" redirectTo={`/progress/${title}`} />
+
+
+        <div className='card-header'>
+          <h3 className="card-title">{title}</h3>
+          <div className="progress-container" onClick={(e) => e.stopPropagation()}>
+            <ProgressBar value={progress} label="Patch Progress" redirectTo={`/progress/${title}`} />
+          </div>
         </div>
-         </div>
         {/* <p className="card-description">{description}</p> */}
         <p className="card-description">
           {badge?.toLowerCase() === 'released' ? (
-            <a href={description} target="_blank" rel="noopener noreferrer" className="kba-link"
+            <a
+              href={kba}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="kba-link"
               onClick={(e) => e.stopPropagation()} // Prevent card click
             >
               KBA
@@ -74,10 +79,11 @@ const Card = ({ info, setPatches, products = [], className = '', children, ...re
             description
           )}
         </p>
+
         <div className="severity-grid">
           <SeverityCount products={products} />
         </div>
-        
+
         {children && <div className="card-children">{children}</div>}
       </div>
 

@@ -19,6 +19,10 @@ import CompletionFilter from '../../components/Button/CompletionFilter';
 import ProgressBar from '../../components/ProgressBar/ProgressBar';
 import get_patch_progress from '../../api/get_patch_progress';
 import { getPatchDetailsById } from '../../api/getPatchDetailsById';
+import exportToExcel from '../../api/exportToExcel';
+import { Pencil, X, Download } from 'lucide-react'; 
+import Tooltip from '../../components/ToolTip/ToolTip';
+
 
 function PatchProgressPage() {
   const { searchTerm, setTitle } = useOutletContext();
@@ -66,7 +70,7 @@ function PatchProgressPage() {
   } else {
     productsToShow = productJars;
   }
-
+    const [patchData, setPatchData] = useState({});
 
   useEffect(() => {
     // async function fetchData() {
@@ -121,12 +125,28 @@ function PatchProgressPage() {
     setFilteredProducts(productMap);
     setPatch(data);
     setLoading(false);
+    setPatchData(data);
   }
 
   fetchData();
   }, [id]);
 
+   const getDate = () => {
+        const today = new Date();
 
+        // Extract day, month, and year
+        let day = today.getDate();
+        let month = today.getMonth() + 1;
+        let year = today.getFullYear();
+
+        // Add leading zero to day and month if needed
+        day = day < 10 ? '0' + day : day;
+        month = month < 10 ? '0' + month : month;
+
+        // Format the date as dd/mm/yyyy
+        const formattedDate = `${day}-${month}-${year}`;
+        return formattedDate;
+    }
   useEffect(() => {
     if (searchTerm.trim() === '') {
       setFilteredProducts(productJars); // show all if search is empty
@@ -340,11 +360,29 @@ function PatchProgressPage() {
         <div className="progress-refresh">
           <div className="progress-container" style={{ pointerEvents: "none" }}>
             <ProgressBar value={progress} label="Patch Progress" />
-          </div>
-          <RefreshButton onRefresh={() => handlePageRefresh(id)} />
+          </div >
+          <RefreshButton onRefresh={() => handlePageRefresh(id)} /> 
+              
         </div>
+       <div className='progress-refresh'>
+        {!loading && (
+                            <button
+                                className="export-btn"
+                                onClick={() =>
+                                    exportToExcel(
+                                        patchData.products,
+                                        `${id}_vulnerabilities_${getDate()}`
+                                    )
+                                }
+                            >
+                                    <Tooltip text="Export Security issues" position="down">
+                                    <Download size={20} /></Tooltip>
+                            </button>
+
+                        )}
         <div className="filter-menu-container">
           <CompletionFilter filter={filter} setFilter={setFilter} counts={counts} />
+        </div>
         </div>
       </div>
 

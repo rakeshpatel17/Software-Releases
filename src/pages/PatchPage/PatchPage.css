@@ -13,24 +13,30 @@
     box-sizing: border-box;
 }
 
+
 /* .patch-header {
-
     display: flex;
-
     justify-content: space-between;
-
     align-items: center;
-
     margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-    gap: 1rem;
 } */
+
 .patch-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #fff;
+
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
 }
+
+
 
 .left-header {
     display: flex;
@@ -340,7 +346,7 @@
 
     }
 
-    .patch-header {
+    /* .patch-header {
 
         flex-direction: column;
 
@@ -350,6 +356,14 @@
 
         margin-top: -10%;
 
+    } */
+       .patch-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        top: 0;               /* still fixed at top */
+        position: sticky;     /* maintain stickiness */
+        margin-top: 0;        /* remove negative margin */
     }
 
     .form-row {
