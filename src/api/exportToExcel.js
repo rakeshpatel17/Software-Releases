@@ -186,13 +186,23 @@ function exportToExcel(products, fileName) {
         ]);
         currentRow++;
       } else {
+
+        // Determine if any issue is Critical or High (case‑insensitive)
+        const hasHighOrCritical = issues.some(issue => {
+          const sev = issue.severity.toString().toLowerCase();
+          return sev === 'critical' || sev === 'high';
+        });
+
+        // Bucket as “Critical/High” if any match, otherwise “Medium/Low”
+        const summarySeverity = hasHighOrCritical ? 'Critical/High' : 'Medium/Low';
+
         // Add summary row with visual indicator
         const summaryRow = worksheet.addRow([
           product.name,
           image.image_name,
           'Twistlock',
           `▼ ${issues.length} Issues`,
-          issues.some(i => i.severity === 'Critical' || i.severity === 'High') ? 'Critical/High' : 'Medium/Low',
+          summarySeverity,
           'Click to expand',
           ''
         ]);
@@ -263,7 +273,7 @@ function exportToExcel(products, fileName) {
   });
 
   // Auto-adjust column widths
-  worksheet.columns.forEach(column => {
+  worksheet.columns.forEach((column, idx) => {
     let maxLength = 0;
     column.eachCell({ includeEmpty: true }, cell => {
       const columnLength = cell.value ? cell.value.toString().length : 10;
@@ -271,8 +281,17 @@ function exportToExcel(products, fileName) {
         maxLength = columnLength;
       }
     });
+    // But if this is the Severity column (index 4 in zero‑based array):
+    if (idx === 4) {
+      maxLength = Math.max(maxLength, 12);   // ensure at least 12 chars wide
+    }
     column.width = maxLength + 2;
   });
+  // forcing the Severity column (the 5th column, “E”) to be at least 12:
+  worksheet.getColumn(5).width = Math.max(
+    worksheet.getColumn(5).width,
+    12
+  );
 
   //  Add one empty row for spacing, to seperate the note and table.
   worksheet.addRow([]);
