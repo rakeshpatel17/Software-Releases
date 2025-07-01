@@ -452,13 +452,16 @@ export default function ImageTable({
     <TableContainer
       component={Paper}
       sx={{
+        maxHeight: 440,         //this line and next line added for sticky headers
+        overflow: 'auto',
         background:
           theme.palette.mode === 'dark'
             ? theme.palette.background.paper
             : theme.palette.grey[50]
       }}
     >
-      <Table aria-label="images table">
+      {/* <Table aria-label="images table"> */}
+      <Table stickyHeader aria-label="images table">
         <TableHead>
           <TableRow>
             {headers.map(label => (
