@@ -130,6 +130,7 @@ import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 
 function exportToExcel(products, fileName) {
+  // console.log("data getting exported ", products);
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet('Vulnerabilities');
   worksheet.properties.outlineProperties = { summaryBelow: false };
@@ -142,7 +143,7 @@ function exportToExcel(products, fileName) {
     'cve_id',
     'severity',
     'affected_libraries',
-    'library_path'
+    'description'
   ]);
   
   // Style header row (same as before)
@@ -235,7 +236,7 @@ function exportToExcel(products, fileName) {
             Array.isArray(issue.affected_libraries)
               ? issue.affected_libraries.join(', ')
               : issue.affected_libraries,
-            issue.library_path
+            issue.product_security_des
           ]);
           
           // Set outline level for grouping
