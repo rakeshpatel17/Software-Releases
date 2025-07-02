@@ -20,7 +20,8 @@ const deleteReleaseProductImage = async (release, productName, imageName, update
       throw new Error("Failed to delete image");
     }
 
-    return await response.json();
+     const text = await response.text();
+    return text ? JSON.parse(text) : {};
   } catch (error) {
     console.error("Error :", error);
     return null;
