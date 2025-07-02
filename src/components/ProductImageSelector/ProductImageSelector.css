@@ -65,12 +65,20 @@
     cursor: pointer;
   }
   
-  .scrollable-product-list {
-    max-height: 200px;
+  /* .scrollable-product-list {
+    max-height: 400px;
     overflow-y: auto;
     border: 1px solid #ccc;
     border-radius: 6px;
     padding: 0.5rem;
     background-color: #fff;
-  }
+  } */
   
+
+   .scrollable-product-list {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0.5rem;
+  background-color: #fff;
+}
+
