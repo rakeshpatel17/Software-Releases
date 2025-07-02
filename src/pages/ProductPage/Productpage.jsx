@@ -9,6 +9,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import toast from 'react-hot-toast';
 import get_release from '../../api/release';
 import LoadingSpinner from '../../components/Loading/LoadingSpinner';
+import Card from '../../components/Card/Card';
+import get_patches from '../../api/patches';
 
 function ProductPage() {
     const { searchTerm, setTitle } = useOutletContext();
@@ -20,25 +22,39 @@ function ProductPage() {
     const [allReleases, setAllReleases] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
+    const [productPatches, setProductPatches] = useState([]);
+
 
     useEffect(() => {
         setTitle(`Images for ${productName}`);
     }, [productName, setTitle]);
 
-  
+
 
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
             try {
-                const [releasesData, imagesData] = await Promise.all([
+                const [patchesData, releasesData, imagesData] = await Promise.all([
+                    get_patches(),
                     get_release(),
                     AllReleaseProductImage()
                 ]);
 
+                console.log('Filtering for productName:', productName);
+
+                // 2. Log the FIRST patch from the API to inspect its structure.
+                if (patchesData && patchesData.length > 0) {
+                    console.log('Structure of a patch from API:', patchesData[0]);
+                }
+
+                const filteredPatches = (patchesData || []).filter(patch =>
+                    patch.products && patch.products.some(p => p.name === productName)
+                ); setProductPatches(filteredPatches);
+
                 const activeReleases = releasesData
                     .filter(r => r.active)
-                    .sort((a, b) => a.name.localeCompare(b.name)); 
+                    .sort((a, b) => a.name.localeCompare(b.name));
                 setAllReleases(activeReleases);
 
                 const filteredImages = imagesData.filter(img => img.product === productName);
@@ -147,64 +163,91 @@ function ProductPage() {
         releaseInfo.name.toLowerCase().includes(searchTerm.toLowerCase().trim())
     );
 
-  return (
+    return (
         <div className="dashboard-main">
             {isLoading ? (
                 <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
                     {/* <CircularProgress /> */}
-                    <LoadingSpinner/>
+                    <LoadingSpinner />
                 </Box>
-            ) : allReleases.length > 0 ? (
-
-                 filteredReleases.length > 0 ? (
-                    
-                filteredReleases.map(releaseInfo => {
-                    const releaseName = releaseInfo.name;
-                    const imagesForRelease = groupedImages[releaseName] || [];
-                    const selectionForRelease = selectedImages[releaseName] || [];
-
-                    return (
-                        <div key={releaseName} className="release-group">
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                                <h3>Release: {releaseName}</h3>
-                                <IconButton
-                                    color="error"
-                                    onClick={() => handleDeleteSelected(releaseName)}
-                                    disabled={selectionForRelease.length === 0}
-                                    aria-label="delete selected"
-                                >
-                                    <DeleteIcon />
-                                </IconButton>
-                            </Box>
-                            <ActionTable
-                                // The props now correctly receive data based on the release loop
-                                images={imagesForRelease} // This will be [] for releases with no images
-                                release={releaseName}
-                                product={productName}
-                                onImageUpdate={handleImageUpdate}
-                                onImageAdd={handleImageAdd}
-                                selected={selectionForRelease}
-                                onSelectionChange={(newSelection) => handleSelectionChange(releaseName, newSelection)}
-                                onImageDelete={handleImageDelete}
-                            />
+            ) : (<>
+                {productPatches.length > 0 && (
+                    <div className="release-group">
+                        <h3>Associated Patches</h3>
+                        <div className="card-scrollable">
+                            <div className="card-grid">
+                                {console.log("patches")}
+                                {productPatches.map((patch) => (
+                                    < Card
+                                        key={patch.name}
+                                        info={{
+                                            title: patch.name || "Untitled Patch",
+                                            description: patch.description || "No description",
+                                            badge: patch.patch_state || "Unknown",
+                                            footer: patch.release_date || "No date"
+                                        }}
+                                    // onClick={() => navigate(`/patches/${encodeURIComponent(patch.name)}`)}
+                                    />
+                                ))}
+                            </div>
                         </div>
-                    );
-                })
-            )  : (
-                    <Paper sx={{ p: 3, textAlign: 'center' }}>
-                        <Typography variant="h6">No Matching Releases Found</Typography>
+                    </div>
+                )}
+
+
+                {allReleases.length > 0 ? (
+
+                    filteredReleases.length > 0 ? (
+
+                        filteredReleases.map(releaseInfo => {
+                            const releaseName = releaseInfo.name;
+                            const imagesForRelease = groupedImages[releaseName] || [];
+                            const selectionForRelease = selectedImages[releaseName] || [];
+
+                            return (
+                                <div key={releaseName} className="release-group">
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                                        <h3>Release: {releaseName}</h3>
+                                        <IconButton
+                                            color="error"
+                                            onClick={() => handleDeleteSelected(releaseName)}
+                                            disabled={selectionForRelease.length === 0}
+                                            aria-label="delete selected"
+                                        >
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </Box>
+                                    <ActionTable
+                                        // The props now correctly receive data based on the release loop
+                                        images={imagesForRelease} // This will be [] for releases with no images
+                                        release={releaseName}
+                                        product={productName}
+                                        onImageUpdate={handleImageUpdate}
+                                        onImageAdd={handleImageAdd}
+                                        selected={selectionForRelease}
+                                        onSelectionChange={(newSelection) => handleSelectionChange(releaseName, newSelection)}
+                                        onImageDelete={handleImageDelete}
+                                    />
+                                </div>
+                            );
+                        })
+                    ) : (
+                        <Paper sx={{ p: 3, textAlign: 'center' }}>
+                            <Typography variant="h6">No Matching Releases Found</Typography>
+                            <Typography color="text.secondary">
+                                Your search for "{searchTerm}" did not match any active releases for this product.
+                            </Typography>
+                        </Paper>
+                    )
+                ) : (
+                    <Paper sx={{ p: 3, textAlign: 'center', mt: productPatches.length > 0 ? 4 : 0 }}>
+                        <Typography variant="h6">No Active Releases Found</Typography>
                         <Typography color="text.secondary">
-                            Your search for "{searchTerm}" did not match any active releases for this product.
+                            There are no active releases available in the system. Please create a release first.
                         </Typography>
                     </Paper>
-                )
-            ) : (
-                <Paper sx={{ p: 3, textAlign: 'center' }}>
-                    <Typography variant="h6">No Active Releases Found</Typography>
-                    <Typography color="text.secondary">
-                        There are no active releases available in the system. Please create a release first.
-                    </Typography>
-                </Paper>
+                )}
+            </>
             )}
         </div>
     );
