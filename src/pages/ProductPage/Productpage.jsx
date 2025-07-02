@@ -4,10 +4,11 @@ import ActionTable from '../../components/ProductImageTable/ActionTable';
 import './ProductPage.css';
 import { AllReleaseProductImage } from '../../api/AllReleaseProductImage';
 import { deleteReleaseProductImage } from '../../api/deleteReleaseProductImage';
-import { Button, Box, IconButton } from '@mui/material';
+import { Box, IconButton, Typography, Paper, CircularProgress } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import toast from 'react-hot-toast';
-
+import get_release from '../../api/release';
+import LoadingSpinner from '../../components/Loading/LoadingSpinner';
 
 function ProductPage() {
     const { searchTerm, setTitle } = useOutletContext();
@@ -16,24 +17,45 @@ function ProductPage() {
     const [selectedImages, setSelectedImages] = useState({});
 
 
+    const [allReleases, setAllReleases] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+
     useEffect(() => {
         setTitle(`Images for ${productName}`);
     }, [productName, setTitle]);
 
+  
+
     useEffect(() => {
         const fetchData = async () => {
+            setIsLoading(true);
             try {
-                const data = await AllReleaseProductImage();
-                const filtered = data.filter(img => img.product === productName);
-                const grouped = filtered.reduce((acc, img) => {
+                const [releasesData, imagesData] = await Promise.all([
+                    get_release(),
+                    AllReleaseProductImage()
+                ]);
+
+                const activeReleases = releasesData
+                    .filter(r => r.active)
+                    .sort((a, b) => a.name.localeCompare(b.name)); 
+                setAllReleases(activeReleases);
+
+                const filteredImages = imagesData.filter(img => img.product === productName);
+
+                const grouped = filteredImages.reduce((acc, img) => {
                     const release = img.release;
                     if (!acc[release]) acc[release] = [];
                     acc[release].push(img);
                     return acc;
                 }, {});
                 setGroupedImages(grouped);
+
             } catch (error) {
-                console.error('Error fetching release images:', error);
+                console.error('Error fetching product page data:', error);
+                toast.error("Failed to load page data. Please try again.");
+            } finally {
+                setIsLoading(false);
             }
         };
         fetchData();
@@ -56,13 +78,11 @@ function ProductPage() {
         }
 
         if (window.confirm(`Are you sure you want to delete ${selectionToDelete.length} selected image(s) from release ${release}?`)) {
-            // Create an array of delete promises
             const deletePromises = selectionToDelete.map(imageName =>
                 deleteReleaseProductImage(release, productName, imageName)
             );
 
             try {
-                // Wait for all delete operations to complete
                 await Promise.all(deletePromises);
 
                 // If successful, update the UI state all at once
@@ -77,7 +97,7 @@ function ProductPage() {
                 // alert("Selected images deleted successfully.");
                 toast.success('Selected images deleted successfully.');
 
-                
+
             } catch (error) {
                 console.error("Error during batch deletion:", error);
                 // alert(`An error occurred: ${error.message}`);
@@ -123,37 +143,69 @@ function ProductPage() {
         }));
     };
 
-    return (
+    const filteredReleases = allReleases.filter(releaseInfo =>
+        releaseInfo.name.toLowerCase().includes(searchTerm.toLowerCase().trim())
+    );
+
+  return (
         <div className="dashboard-main">
-            {Object.entries(groupedImages).map(([release, images]) => (
-                <div key={release} className="release-group">
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                        <h3>Release: {release}</h3>
-                        <IconButton
-                            color="error"
-                            onClick={() => handleDeleteSelected(release)}
-                            disabled={!selectedImages[release] || selectedImages[release].length === 0}
-                            aria-label="delete selected"
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    </Box>
-                    <ActionTable
-                        images={images}
-                        release={release}
-                        product={productName}
-                        // These props now correctly trigger the robust state updates
-                        onImageUpdate={handleImageUpdate}
-                        onImageAdd={handleImageAdd}
+            {isLoading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+                    {/* <CircularProgress /> */}
+                    <LoadingSpinner/>
+                </Box>
+            ) : allReleases.length > 0 ? (
 
-                        selected={selectedImages[release] || []}
-                        onSelectionChange={(newSelection) => handleSelectionChange(release, newSelection)}
+                 filteredReleases.length > 0 ? (
+                    
+                filteredReleases.map(releaseInfo => {
+                    const releaseName = releaseInfo.name;
+                    const imagesForRelease = groupedImages[releaseName] || [];
+                    const selectionForRelease = selectedImages[releaseName] || [];
 
-                        onImageDelete={handleImageDelete}
-
-                    />
-                </div>
-            ))}
+                    return (
+                        <div key={releaseName} className="release-group">
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                                <h3>Release: {releaseName}</h3>
+                                <IconButton
+                                    color="error"
+                                    onClick={() => handleDeleteSelected(releaseName)}
+                                    disabled={selectionForRelease.length === 0}
+                                    aria-label="delete selected"
+                                >
+                                    <DeleteIcon />
+                                </IconButton>
+                            </Box>
+                            <ActionTable
+                                // The props now correctly receive data based on the release loop
+                                images={imagesForRelease} // This will be [] for releases with no images
+                                release={releaseName}
+                                product={productName}
+                                onImageUpdate={handleImageUpdate}
+                                onImageAdd={handleImageAdd}
+                                selected={selectionForRelease}
+                                onSelectionChange={(newSelection) => handleSelectionChange(releaseName, newSelection)}
+                                onImageDelete={handleImageDelete}
+                            />
+                        </div>
+                    );
+                })
+            )  : (
+                    <Paper sx={{ p: 3, textAlign: 'center' }}>
+                        <Typography variant="h6">No Matching Releases Found</Typography>
+                        <Typography color="text.secondary">
+                            Your search for "{searchTerm}" did not match any active releases for this product.
+                        </Typography>
+                    </Paper>
+                )
+            ) : (
+                <Paper sx={{ p: 3, textAlign: 'center' }}>
+                    <Typography variant="h6">No Active Releases Found</Typography>
+                    <Typography color="text.secondary">
+                        There are no active releases available in the system. Please create a release first.
+                    </Typography>
+                </Paper>
+            )}
         </div>
     );
 }

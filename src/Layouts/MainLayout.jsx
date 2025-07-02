@@ -61,9 +61,13 @@ const MainLayout = ({ onLogout }) => {
     } else if (path.startsWith('/progress/')) {
       const version = path.split('/')[2];
       setSearchPlaceholder(`Search for products ... `);
+    } else if(path.startsWith('/products/')) {
+      setSearchPlaceholder('Search for release...');
     } else {
       setSearchPlaceholder('Search...');
     }
+
+    
 
   }, [path]);
 

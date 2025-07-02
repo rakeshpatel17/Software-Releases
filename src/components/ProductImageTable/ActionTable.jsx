@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
     Table, TableBody, TableCell, TableContainer, TableHead,
-    TableRow, Paper, Checkbox, TablePagination, Button, Box, IconButton, TextField, Collapse
+    TableRow, Paper, Checkbox, TablePagination, Button, Box, IconButton, TextField, Collapse, Typography
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -68,48 +68,65 @@ const ImageTable = ({
     const handleChangePage = (_, newPage) => setPage(newPage);
     const handleChangeRowsPerPage = (event) => { setRowsPerPage(parseInt(event.target.value, 10)); setPage(0); };
     // const handleAddImage = () => { setDialogMode('add'); setDialogData({ release, product }); setDialogOpen(true); };
-
-        const handleAddImage = () => {
-        // Fallback object if the table is empty
-        let initialDataForDialog = {
-            release,
-            product,
-            image_name: '', 
-            registry_image_name: '',
-            ot2paas_image_name: '',
-            local_image_name: '',
-          
-        };
-
+    const handleAddImage = () => {
+        let initialDataForDialog;
         if (images && images.length > 0) {
+          
             const lastImage = images[images.length - 1];
 
             initialDataForDialog = {
-              
                 ...lastImage,
-
-                image_name: '',          
+                image_name: '',
                 registry_image_name: '',
-                ot2paas_image_name: '',  
-                local_image_name: '',    
-
+                ot2paas_image_name: '',
+                local_image_name: '',
                 release: release,
                 product: product,
             };
+        } else {
+           
+            initialDataForDialog = {
+                release: release,
+                product: product,
+
+                image_name: '',
+                registry_image_name: '',
+                ot2paas_image_name: '',
+                local_image_name: '',
+
+                registry_registry: ' https://artifactory.otxlab.net',
+                registry_path: 'bpdockerhub',
+
+                ot2paas_registry: ' https://artifactory.otxlab.net',
+                ot2paas_path: 'bpdockerhub',
+                local_registry: ' https://artifactory.otxlab.net',
+                local_path: 'bpdockerhub',
+            };
         }
-        
+
+        // This part remains the same, it just uses the object we prepared.
         setDialogMode('add');
         setDialogData(initialDataForDialog);
         setDialogOpen(true);
     };
 
-
     const handleDialogSave = async (newData) => {
         if (dialogMode === 'add') {
             try {
                 const createdImage = await createReleaseProductImage({ release, product, ...newData });
-                if (createdImage) { onImageAdd(release, createdImage); }
-            } catch (err) { console.error("Failed to add image:", err); }
+                toast.success(`image added successfully`);
+                if (createdImage) { 
+                    const newImageForrelease = {
+                    ...newData,
+                    release: release, 
+                    product: product
+                };
+                    onImageAdd(release, newImageForrelease); }
+            } catch (err) {
+                console.error("Failed to add image:", err);
+                const errorMessage = err.response?.data?.message || `Unable to add image`;
+                toast.error(errorMessage);
+            }
         }
         setDialogOpen(false);
     };
@@ -150,6 +167,7 @@ const ImageTable = ({
                                     indeterminate={selected.length > 0 && selected.length < images.length}
                                     checked={images.length > 0 && selected.length === images.length}
                                     onChange={handleSelectAllClick}
+                                    disabled={images.length === 0}
                                 />
                             </TableCell>
                             <TableCell sx={{ color: 'white' }}>Image Name</TableCell>
@@ -158,54 +176,64 @@ const ImageTable = ({
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {paginated.map((row) => {
-                            const rowKey = row.original_image_name || row.image_name;
-                            const isExpanded = expandedRowKey === rowKey;
-                            const isSelected = selected.includes(row.image_name);
+                        {imageData.length > 0 ? (
+                            paginated.map((row) => {
+                                const rowKey = row.original_image_name || row.image_name;
+                                const isExpanded = expandedRowKey === rowKey;
+                                const isSelected = selected.includes(row.image_name);
 
-                            return (
-                                <React.Fragment key={rowKey}>
-                                    <TableRow hover selected={isSelected} sx={{ '& > *': { borderBottom: 'unset' } }}>
-                                        <TableCell padding="checkbox">
-                                            <Checkbox color="primary" checked={isSelected} onChange={() => handleSelect(row.image_name)} />
-                                        </TableCell>
-                                        <TableCell>
-                                            {editMode ? (
-                                                // Your original edit logic - RESTORED
-                                                <TextField
-                                                    variant="standard" value={row.image_name}
-                                                    onChange={(e) => {
-                                                        setImageData(currentData => currentData.map(img =>
-                                                            (img.original_image_name || img.image_name) === rowKey
-                                                                ? { ...img, image_name: e.target.value }
-                                                                : img
-                                                        ));
-                                                    }}
-                                                    fullWidth
-                                                />
-                                            ) : (row.image_name)}
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <IconButton onClick={() => handleToggleExpandRow(rowKey)}>
-                                                {isExpanded ? <CloseIcon /> : <AddCircleOutlineIcon />}
-                                            </IconButton>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <IconButton color="error" onClick={() => handleDelete(row)}>
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
-                                            <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-                                                <ImageDialog renderInline={true} mode="view" data={{ release, product, ...row }} onClose={() => setExpandedRowKey(null)} onSave={handleInlineSave} />
-                                            </Collapse>
-                                        </TableCell>
-                                    </TableRow>
-                                </React.Fragment>
-                            );
-                        })}
+                                return (
+                                    <React.Fragment key={rowKey}>
+                                        <TableRow hover selected={isSelected} sx={{ '& > *': { borderBottom: 'unset' } }}>
+                                            <TableCell padding="checkbox">
+                                                <Checkbox color="primary" checked={isSelected} onChange={() => handleSelect(row.image_name)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                {editMode ? (
+                                                    // Your original edit logic - RESTORED
+                                                    <TextField
+                                                        variant="standard" value={row.image_name}
+                                                        onChange={(e) => {
+                                                            setImageData(currentData => currentData.map(img =>
+                                                                (img.original_image_name || img.image_name) === rowKey
+                                                                    ? { ...img, image_name: e.target.value }
+                                                                    : img
+                                                            ));
+                                                        }}
+                                                        fullWidth
+                                                    />
+                                                ) : (row.image_name)}
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                <IconButton onClick={() => handleToggleExpandRow(rowKey)}>
+                                                    {isExpanded ? <CloseIcon /> : <AddCircleOutlineIcon />}
+                                                </IconButton>
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                <IconButton color="error" onClick={() => handleDelete(row)}>
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
+                                                <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+                                                    <ImageDialog renderInline={true} mode="view" data={{ release, product, ...row }} onClose={() => setExpandedRowKey(null)} onSave={handleInlineSave} />
+                                                </Collapse>
+                                            </TableCell>
+                                        </TableRow>
+                                    </React.Fragment>
+                                );
+                            })
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={4} align="center" sx={{ py: 3 }}>
+                                    <Typography color="text.secondary">
+                                        No images exist for this release.
+                                    </Typography>
+                                </TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>

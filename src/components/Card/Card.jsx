@@ -6,7 +6,6 @@ import { Trash2 } from 'lucide-react';
 import SeverityCount from '../SeverityCount/SeverityCount';
 import ProgressBar from '../ProgressBar/ProgressBar';
 import get_patch_progress from '../../api/get_patch_progress';
-import ToastMsg from '../Toast/ToastMsg';
 import toast from 'react-hot-toast'; 
 
 const Card = ({ info, setPatches, products = [], className = '', children, ...rest }) => {
