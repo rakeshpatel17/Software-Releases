@@ -285,6 +285,7 @@ import patch_image_jars from '../../api/patch_image_jars';
 import { getPatchById }         from '../../api/getPatchById';
 import { securityIssuesUpdate } from '../../api/updateIssuesdes';
 import ExpandableSection from '../ExpandableSection/ExpandableSection';
+import ToggleLockIcon from '../ToggleLockIcon'
 
 function highlightMatch(text, term) {
   if (!term) return text;
@@ -512,8 +513,21 @@ export default function ImageTable({
                     {img.image_name}
                   </TableCell>
 
-                  <TableCell>
+                  {/* <TableCell>
                     {highlightMatch(img.patch_build_number, searchTerm)}
+                  </TableCell> */}
+                  <TableCell>
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      width="100%"
+                    >
+                      <Box>
+                        {highlightMatch(img.patch_build_number, searchTerm)}
+                      </Box>
+                      <ToggleLockIcon />
+                    </Box>
                   </TableCell>
 
                   <TableCell>
