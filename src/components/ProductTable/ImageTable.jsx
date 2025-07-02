@@ -453,8 +453,6 @@ export default function ImageTable({
     <TableContainer
       component={Paper}
       sx={{
-        maxHeight: 440,         //this line and next line added for sticky headers
-        overflow: 'auto',
         background:
           theme.palette.mode === 'dark'
             ? theme.palette.background.paper
@@ -462,7 +460,7 @@ export default function ImageTable({
       }}
     >
       {/* <Table aria-label="images table"> */}
-      <Table stickyHeader aria-label="images table">
+      <Table aria-label="images table">
         <TableHead>
           <TableRow>
             {headers.map(label => (
@@ -487,6 +485,7 @@ export default function ImageTable({
 
         <TableBody>
           {images.map((img, idx) => {
+            // console.log("image data is : ", img);
             // pull this image's own jars array:
             // const imageJars = img.jars || [];
             const imageJars = imageJarsMap[img.image_name] || [];
@@ -526,7 +525,11 @@ export default function ImageTable({
                       <Box>
                         {highlightMatch(img.patch_build_number, searchTerm)}
                       </Box>
-                      <ToggleLockIcon />
+                      <ToggleLockIcon
+                        initialLock={img.lock}
+                        patchName={patchname}
+                        imageName={img.image_name}
+                      />
                     </Box>
                   </TableCell>
 

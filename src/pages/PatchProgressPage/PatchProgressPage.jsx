@@ -434,6 +434,7 @@ function PatchProgressPage() {
                       <div className="image-table-wrapper">
                         {/* now pass this product’s own images */}
                         {/* <ImageTable images={images} patchname={patch?.name} /> */}
+                        {console.log("images sending to image table : ",productObj.images)}
                         <ImageTable
                           key={productObj.name + JSON.stringify(productObj.images)}
                           images={productObj.images}
