@@ -29,7 +29,18 @@ const ImageDialog = ({ open, mode = 'view', onClose, data = {}, onSave, renderIn
     }, [open, data, mode, renderInline]);
 
     const handleChange = (key, value) => {
-        setFormData(prev => ({ ...prev, [key]: value }));
+        if (key === 'image_name') {
+            setFormData(prev => ({
+                ...prev,
+                image_name: value,
+
+                registry_image_name: value,
+                ot2paas_image_name: value,
+                local_image_name: value
+            }));
+        } else {
+            setFormData(prev => ({ ...prev, [key]: value }));
+        }
     };
 
     const isViewOnly = mode === 'view' && !localEditMode;

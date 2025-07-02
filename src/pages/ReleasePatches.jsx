@@ -31,6 +31,7 @@ function ReleasePatches() {
         badge: patch.patch_state || "no patche state",
         footer: patch.release_date || "no release_date",
         products: patch.products || [], 
+         kba: patch.kba || "",  
       }));
       //console.log("fetched patches in dashboard : ", mappedData);
       setPatches(mappedData);

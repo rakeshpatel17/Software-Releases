@@ -14,6 +14,8 @@ import ImageDialog from './ImageDialog';
 import { createReleaseProductImage } from '../../api/createReleaseProductImage';
 import { updateReleaseProductImage } from '../../api/ReleaseProductImage';
 import { deleteReleaseProductImage } from '../../api/deleteReleaseProductImage'; // Import Delete API
+import toast from 'react-hot-toast';
+
 
 const ImageTable = ({
     images = [], release, product,
@@ -39,7 +41,7 @@ const ImageTable = ({
             : [...selected, imageName];
         onSelectionChange(newSelection);
     };
-    
+
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
             onSelectionChange(images.map(img => img.image_name));
@@ -52,17 +54,56 @@ const ImageTable = ({
         if (window.confirm(`Are you sure you want to delete the image "${imageToDelete.image_name}"?`)) {
             try {
                 await deleteReleaseProductImage(release, product, imageToDelete.image_name);
+                toast.success(`${imageToDelete.image_name} deleted successfully`);
                 onImageDelete(release, imageToDelete.image_name);
             } catch (error) {
                 console.error("Failed to delete image:", error);
-                alert(`Could not delete the image: ${error.message}`);
+                // alert(`Could not delete the image: ${error.message}`);
+                const errorMessage = error.response?.data?.message || `Unable to delete image`;
+                toast.error(errorMessage);
             }
         }
     };
 
     const handleChangePage = (_, newPage) => setPage(newPage);
     const handleChangeRowsPerPage = (event) => { setRowsPerPage(parseInt(event.target.value, 10)); setPage(0); };
-    const handleAddImage = () => { setDialogMode('add'); setDialogData({ release, product }); setDialogOpen(true); };
+    // const handleAddImage = () => { setDialogMode('add'); setDialogData({ release, product }); setDialogOpen(true); };
+
+        const handleAddImage = () => {
+        // Fallback object if the table is empty
+        let initialDataForDialog = {
+            release,
+            product,
+            image_name: '', 
+            registry_image_name: '',
+            ot2paas_image_name: '',
+            local_image_name: '',
+          
+        };
+
+        if (images && images.length > 0) {
+            const lastImage = images[images.length - 1];
+
+            initialDataForDialog = {
+              
+                ...lastImage,
+
+                image_name: '',          
+                registry_image_name: '',
+                ot2paas_image_name: '',  
+                local_image_name: '',    
+
+                release: release,
+                product: product,
+            };
+        }
+        
+        setDialogMode('add');
+        setDialogData(initialDataForDialog);
+        setDialogOpen(true);
+    };
+
+
     const handleDialogSave = async (newData) => {
         if (dialogMode === 'add') {
             try {

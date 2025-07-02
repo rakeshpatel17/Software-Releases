@@ -4,8 +4,9 @@ import ActionTable from '../../components/ProductImageTable/ActionTable';
 import './ProductPage.css';
 import { AllReleaseProductImage } from '../../api/AllReleaseProductImage';
 import { deleteReleaseProductImage } from '../../api/deleteReleaseProductImage';
-import { Button, Box ,IconButton } from '@mui/material';
+import { Button, Box, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import toast from 'react-hot-toast';
 
 
 function ProductPage() {
@@ -49,7 +50,8 @@ function ProductPage() {
     const handleDeleteSelected = async (release) => {
         const selectionToDelete = selectedImages[release] || [];
         if (selectionToDelete.length === 0) {
-            alert("No images selected for this release.");
+            // alert("No images selected for this release.");
+            toast.error("No images selected for this release.");
             return;
         }
 
@@ -72,11 +74,15 @@ function ProductPage() {
                 // Clear the selection for this release
                 setSelectedImages(prev => ({ ...prev, [release]: [] }));
 
-                alert("Selected images deleted successfully.");
+                // alert("Selected images deleted successfully.");
+                toast.success('Selected images deleted successfully.');
 
+                
             } catch (error) {
                 console.error("Error during batch deletion:", error);
-                alert(`An error occurred: ${error.message}`);
+                // alert(`An error occurred: ${error.message}`);
+                const errorMessage = error.response?.data?.message || `An Error Occurred`;
+                toast.error(errorMessage);
             }
         }
     };
@@ -127,7 +133,7 @@ function ProductPage() {
                             color="error"
                             onClick={() => handleDeleteSelected(release)}
                             disabled={!selectedImages[release] || selectedImages[release].length === 0}
-                            aria-label="delete selected" 
+                            aria-label="delete selected"
                         >
                             <DeleteIcon />
                         </IconButton>

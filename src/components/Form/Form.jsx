@@ -13,8 +13,7 @@ import CancelButton from '../Button/CancelButton';
 import SaveButton from '../Button/SaveButton';
 import { useOutletContext } from 'react-router-dom';
 import { AllReleaseProductImage } from '../../api/AllReleaseProductImage';
-
-
+import toast from 'react-hot-toast';
 
 function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) {
     const location = useLocation();
@@ -58,7 +57,8 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
     ]);
 
 
-
+    //toastmessage
+    const [toastState, setToastState] = useState({ message: '', type: '' });
 
 
     //error
@@ -165,7 +165,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
 
     useEffect(() => {
         const fetchAndProcessImages = async () => {
-            
+
             if (!selectedRelease) {
                 setProductData([]);
                 return;
@@ -191,7 +191,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                 });
 
                 return accumulator;
-            }, {}); 
+            }, {});
             const finalProductData = Object.keys(groupedByProduct).map(productName => {
                 return {
                     name: productName,
@@ -204,7 +204,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         };
 
         fetchAndProcessImages();
-    }, [selectedRelease]); 
+    }, [selectedRelease]);
 
 
 
@@ -339,11 +339,16 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
 
         try {
             const response = await post_patches(finalData);
-            navigate(`/patches/${patchedFormData.name}`, {
-                state: { patch: finalData }
-            });
+            toast.success('Patch saved successfully!');
+            setTimeout(() => {
+                navigate(`/patches/${finalData.name}`, {
+                    state: { patch: finalData }
+                });
+            }, 2000);
         } catch (error) {
             console.error('Error while posting to database:', error);
+            const errorMessage = error.response?.data?.message || 'Failed to save the patch. Please check the details.';
+            toast.error(errorMessage);
         }
     };
 
@@ -408,15 +413,14 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
     // }));
     // Corrected version
     const transformedProducts = productData.map(item => ({
-        name: item.name, 
-        images: item.images.map(img => ({ 
+        name: item.name,
+        images: item.images.map(img => ({
             image_name: img.imagename
         }))
     }));
 
     return (
         <>
-
             <form className="form-container" onSubmit={handleSubmit}>
                 <div className="inline-fields">
                     <div className="form-group">

@@ -11,7 +11,7 @@ import MainLayout from "./Layouts/MainLayout";
 import Form from "./components/Form/Form";
 import CompareImage from "./pages/ImageCompare/CompareImage"
 import { RouteProvider } from "./components/RouteContext/RouteContext"; 
-
+import { Toaster } from "react-hot-toast";
 
 // PrivateRoute component: checks if authenticated
 function PrivateRoute({ isAuthenticated, children }) {
@@ -83,6 +83,7 @@ function App() {
   return (
     <BrowserRouter>
     <RouteProvider>
+        <Toaster position="top-right" />
       <AppRoutes
         isLoggedIn={isLoggedIn}
         handleLoginSuccess={handleLoginSuccess}

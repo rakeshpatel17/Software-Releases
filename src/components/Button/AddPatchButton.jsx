@@ -1,3 +1,4 @@
+import Tooltip from '../../components/ToolTip/ToolTip';
 import { useNavigate } from 'react-router-dom';
 
 function AddPatchButton({ release }) {
@@ -12,9 +13,10 @@ function AddPatchButton({ release }) {
   };
 
   return (
+    <Tooltip text='add patch' position='down'>
     <button className="add-patch-button" onClick={handleClick}>
-      ➕ Add Patch
-    </button>
+      ➕ 
+    </button></Tooltip>
   );
 }
 

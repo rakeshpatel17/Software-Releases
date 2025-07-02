@@ -18,6 +18,7 @@ import get_patch_progress from '../../api/get_patch_progress';
 import { Pencil, X, Download } from 'lucide-react'; // Place this at the top of your file
 import Tooltip from '../../components/ToolTip/ToolTip';
 import { AllReleaseProductImage } from '../../api/AllReleaseProductImage';
+import toast from 'react-hot-toast';
 
 function PatchPage() {
     const { patchName } = useParams();
@@ -43,6 +44,10 @@ function PatchPage() {
     //jars
     const [selectedJars, setSelectedJars] = useState([]);
     const [tempSelectedJars, setTempSelectedJars] = useState([]);
+
+    //toastmsg
+    const [toastState, setToastState] = useState({ message: '', type: '' });
+
 
     const [progress, setProgress] = useState(null);
     useEffect(() => {
@@ -231,6 +236,7 @@ function PatchPage() {
             console.log("PUT payload:", payload);
 
             await put_patches(patchName, payload);
+            toast.success('Patch edited successfully!');
             setPatchData(payload); // update local state with saved data
             setSelectedJars(tempSelectedJars);
             setHighLevelScope(tempHighLevelScope);
@@ -240,6 +246,8 @@ function PatchPage() {
             setIsEditing(false);
         } catch (error) {
             console.error("Failed to save patch data:", error);
+            const errorMessage = error.response?.data?.message || 'Failed to edit patch. Please check the details.';
+            toast.error(errorMessage);
         }
     };
 
@@ -319,7 +327,6 @@ function PatchPage() {
 
     return (
         <>
-
             <div className="patch-page">
                 <div className="patch-header">
                     <div className="left-header">

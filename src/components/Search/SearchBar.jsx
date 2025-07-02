@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import './SearchBar.css';
 import { FaSearch, FaTimes } from 'react-icons/fa';
 
-export default function SearchBar({ onSearch, value = '' }) {
+export default function SearchBar({ onSearch, value = '',placeholder = 'Search...' }) {
   const [query, setQuery] = useState('');
   
   useEffect(() => {
@@ -20,7 +20,7 @@ export default function SearchBar({ onSearch, value = '' }) {
       <span className="icon search-icon"><FaSearch /></span>
       <input
         type="text"
-        placeholder="Search..."
+        placeholder={placeholder}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
