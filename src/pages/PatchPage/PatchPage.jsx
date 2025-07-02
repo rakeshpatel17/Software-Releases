@@ -323,6 +323,47 @@ function PatchPage() {
         setSelectedRelease(newRelease);
     };
 
+     // To get previous date
+    const getPreviousDate = (releaseDate, days) => {
+        if (!releaseDate) return '';
+        const date = new Date(releaseDate);
+        date.setDate(date.getDate() - days);
+        // If the previous date is before today, return today's date
+        const today = new Date();
+        if (date < today) {
+            return today.toISOString().split('T')[0]; // returns today's date in YYYY-MM-DD format
+        }
+        return date.toISOString().split('T')[0]; // returns YYYY-MM-DD
+    };
+    const getFutureDate = (rdate, releaseDate, days) => {
+        if (!rdate) return '';
+        const date = new Date(rdate);
+        date.setDate(date.getDate() + days);
+        // If the future date exceeds releaseDate, return releaseDate
+        const release = new Date(releaseDate);
+        if (date > release) {
+            return release.toISOString().split('T')[0]; // returns releaseDate in YYYY-MM-DD format
+        }
+        return date.toISOString().split('T')[0]; // returns YYYY-MM-DD
+    }
+    useEffect(() => {
+    if (tempPatchData.release_date) {
+        // Calculate the other dates
+        const kick_off = getPreviousDate(tempPatchData.release_date, 14);
+        const code_freeze = getFutureDate(kick_off, tempPatchData.release_date, 4);
+        const platform_qa_build = getFutureDate(code_freeze, tempPatchData.release_date, 4);
+        const client_build_availability = getFutureDate(platform_qa_build, tempPatchData.release_date, 2);
+
+        // Update the tempPatchData state with new dates
+        setTempPatchData((prev) => ({
+            ...prev,
+            kick_off,
+            code_freeze,
+            platform_qa_build,
+            client_build_availability
+        }));
+    }
+}, [tempPatchData.release_date]); // Trigger on release_date change
 
 
     return (

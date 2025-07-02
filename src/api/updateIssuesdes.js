@@ -3,7 +3,7 @@ export const securityIssuesUpdate = async (patchName, payload) => {
   const username = process.env.REACT_APP_USERNAME;
   const password = process.env.REACT_APP_PASSWORD;
   const authHeader = 'Basic ' + btoa(`${username}:${password}`);
-
+  console.log("payload : ",payload);
   const headers = {
     'Content-Type': 'application/json',
     'Authorization': authHeader,

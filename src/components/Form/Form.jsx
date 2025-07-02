@@ -237,7 +237,7 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
                 updatedData.code_freeze = getPreviousDate(value, 1);
                 updatedData.platform_qa_build = getPreviousDate(value, 1);
                 updatedData.client_build_availability = getPreviousDate(value, 1);
-                updatedData.kick_off = getPreviousDate(value, 1);
+                updatedData.kick_off = getPreviousDate(value, 14);
             }
             if (name === 'release') {
                 updatedData.name = ``;
@@ -390,17 +390,38 @@ function Form({ onCancel, lockedRelease: lockedReleaseProp, isEditing = true }) 
         if (!releaseDate) return '';
         const date = new Date(releaseDate);
         date.setDate(date.getDate() - days);
+        // If the previous date is before today, return today's date
+        const today = new Date();
+        if (date < today) {
+            return today.toISOString().split('T')[0]; // returns today's date in YYYY-MM-DD format
+        }
         return date.toISOString().split('T')[0]; // returns YYYY-MM-DD
     };
+    const getFutureDate = (rdate, releaseDate, days) => {
+        if (!rdate) return '';
+        const date = new Date(rdate);
+        date.setDate(date.getDate() + days);
+        // If the future date exceeds releaseDate, return releaseDate
+        const release = new Date(releaseDate);
+        if (date > release) {
+            return release.toISOString().split('T')[0]; // returns releaseDate in YYYY-MM-DD format
+        }
+        return date.toISOString().split('T')[0]; // returns YYYY-MM-DD
+    }
 
     useEffect(() => {
         if (formData.release_date) {
+            // Calculate the dates first
+            const kick_off = getPreviousDate(formData.release_date, 14);
+            const code_freeze = getFutureDate(kick_off, formData.release_date, 4);
+            const platform_qa_build = getFutureDate(code_freeze, formData.release_date, 4);
+            const client_build_availability = getFutureDate(platform_qa_build, formData.release_date, 2);
             setFormData((prev) => ({
-                ...prev,
-                code_freeze: prev.code_freeze || getPreviousDate(formData.release_date, 1),
-                platform_qa_build: prev.platform_qa_build || getPreviousDate(formData.release_date, 1),
-                client_build_availability: prev.client_build_availability || getPreviousDate(formData.release_date, 1),
-                kick_off: prev.kick_off || getPreviousDate(formData.release_date, 1),
+                 ...prev,
+                    kick_off,
+                    code_freeze,
+                    platform_qa_build,
+                    client_build_availability
             }));
         }
     }, [formData.release_date]);
