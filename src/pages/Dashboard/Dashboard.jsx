@@ -30,7 +30,7 @@ function Dashboard() {
       const mappedData = (data || []).map((patch) => ({
         title: patch.name || "Untitled Patch",
         description: patch.description || "No description available",
-        badge: patch.patch_state || "no patche state",
+        badge: patch.patch_state || "no patch state",
         footer: patch.release_date || "no release_date",
           products: patch.products || [], 
           kba: patch.kba || "",  
@@ -53,13 +53,13 @@ function Dashboard() {
     .filter(p => p.badge.toLowerCase() === 'new' || p.badge.toLowerCase() === 'released')
     .sort((a, b) => new Date(b.footer) - new Date(a.footer));
 
-  const verified = filteredPatches.filter(p => p.badge.toLowerCase() === 'verified');
-  const rejected = filteredPatches.filter(p => p.badge.toLowerCase() === 'rejected');
+  const cancelled = filteredPatches.filter(p => p.badge.toLowerCase() === 'cancelled');
+  const in_progress = filteredPatches.filter(p => p.badge.toLowerCase() === 'in_progress');
 
   const displayGroups = [
     { title: 'New & Released Patches', items: newReleased },
-    { title: 'Verified Patches', items: verified },
-    { title: 'Rejected Patches', items: rejected }
+    { title: 'In progress Patches', items: in_progress },
+    { title: 'Rejected Patches', items: cancelled }
   ];
 
   
