@@ -21,7 +21,6 @@
 
         const [progress, setProgress] = useState(null);
 
-    
 
         const fetchData = async () => {
             if (!patchName || !productName) return;
@@ -59,7 +58,7 @@
                 setTitle("");
                 setFilterOptions(null);
             };
-        }, [patchName, productName, setTitle, setFilterOptions]); 
+        }, [patchName, productName]); 
 
         useEffect(() => {
             const fetchProgress = async () => {

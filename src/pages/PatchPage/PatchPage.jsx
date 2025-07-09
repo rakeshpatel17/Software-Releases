@@ -8,7 +8,7 @@ import './PatchPage.css';
 import getAllProducts from '../../api/product';
 import { getPatchById } from '../../api/getPatchById';
 import { useOutletContext } from "react-router-dom";
-import { useParams } from 'react-router-dom';
+import { useParams,useNavigate} from 'react-router-dom';
 import CancelButton from '../../components/Button/CancelButton';
 import SaveButton from '../../components/Button/SaveButton';
 import exportToExcel from '../../api/exportToExcel';
@@ -45,8 +45,7 @@ function PatchPage() {
     const [selectedJars, setSelectedJars] = useState([]);
     const [tempSelectedJars, setTempSelectedJars] = useState([]);
 
-    //toastmsg
-    const [toastState, setToastState] = useState({ message: '', type: '' });
+    const navigate = useNavigate();
 
 
     const [progress, setProgress] = useState(null);
@@ -323,7 +322,7 @@ function PatchPage() {
         setSelectedRelease(newRelease);
     };
 
-     // To get previous date
+    // To get previous date
     const getPreviousDate = (releaseDate, days) => {
         if (!releaseDate) return '';
         const date = new Date(releaseDate);
@@ -347,23 +346,23 @@ function PatchPage() {
         return date.toISOString().split('T')[0]; // returns YYYY-MM-DD
     }
     useEffect(() => {
-    if (tempPatchData.release_date) {
-        // Calculate the other dates
-        const kick_off = getPreviousDate(tempPatchData.release_date, 14);
-        const code_freeze = getFutureDate(kick_off, tempPatchData.release_date, 4);
-        const platform_qa_build = getFutureDate(code_freeze, tempPatchData.release_date, 4);
-        const client_build_availability = getFutureDate(platform_qa_build, tempPatchData.release_date, 2);
+        if (tempPatchData.release_date) {
+            // Calculate the other dates
+            const kick_off = getPreviousDate(tempPatchData.release_date, 14);
+            const code_freeze = getFutureDate(kick_off, tempPatchData.release_date, 4);
+            const platform_qa_build = getFutureDate(code_freeze, tempPatchData.release_date, 4);
+            const client_build_availability = getFutureDate(platform_qa_build, tempPatchData.release_date, 2);
 
-        // Update the tempPatchData state with new dates
-        setTempPatchData((prev) => ({
-            ...prev,
-            kick_off,
-            code_freeze,
-            platform_qa_build,
-            client_build_availability
-        }));
-    }
-}, [tempPatchData.release_date]); // Trigger on release_date change
+            // Update the tempPatchData state with new dates
+            setTempPatchData((prev) => ({
+                ...prev,
+                kick_off,
+                code_freeze,
+                platform_qa_build,
+                client_build_availability
+            }));
+        }
+    }, [tempPatchData.release_date]); // Trigger on release_date change
 
 
     return (
@@ -383,7 +382,8 @@ function PatchPage() {
 
                     <div className="right-header">
                         <div className="progress-container">
-                            <ProgressBar value={progress} label="Patch Progress" redirectTo={`/progress/${patchName}`} />
+                            <ProgressBar value={progress} label="Patch Progress" onClick={() => navigate(`/progress/${patchName}`)}
+                            />
                         </div>
 
                         {!loading && (

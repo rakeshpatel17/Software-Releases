@@ -13,7 +13,7 @@ import Card from '../../components/Card/Card';
 // import get_patches from '../../api/patches';
 import { getPatchesByProduct } from '../../api/PatchesByProduct';
 import { useNavigate } from 'react-router-dom';
-
+import getProductPatchProgress from '../../api/getProductPatchProgress';
 
 function ProductPage() {
     const { searchTerm, setTitle, activeFilters, setFilterOptions } = useOutletContext();
@@ -200,7 +200,7 @@ function ProductPage() {
                 {displayGroups.map((group, idx) => (
                     group.items.length > 0 && (
                         <div key={idx} className="release-group">
-                            <h3>Associated Patches</h3>
+                            {/* <h3>Associated Patches : {group.title}</h3> */}
                             <div className="card-scrollable">
                                 <div className="card-grid">
                                     {group.items.map((patch, index) => (
@@ -214,6 +214,8 @@ function ProductPage() {
                                             }}
                                             products={patch.products.filter(p => p.name === productName)}
                                             onProgressClick={() => navigate(`/patches/${patch.name}/products/${productName}`)}
+                                            progressFetcher={() => getProductPatchProgress(patch.name, productName)}
+
                                         />
                                     ))}
                                 </div>

@@ -8,7 +8,7 @@ import ProgressBar from '../ProgressBar/ProgressBar';
 import get_patch_progress from '../../api/get_patch_progress';
 import toast from 'react-hot-toast';
 
-const Card = ({ info, setPatches, products = [], onProgressClick, className = '', children, ...rest }) => {
+const Card = ({ info, setPatches, products = [], onProgressClick, progressFetcher, className = '', children, ...rest }) => {
   const { title, description, image, badge, footer, kba } = info || {};
   const cardClasses = `enhanced-card float = 'float' ${className}`.trim();
 
@@ -32,20 +32,35 @@ const Card = ({ info, setPatches, products = [], onProgressClick, className = ''
 
   const navigate = useNavigate();
   const handleClick = () => {
-    // Navigate to the PatchPage with the patch title as the identifier
     navigate(`/patches/${encodeURIComponent(title)}`);
   };
 
   const [progress, setProgress] = useState(null);
   useEffect(() => {
     const fetchProgress = async () => {
-      const result = await get_patch_progress(title);
-      // console.log(`Patch ${patchName} progress: ${result}%`);
-      setProgress(result); // result should be a number like 33.33
+      let result = null;
+      if (progressFetcher) {
+        result = await progressFetcher();
+      } else {
+        result = await get_patch_progress(title);
+      }
+      setProgress(result);
     };
 
     if (title) fetchProgress();
-  }, [title]);
+  }, [title, progressFetcher]);
+
+  const handleProgressClick = () => {
+
+
+    if (onProgressClick) {
+      // If an override was passed from a page like ProductPage, run it.
+      onProgressClick();
+    } else {
+      // Otherwise, run the default navigation action for pages like the Dashboard.
+      navigate(`/progress/${title}`);
+    }
+  };
 
   return (
 
@@ -61,22 +76,12 @@ const Card = ({ info, setPatches, products = [], onProgressClick, className = ''
 
         <div className='card-header'>
           <h3 className="card-title">{title}</h3>
-          <div className="progress-container" onClick={(e) => {
-            // This stops the click from bubbling up to the main card's onClick
-            e.stopPropagation();
-
-            // This is the core logic:
-            if (onProgressClick) {
-              // If an `onProgressClick` function was passed as a prop,
-              // run that function. This is your override.
-              onProgressClick();
-            } else {
-              // If no override was provided, perform the default action:
-              // navigate to the old progress page.
-              navigate(`/progress/${title}`);
-            }
-          }}>
-            <ProgressBar value={progress} label="Patch Progress" redirectTo={`/progress/${title}`} />
+          <div className="progress-container" >
+            <ProgressBar value={progress} label="Patch Progress" onClick={(e) => {
+              e.stopPropagation();
+              handleProgressClick();
+            }}
+            />
           </div>
         </div>
         {/* <p className="card-description">{description}</p> */}

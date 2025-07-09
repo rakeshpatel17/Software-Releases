@@ -18,20 +18,20 @@ function Dashboard() {
   const { searchTerm, setTitle, setPatchVersion, activeFilters, setFilterOptions } = useOutletContext();
 
   const patchStateFilters = [
-  { value: 'new', label: 'New' },
-  { value: 'released', label: 'Released' },
-  { value: 'in progress', label: 'In Progress' },
-  { value: 'cancelled', label: 'Cancelled' }
-];
+    { value: 'new', label: 'New' },
+    { value: 'released', label: 'Released' },
+    { value: 'in progress', label: 'In Progress' },
+    { value: 'cancelled', label: 'Cancelled' }
+  ];
 
   useEffect(() => {
     setTitle("Overview");
     setPatchVersion("")
     setFilterOptions(patchStateFilters);
-     return () => {
+    return () => {
       setFilterOptions(null);
     };
-  }, [setTitle, setPatchVersion,setFilterOptions]);
+  }, [setTitle, setPatchVersion, setFilterOptions]);
 
 
   useEffect(() => {
@@ -55,7 +55,7 @@ function Dashboard() {
   }, []);
 
 
-   const filteredPatches = fetchedPatches.filter(p => {
+  const filteredPatches = fetchedPatches.filter(p => {
     // Condition 1: Must match the text in the search bar
     const searchTermMatch = p.title.toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -67,22 +67,21 @@ function Dashboard() {
     return searchTermMatch && filterMatch; // Must satisfy both conditions
   });
 
-  // Grouping logic now operates on the already-filtered list, so it works automatically.
-  // Let's update it to include the new states you wanted.
+
+
+// Grouping
   const newReleased = filteredPatches
-    .filter(p => ['new', 'released', 'in progress'].includes(p.badge.toLowerCase()))
+    .filter(p => p.badge.toLowerCase() === 'new' || p.badge.toLowerCase() === 'released')
     .sort((a, b) => new Date(b.footer) - new Date(a.footer));
-
-  const verified = filteredPatches.filter(p => p.badge.toLowerCase() === 'verified');
-  const rejected = filteredPatches.filter(p => ['rejected', 'cancelled'].includes(p.badge.toLowerCase()));
-
+ 
+  const cancelled = filteredPatches.filter(p => p.badge.toLowerCase() === 'cancelled');
+  const in_progress = filteredPatches.filter(p => p.badge.toLowerCase() === 'in_progress');
+ 
   const displayGroups = [
-    { title: 'New, Released & In Progress', items: newReleased },
-    { title: 'Verified Patches', items: verified },
-    { title: 'Rejected & Cancelled Patches', items: rejected }
+    { title: 'New & Released Patches', items: newReleased },
+    { title: 'In progress Patches', items: in_progress },
+    { title: 'Rejected Patches', items: cancelled }
   ];
-
-
 
 
 
