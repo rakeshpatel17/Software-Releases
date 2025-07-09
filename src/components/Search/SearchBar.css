@@ -1,3 +1,5 @@
+/* --- Original User Styles (Preserved) --- */
+
 .search-bar {
     display: flex;
     align-items: center;
@@ -9,12 +11,10 @@
     background-color: #f2f6fc;
     outline: none;
     transition: 0.2s ease;
-    margin-top: -7px;
-    width: 66%;
-    max-width: 300px; 
-    overflow: hidden;  
+    /* margin-top will be handled by the new container */
+    width: 100%; /* The container will now control the max-width */
+    overflow: hidden;
 }
-
 
 .search-bar input {
     flex: 1;
@@ -30,10 +30,10 @@
     cursor: pointer;
     user-select: none;
     position: relative;
-    top: -3px;
-    /* Adjust as needed */
+    top: -1px; /* Slightly adjusted for better vertical centering with flex */
+    display: flex; /* Helps with alignment */
+    align-items: center;
 }
-
 
 .search-icon {
     margin-right: 8px;
@@ -41,8 +41,124 @@
 }
 
 .clear-icon {
-    margin-left: 8px;
+    /* The button wrapper now handles spacing */
     color: #20338b;
     background: none;
     border: none;
+    padding: 0; /* Remove default button padding */
+}
+
+/* --- New Styles for Filter Functionality (Adapted to your theme) --- */
+
+/* 1. Main Container for positioning the dropdown */
+.search-bar-container {
+    position: relative;
+    width: 66%;
+    max-width: 300px;
+    margin-top: -7px; /* Moved from .search-bar to the container */
+    margin-left: auto;  /* Example for centering, adjust as needed */
+    margin-right: auto; /* Example for centering, adjust as needed */
+}
+
+/* 2. Style adjustments for focus and buttons */
+.search-bar:focus-within {
+    border-color: #007bff; /* A suggested focus color, change if you like */
+    box-shadow: 0 0 5px rgba(32, 51, 139, 0.3);
+}
+
+.search-bar button.icon {
+    background: none;
+    border: none;
+    padding: 0 8px; /* Give buttons consistent spacing */
+}
+
+/* 3. The new Filter Button */
+.filter-button {
+    color: #20338b; /* Match your brand color */
+    position: relative; /* Needed for the counter badge */
+}
+
+.filter-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* 4. The counter badge on the filter icon */
+.filter-count {
+    position: absolute;
+    top: -6px;
+    right: -2px;
+    background-color: #dc3545; /* A standard notification red */
+    color: white;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: bold;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid white;
+}
+
+/* 5. The Filter Dropdown Panel */
+.filter-dropdown {
+    position: absolute;
+    top: calc(100% + 5px); /* Position below the search bar with a 5px gap */
+    right: 0;
+    width: 250px;
+    background-color: #ffffff; /* Use a clean white background */
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 1px solid #ccc;
+    z-index: 1000;
+    overflow: hidden;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.filter-dropdown-header {
+    padding: 12px 16px;
+    font-weight: bold;
+    color: #333;
+    background-color: #f8f9fa; /* Light header background */
+    border-bottom: 1px solid #ddd;
+}
+
+/* 6. Individual filter items (checkbox and label) */
+.filter-item {
+    padding: 10px 16px;
+    cursor: pointer;
+}
+
+.filter-item:hover {
+    background-color: #f2f6fc; /* Use your brand's light background for hover */
+}
+
+.filter-item label {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.filter-item input[type="checkbox"] {
+    margin-right: 12px;
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+    /* Optional: Style checkbox to match your theme */
+    accent-color: #20338b;
+}
+
+/* Simple fade-in animation for the dropdown */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

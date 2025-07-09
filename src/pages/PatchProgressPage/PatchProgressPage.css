@@ -1,76 +1,6 @@
-/* .dashboard-container {
-    display: flex;
-    height: 100vh;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f5f6fa;
-  }
-   
-  .dashboard-content {
-    flex-grow: 1;
-    padding: 20px;
-    background-color: #ffffff;
-    display: flex;
-    flex-direction: column;
-    height: 100vh; 
-    overflow-y: auto; 
-  }
-   
-  .dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 20px;
-    margin-bottom: 1rem;
-    padding-top: 10px;
-    padding-right: 20px;
-  
-  }
-  
 
-   
-  .search-input {
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    width: 250px;
-    outline: none;
-  }
-   
-  .profile {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-   
-  .restaurant-name {
-    font-weight: bold;
-    color: #333;
-  }
-   
-  .profile-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-  }
-   
-  .dashboard-main {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    overflow-y: auto;
-  }
-    */
 
-.filter-menu-container {
-  /* position: sticky; */
-  /* top: 0; */
-  display: flex;
-  justify-content: flex-end;
-  /* padding: 10px;
-  background-color: white; 
-  z-index: 1000;
-  margin-bottom: 10px;  */
-}
+
 
 
    
@@ -136,21 +66,26 @@
   z-index: 100;
   padding-top: 10px; 
   padding-bottom: 10px;
+  margin-right: 14px;
 }
 
 
 
-.progress-refresh {
+.progress-export {
   display: flex;
   align-items: center;
   gap: 0.4rem; 
 }
 
-.progress-refresh .btn {
-  margin-top: 2% !important;
-  position: static !important;
-  margin-right: 0 !important;
+.refresh {
+   align-self: flex-start;  
+   margin-top: 2%;
 }
+
+.export-btn{
+  margin-top: -2%;
+}
+
 
 
 

@@ -10,10 +10,13 @@ import toast from 'react-hot-toast';
 import get_release from '../../api/release';
 import LoadingSpinner from '../../components/Loading/LoadingSpinner';
 import Card from '../../components/Card/Card';
-import get_patches from '../../api/patches';
+// import get_patches from '../../api/patches';
+import { getPatchesByProduct } from '../../api/PatchesByProduct';
+import { useNavigate } from 'react-router-dom';
+
 
 function ProductPage() {
-    const { searchTerm, setTitle } = useOutletContext();
+    const { searchTerm, setTitle, activeFilters, setFilterOptions } = useOutletContext();
     const { productName } = useParams();
     const [groupedImages, setGroupedImages] = useState({});
     const [selectedImages, setSelectedImages] = useState({});
@@ -23,34 +26,40 @@ function ProductPage() {
     const [isLoading, setIsLoading] = useState(true);
 
     const [productPatches, setProductPatches] = useState([]);
+    const navigate = useNavigate();
 
+
+
+
+    const patchFilters = [
+        { value: 'new', label: 'New' },
+        { value: 'released', label: 'Released' },
+        { value: 'in_progress', label: 'In Progress' },
+        { value: 'cancelled', label: 'Cancelled' },
+    ];
 
     useEffect(() => {
         setTitle(`Images for ${productName}`);
-    }, [productName, setTitle]);
-
-
+        setFilterOptions(patchFilters);
+        return () => {
+            setFilterOptions(null);
+        };
+    }, [productName, setTitle, setFilterOptions]);
 
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
             try {
-                const [patchesData, releasesData, imagesData] = await Promise.all([
-                    get_patches(),
+                const [productPatchesData, releasesData, imagesData] = await Promise.all([
+                    getPatchesByProduct(productName),
                     get_release(),
                     AllReleaseProductImage()
                 ]);
 
                 console.log('Filtering for productName:', productName);
 
-                // 2. Log the FIRST patch from the API to inspect its structure.
-                if (patchesData && patchesData.length > 0) {
-                    console.log('Structure of a patch from API:', patchesData[0]);
-                }
 
-                const filteredPatches = (patchesData || []).filter(patch =>
-                    patch.products && patch.products.some(p => p.name === productName)
-                ); setProductPatches(filteredPatches);
+                setProductPatches(productPatchesData || []);
 
                 const activeReleases = releasesData
                     .filter(r => r.active)
@@ -159,9 +168,26 @@ function ProductPage() {
         }));
     };
 
-    const filteredReleases = allReleases.filter(releaseInfo =>
-        releaseInfo.name.toLowerCase().includes(searchTerm.toLowerCase().trim())
-    );
+    const filteredPatches = productPatches.filter(patch => {
+        const searchTermMatch = patch.name.toLowerCase().includes(searchTerm.toLowerCase());
+        const filterMatch = activeFilters.length === 0 || activeFilters.includes(patch.patch_state.toLowerCase());
+        return searchTermMatch && filterMatch;
+    });
+
+    const newReleased = filteredPatches
+        .filter(p => p.patch_state.toLowerCase() === 'new' || p.patch_state.toLowerCase() === 'released')
+        .sort((a, b) => new Date(b.release_date) - new Date(a.release_date));
+
+    const cancelled = filteredPatches.filter(p => p.patch_state.toLowerCase() === 'cancelled');
+    const in_progress = filteredPatches.filter(p => p.patch_state.toLowerCase() === 'in_progress');
+
+    const displayGroups = [
+        { title: 'New & Released Patches', items: newReleased },
+        { title: 'In Progress Patches', items: in_progress },
+        { title: 'Cancelled Patches', items: cancelled }
+    ];
+
+    const filteredReleases = allReleases.filter(releaseInfo => releaseInfo.name.toLowerCase().includes(searchTerm.toLowerCase().trim()));
 
     return (
         <div className="dashboard-main">
@@ -171,29 +197,30 @@ function ProductPage() {
                     <LoadingSpinner />
                 </Box>
             ) : (<>
-                {productPatches.length > 0 && (
-                    <div className="release-group">
-                        <h3>Associated Patches</h3>
-                        <div className="card-scrollable">
-                            <div className="card-grid">
-                                {console.log("patches")}
-                                {productPatches.map((patch) => (
-                                    < Card
-                                        key={patch.name}
-                                        info={{
-                                            title: patch.name || "Untitled Patch",
-                                            description: patch.description || "No description",
-                                            badge: patch.patch_state || "Unknown",
-                                            footer: patch.release_date || "No date"
-                                        }}
-                                    // onClick={() => navigate(`/patches/${encodeURIComponent(patch.name)}`)}
-                                    />
-                                ))}
+                {displayGroups.map((group, idx) => (
+                    group.items.length > 0 && (
+                        <div key={idx} className="release-group">
+                            <h3>Associated Patches</h3>
+                            <div className="card-scrollable">
+                                <div className="card-grid">
+                                    {group.items.map((patch, index) => (
+                                        <Card
+                                            key={index}
+                                            info={{
+                                                title: patch.name,
+                                                description: patch.description,
+                                                badge: patch.patch_state,
+                                                footer: patch.release_date,
+                                            }}
+                                            products={patch.products.filter(p => p.name === productName)}
+                                            onProgressClick={() => navigate(`/patches/${patch.name}/products/${productName}`)}
+                                        />
+                                    ))}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                )}
-
+                    )
+                ))}
 
                 {allReleases.length > 0 ? (
 

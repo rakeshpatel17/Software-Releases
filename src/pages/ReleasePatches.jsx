@@ -13,12 +13,28 @@ function ReleasePatches() {
   const [showForm, setShowForm] = useState(false);
   // const [selectedPatch, setSelectedPatch] = useState(null);
 
-  const { searchTerm, setTitle, setPatchVersion } = useOutletContext();
+  const { searchTerm, setTitle, setPatchVersion, activeFilters,
+    setFilterOptions } = useOutletContext();
 
   useEffect(() => {
     setTitle(`Patches for ${id}`);
     setPatchVersion(id);
   }, [id, setTitle, setPatchVersion]);
+
+  useEffect(() => {
+    setFilterOptions(releasePatchFilters);
+
+    return () => {
+      setFilterOptions(null);
+    };
+  }, [setFilterOptions]); 
+
+  const releasePatchFilters = [
+    { value: 'new', label: 'New' },
+    { value: 'released', label: 'Released' },
+    { value: 'in_progress', label: 'In Progress' },
+    { value: 'cancelled', label: 'Cancelled' },
+  ];
 
 
   useEffect(() => {
@@ -30,8 +46,8 @@ function ReleasePatches() {
         description: patch.description || "No description available",
         badge: patch.patch_state || "no patche state",
         footer: patch.release_date || "no release_date",
-        products: patch.products || [], 
-         kba: patch.kba || "",  
+        products: patch.products || [],
+        kba: patch.kba || "",
       }));
       //console.log("fetched patches in dashboard : ", mappedData);
       setPatches(mappedData);
@@ -40,23 +56,28 @@ function ReleasePatches() {
     fetch();
   }, [id]);
 
-  const filteredPatches = patches.filter(p =>
-    p.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
-  // Grouping
+
+  const filteredPatches = patches.filter(p => {
+    const searchTermMatch = p.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const filterMatch = activeFilters.length === 0 || activeFilters.includes(p.badge.toLowerCase());
+    return searchTermMatch && filterMatch;
+  });
+
+
   const newReleased = filteredPatches
     .filter(p => p.badge.toLowerCase() === 'new' || p.badge.toLowerCase() === 'released')
     .sort((a, b) => new Date(b.footer) - new Date(a.footer));
 
   const cancelled = filteredPatches.filter(p => p.badge.toLowerCase() === 'cancelled');
-  const in_progress = filteredPatches.filter(p => p.badge.toLowerCase() === 'in_progress');
+  const in_progress = filteredPatches.filter(p => p.badge.toLowerCase() === 'in_progress'); 
 
   const displayGroups = [
     { title: 'New & Released Patches', items: newReleased },
-    { title: 'In progress Patches', items: in_progress },
-    { title: 'Rejected Patches', items: cancelled }
+    { title: 'In Progress Patches', items: in_progress },
+    { title: 'Cancelled Patches', items: cancelled } 
   ];
+
 
   const navigate = useNavigate();
 

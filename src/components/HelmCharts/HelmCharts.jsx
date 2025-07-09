@@ -35,7 +35,7 @@ const HelmCharts = ({ product }) => {
 
   return (
     <div className="helm-charts-container">
-      <h3>{product.name}</h3>
+      {/* <h3>{product.name}</h3> */}
       <table className="helm-charts-table">
         <thead>
           <tr>

@@ -3,7 +3,7 @@ import './Dashboard.css';
 import Card from '../../components/Card/Card';
 import Form from '../../components/Form/Form';
 import get_patches from '../../api/patches';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 import { useOutletContext } from "react-router-dom";
 
 
@@ -13,14 +13,25 @@ function Dashboard() {
   const [fetchedPatches, setFetchedPatches] = useState([]);
   // const [selectedPatch, setSelectedPatch] = useState(null);
 
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
-  const { searchTerm, setTitle,setPatchVersion } = useOutletContext(); // <-- move this up
+  const { searchTerm, setTitle, setPatchVersion, activeFilters, setFilterOptions } = useOutletContext();
+
+  const patchStateFilters = [
+  { value: 'new', label: 'New' },
+  { value: 'released', label: 'Released' },
+  { value: 'in progress', label: 'In Progress' },
+  { value: 'cancelled', label: 'Cancelled' }
+];
 
   useEffect(() => {
     setTitle("Overview");
     setPatchVersion("")
-  }, [setTitle,setPatchVersion]);
+    setFilterOptions(patchStateFilters);
+     return () => {
+      setFilterOptions(null);
+    };
+  }, [setTitle, setPatchVersion,setFilterOptions]);
 
 
   useEffect(() => {
@@ -32,45 +43,54 @@ function Dashboard() {
         description: patch.description || "No description available",
         badge: patch.patch_state || "no patche state",
         footer: patch.release_date || "no release_date",
-          products: patch.products || [], 
-          kba: patch.kba || "",  
-         
+        products: patch.products || [],
+        kba: patch.kba || "",
+
       }));
       //console.log("fetched patches in dashboard : ", mappedData);
-      setFetchedPatches(mappedData); 
+      setFetchedPatches(mappedData);
     };
- 
+
     fetch();
   }, []);
-  
 
-  const filteredPatches = fetchedPatches.filter(p =>
-    p.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
-  // Grouping
+   const filteredPatches = fetchedPatches.filter(p => {
+    // Condition 1: Must match the text in the search bar
+    const searchTermMatch = p.title.toLowerCase().includes(searchTerm.toLowerCase());
+
+    // Condition 2: Must match the selected filters
+    // If no filters are active, this is always true.
+    // Otherwise, the patch's badge must be in the activeFilters array.
+    const filterMatch = activeFilters.length === 0 || activeFilters.includes(p.badge.toLowerCase());
+
+    return searchTermMatch && filterMatch; // Must satisfy both conditions
+  });
+
+  // Grouping logic now operates on the already-filtered list, so it works automatically.
+  // Let's update it to include the new states you wanted.
   const newReleased = filteredPatches
-    .filter(p => p.badge.toLowerCase() === 'new' || p.badge.toLowerCase() === 'released')
+    .filter(p => ['new', 'released', 'in progress'].includes(p.badge.toLowerCase()))
     .sort((a, b) => new Date(b.footer) - new Date(a.footer));
 
   const verified = filteredPatches.filter(p => p.badge.toLowerCase() === 'verified');
-  const rejected = filteredPatches.filter(p => p.badge.toLowerCase() === 'rejected');
+  const rejected = filteredPatches.filter(p => ['rejected', 'cancelled'].includes(p.badge.toLowerCase()));
 
   const displayGroups = [
-    { title: 'New & Released Patches', items: newReleased },
+    { title: 'New, Released & In Progress', items: newReleased },
     { title: 'Verified Patches', items: verified },
-    { title: 'Rejected Patches', items: rejected }
+    { title: 'Rejected & Cancelled Patches', items: rejected }
   ];
 
-  
+
 
 
 
   return (
-        <div className="dashboard-main">
-        {/* <div className="dashboard-header"> */}
-            {/* <h2 className="dashboard-title">Overview</h2> */}
-            {/* {!showForm && !selectedPatch && (
+    <div className="dashboard-main">
+      {/* <div className="dashboard-header"> */}
+      {/* <h2 className="dashboard-title">Overview</h2> */}
+      {/* {!showForm && !selectedPatch && (
               <button
               className="add-patch-button"
               onClick={() => navigate('/addpatch')}
@@ -78,9 +98,9 @@ function Dashboard() {
               ➕ Add Patch
             </button>
             )} */}
-          {/* </div>      */}
-          
-          {showForm ? (
+      {/* </div>      */}
+
+      {showForm ? (
         <Form onCancel={() => setShowForm(false)} />
       ) : (
         displayGroups.map((group, idx) => (
@@ -90,12 +110,12 @@ function Dashboard() {
               <div className="card-scrollable">
                 <div className="card-grid">
                   {group.items.map((patch, index) => (
-                    
+
                     <Card
                       key={index}
                       info={patch}
                       products={patch.products}
-                      setPatches={setFetchedPatches} 
+                      setPatches={setFetchedPatches}
                       onClick={() => navigate(`/patches/${encodeURIComponent(patch.title)}`, {
                         state: { patch }
                       })}
@@ -107,7 +127,7 @@ function Dashboard() {
           )
         ))
       )}
-        </div>
+    </div>
   );
 }
 

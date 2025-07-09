@@ -6,9 +6,9 @@ import { Trash2 } from 'lucide-react';
 import SeverityCount from '../SeverityCount/SeverityCount';
 import ProgressBar from '../ProgressBar/ProgressBar';
 import get_patch_progress from '../../api/get_patch_progress';
-import toast from 'react-hot-toast'; 
+import toast from 'react-hot-toast';
 
-const Card = ({ info, setPatches, products = [], className = '', children, ...rest }) => {
+const Card = ({ info, setPatches, products = [], onProgressClick, className = '', children, ...rest }) => {
   const { title, description, image, badge, footer, kba } = info || {};
   const cardClasses = `enhanced-card float = 'float' ${className}`.trim();
 
@@ -18,7 +18,7 @@ const Card = ({ info, setPatches, products = [], className = '', children, ...re
     if (userConfirmed) {
       try {
         const result = await deletePatch(patchName);
-        toast.success(result.message || 'Patch deleted successfully'); 
+        toast.success(result.message || 'Patch deleted successfully');
         setPatches(prev => prev.filter(patch => patch.title !== patchName));
       } catch (err) {
         console.error("Delete patch error:", err);
@@ -48,64 +48,78 @@ const Card = ({ info, setPatches, products = [], className = '', children, ...re
   }, [title]);
 
   return (
-    
-
-      <div className={cardClasses} onClick={handleClick} {...rest}>
-        {image && <img src={image} alt={title} className="card-image" />}
-
-        <div className="card-body">
-
-          {badge && (
-            <span className={`card-badge ${badge.toLowerCase()}`}>{(badge[0].toUpperCase() + badge.slice(1))}</span>)}
 
 
-          <div className='card-header'>
-            <h3 className="card-title">{title}</h3>
-            <div className="progress-container" onClick={(e) => e.stopPropagation()}>
-              <ProgressBar value={progress} label="Patch Progress" redirectTo={`/progress/${title}`} />
-            </div>
+    <div className={cardClasses} onClick={handleClick} {...rest}>
+      {image && <img src={image} alt={title} className="card-image" />}
+
+      <div className="card-body">
+
+        {badge && (
+          <span className={`card-badge ${badge.toLowerCase()}`}>{(badge[0].toUpperCase() + badge.slice(1))}</span>)}
+
+
+        <div className='card-header'>
+          <h3 className="card-title">{title}</h3>
+          <div className="progress-container" onClick={(e) => {
+            // This stops the click from bubbling up to the main card's onClick
+            e.stopPropagation();
+
+            // This is the core logic:
+            if (onProgressClick) {
+              // If an `onProgressClick` function was passed as a prop,
+              // run that function. This is your override.
+              onProgressClick();
+            } else {
+              // If no override was provided, perform the default action:
+              // navigate to the old progress page.
+              navigate(`/progress/${title}`);
+            }
+          }}>
+            <ProgressBar value={progress} label="Patch Progress" redirectTo={`/progress/${title}`} />
           </div>
-          {/* <p className="card-description">{description}</p> */}
-          <p className="card-description">
-            {badge?.toLowerCase() === 'released' ? (
-              <a
-                href={kba}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="kba-link"
-                onClick={(e) => e.stopPropagation()} // Prevent card click
-              >
-                KBA
-              </a>
-            ) : (
-              description
-            )}
-          </p>
+        </div>
+        {/* <p className="card-description">{description}</p> */}
+        <p className="card-description">
+          {badge?.toLowerCase() === 'released' ? (
+            <a
+              href={kba}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="kba-link"
+              onClick={(e) => e.stopPropagation()} // Prevent card click
+            >
+              KBA
+            </a>
+          ) : (
+            description
+          )}
+        </p>
 
-          <div className="severity-grid">
-            <SeverityCount products={products} />
-          </div>
-
-          {children && <div className="card-children">{children}</div>}
+        <div className="severity-grid">
+          <SeverityCount products={products} />
         </div>
 
-        {footer && (
-          <div className="card-footer">
-            {/* delete button */}
-            <button className='patch-btn' onClick={(e) => {
-              e.stopPropagation();
-              handleDelete(title);
-            }}>
-              <Trash2 size={18} />
-            </button>
-            Release Date: {new Date(footer).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })}
-          </div>
-        )}
+        {children && <div className="card-children">{children}</div>}
       </div>
+
+      {footer && (
+        <div className="card-footer">
+          {/* delete button */}
+          <button className='patch-btn' onClick={(e) => {
+            e.stopPropagation();
+            handleDelete(title);
+          }}>
+            <Trash2 size={18} />
+          </button>
+          Release Date: {new Date(footer).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })}
+        </div>
+      )}
+    </div>
   );
 };
 
