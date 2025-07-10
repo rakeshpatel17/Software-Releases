@@ -7,7 +7,7 @@ import Heading from '../Side-nav/Heading/Heading';
 import AddPatchButton from '../Button/AddPatchButton';
 
 
-function TopNavbar({ onSearch, onLogout,title,  patchVersion,searchTerm,searchPlaceholder }) {
+function TopNavbar({ onSearch,onFilterChange, onLogout, title, patchVersion, searchTerm, searchPlaceholder, filterOptions, initialFilters }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef();
 
@@ -20,51 +20,58 @@ function TopNavbar({ onSearch, onLogout,title,  patchVersion,searchTerm,searchPl
       setDropdownOpen(false);
     }
   };
-  
+
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  
+
 
   return (
     <div className="top-navbar">
-    <div className="left-controls">
-      <BackButtonComponent />
-      <ForwardButtonComponent />
-    </div>
-  
-    <div className="center-controls">
-      <Heading name={title} />
-    </div>
-  
-    <div className="right-controls">
-      <AddPatchButton className="add-patch-button" release={patchVersion} />
-      {/* <SearchBar onSearch={onSearch}  value={searchTerm} /> */}
-      <SearchBar onSearch={onSearch} value={searchTerm} placeholder={searchPlaceholder} />
-      <div ref={dropdownRef} className="profile-container">
-        <div onClick={toggleDropdown} className="profile-toggle">
-          <span>Profile</span>
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/2922/2922510.png"
-            alt="Profile"
-          />
-        </div>
-  
-        {dropdownOpen && (
-          <div className="dropdown">
-            <p>Welcome, Admin!</p>
-            <p>Email: admin@opentext.com</p>
-            <hr />
-            <button onClick={onLogout}>Logout</button>
+      <div className="left-controls">
+        <BackButtonComponent />
+        <ForwardButtonComponent />
+      </div>
+
+      <div className="center-controls">
+        <Heading name={title} />
+      </div>
+
+      <div className="right-controls">
+        <AddPatchButton className="add-patch-button" release={patchVersion} />
+        {/* <SearchBar onSearch={onSearch}  value={searchTerm} /> */}
+        <SearchBar
+          onSearch={onSearch}
+          onFilterChange={onFilterChange}
+          value={searchTerm}
+          placeholder={searchPlaceholder}
+          filterOptions={filterOptions}
+          initialFilters={initialFilters}
+        />    
+          <div ref={dropdownRef} className="profile-container">
+          <div onClick={toggleDropdown} className="profile-toggle">
+            <span>Profile</span>
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/2922/2922510.png"
+              alt="Profile"
+            />
           </div>
-        )}
+
+          {dropdownOpen && (
+            <div className="dropdown">
+              <p>Welcome, Admin!</p>
+              <p>Email: admin@opentext.com</p>
+              <hr />
+              <button onClick={onLogout}>Logout</button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
-  </div>
-  
-  
+
+
   );
 }
 

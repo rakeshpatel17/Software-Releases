@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, version } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import ProductImageSelector from '../../components/ProductImageSelector/ProductImageSelector';
 import JarSelector from '../../components/JarSelector/JarSelector';
 import ProgressBar from '../../components/ProgressBar/ProgressBar';
@@ -8,7 +8,7 @@ import './PatchPage.css';
 import getAllProducts from '../../api/product';
 import { getPatchById } from '../../api/getPatchById';
 import { useOutletContext } from "react-router-dom";
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import CancelButton from '../../components/Button/CancelButton';
 import SaveButton from '../../components/Button/SaveButton';
 import exportToExcel from '../../api/exportToExcel';
@@ -45,8 +45,7 @@ function PatchPage() {
     const [selectedJars, setSelectedJars] = useState([]);
     const [tempSelectedJars, setTempSelectedJars] = useState([]);
 
-    //toastmsg
-    const [toastState, setToastState] = useState({ message: '', type: '' });
+    const navigate = useNavigate();
 
 
     const [progress, setProgress] = useState(null);
@@ -60,65 +59,14 @@ function PatchPage() {
         if (patchName) fetchProgress();
     }, [patchName]);
 
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         const products = await getAllProducts();
-    //         // console.log("all products getting :  ",products);
-    //         if (products && products.length > 0) {
-    //             let releaseObj;
-    //             if (selectedRelease) {
-    //                 releaseObj = products.find(obj => Object.keys(obj)[0] === selectedRelease);
-    //             }
-    //             if (!releaseObj) releaseObj = products[0]; // fallback
-
-    //             const releaseKey = Object.keys(releaseObj)[0];
-    //             const releaseProducts = releaseObj[releaseKey];
-
-    //             setSelectedRelease(releaseKey);
-    //             setProductData(releaseProducts);
-
-    //             const patchData = await getPatchById(patchName);
-    //             // console.log("The updated backend patch data is : ", patchData);
-    //             if (patchData) {
-    //                 const patch = patchData;
-    //                 setPatchData(patch);
-    //                 setTempPatchData(patch);
-
-
-    //                 const productImageMap = patch.products || [];
-    //                 const highLevelScopes = patch.scopes || [];
-    //                 const selectedJars = patch.jars || [];
-
-    //                 setSelectedProducts(productImageMap);
-    //                 // console.log("the current selected products : ", selectedProducts);
-    //                 // console.log("the current selected productimagemap : ", productImageMap);
-
-
-    //                 //  Set high level scope labels
-    //                 const HighLevelScope = highLevelScopes.map(scope => ({
-    //                     name: scope.name,
-    //                     version: scope.version,
-    //                     // remarks : scope.remarks
-    //                 }));
-    //                 setHighLevelScope(HighLevelScope);
-
-    //                 //set jars
-    //                 setSelectedJars(selectedJars.map(jar => ({
-    //                     name: jar.name,
-    //                     version: jar.version,
-    //                     remarks: jar.remarks
-    //                 })));
-    //             }
-    //         }
-    //         setLoading(false); // Making loading false when total patch data loads
-    //     };
-    //     fetchData();
-    // }, [patchName]);
-
     useEffect(() => {
         const fetchAndPopulatePatchData = async () => {
             setLoading(true);
-            const patch = await getPatchById(patchName);
+            const [patch, allImages] = await Promise.all([
+                getPatchById(patchName),
+                AllReleaseProductImage()
+            ]);
+            console.log("in patch page", patch)
             if (!patch) {
                 console.error(`Patch with name "${patchName}" not found.`);
                 setLoading(false);
@@ -126,7 +74,6 @@ function PatchPage() {
             }
             const releaseForThisPatch = patch.release;
 
-            const allImages = await AllReleaseProductImage();
             if (allImages) {
                 const imagesForRelease = allImages.filter(img => img.release === releaseForThisPatch);
 
@@ -143,6 +90,7 @@ function PatchPage() {
                 }));
 
                 setProductData(finalProductData);
+                console.log("final product data", finalProductData)
             } else {
                 setProductData([]);
             }
@@ -305,25 +253,22 @@ function PatchPage() {
     }
 
 
-    // const transformedProducts = productData.map(item => ({
-    //     name: item.products_data.name,
-    //     images: item.products_data.images.map(img => ({
-    //         image_name: img.imagename
-    //     }))
-    // }));
-    // Corrected version
-    const transformedProducts = productData.map(item => ({
-        name: item.name, // Access item.name directly
-        images: (item.images || []).map(img => ({ // Access item.images directly, with a safety fallback
-            image_name: img.imagename
-        }))
-    }));
+  
+    const transformedProducts = useMemo(() => {
+        console.log("Recalculating transformedProducts...");
+        return productData.map(item => ({
+            name: item.name,
+            images: (item.images || []).map(img => ({
+                image_name: img.imagename
+            }))
+        }));
+    }, [productData]);
     const handleReleaseChange = (newRelease) => {
         // For example, update a state that triggers fetching products
         setSelectedRelease(newRelease);
     };
 
-     // To get previous date
+    // To get previous date
     const getPreviousDate = (releaseDate, days) => {
         if (!releaseDate) return '';
         const date = new Date(releaseDate);
@@ -347,23 +292,23 @@ function PatchPage() {
         return date.toISOString().split('T')[0]; // returns YYYY-MM-DD
     }
     useEffect(() => {
-    if (tempPatchData.release_date) {
-        // Calculate the other dates
-        const kick_off = getPreviousDate(tempPatchData.release_date, 14);
-        const code_freeze = getFutureDate(kick_off, tempPatchData.release_date, 4);
-        const platform_qa_build = getFutureDate(code_freeze, tempPatchData.release_date, 4);
-        const client_build_availability = getFutureDate(platform_qa_build, tempPatchData.release_date, 2);
+        if (tempPatchData.release_date) {
+            // Calculate the other dates
+            const kick_off = getPreviousDate(tempPatchData.release_date, 14);
+            const code_freeze = getFutureDate(kick_off, tempPatchData.release_date, 4);
+            const platform_qa_build = getFutureDate(code_freeze, tempPatchData.release_date, 4);
+            const client_build_availability = getFutureDate(platform_qa_build, tempPatchData.release_date, 2);
 
-        // Update the tempPatchData state with new dates
-        setTempPatchData((prev) => ({
-            ...prev,
-            kick_off,
-            code_freeze,
-            platform_qa_build,
-            client_build_availability
-        }));
-    }
-}, [tempPatchData.release_date]); // Trigger on release_date change
+            // Update the tempPatchData state with new dates
+            setTempPatchData((prev) => ({
+                ...prev,
+                kick_off,
+                code_freeze,
+                platform_qa_build,
+                client_build_availability
+            }));
+        }
+    }, [tempPatchData.release_date]); // Trigger on release_date change
 
 
     return (
@@ -383,7 +328,8 @@ function PatchPage() {
 
                     <div className="right-header">
                         <div className="progress-container">
-                            <ProgressBar value={progress} label="Patch Progress" redirectTo={`/progress/${patchName}`} />
+                            <ProgressBar value={progress} label="Patch Progress" onClick={() => navigate(`/progress/${patchName}`)}
+                            />
                         </div>
 
                         {!loading && (
