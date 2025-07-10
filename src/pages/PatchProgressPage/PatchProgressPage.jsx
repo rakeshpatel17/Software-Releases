@@ -58,12 +58,12 @@ function PatchProgressPage() {
   const normalize = str => str.trim().toLowerCase();
 
   if (filter === 'completed') {
-    const completedSet = new Set(completedProducts.map(p => normalize(p.name)));
+    const completedSet = new Set(completedProducts.map(p => normalize(p)));
     productsToShow = Object.fromEntries(
       Object.entries(productJars).filter(([key]) => completedSet.has(normalize(key)))
     );
   } else if (filter === 'not_completed') {
-    const notCompletedSet = new Set(notCompletedProducts.map(p => normalize(p.name)));
+    const notCompletedSet = new Set(notCompletedProducts.map(p => normalize(p)));
     productsToShow = Object.fromEntries(
       Object.entries(productJars).filter(([key]) => notCompletedSet.has(normalize(key)))
     );
