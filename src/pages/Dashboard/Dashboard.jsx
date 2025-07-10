@@ -20,7 +20,7 @@ function Dashboard() {
   const patchStateFilters = [
     { value: 'new', label: 'New' },
     { value: 'released', label: 'Released' },
-    { value: 'in progress', label: 'In Progress' },
+    { value: 'in_progress', label: 'In Progress' },
     { value: 'cancelled', label: 'Cancelled' }
   ];
 
@@ -41,7 +41,7 @@ function Dashboard() {
       const mappedData = (data || []).map((patch) => ({
         title: patch.name || "Untitled Patch",
         description: patch.description || "No description available",
-        badge: patch.patch_state || "no patche state",
+        badge: patch.patch_state || "no patch state",
         footer: patch.release_date || "no release_date",
         products: patch.products || [],
         kba: patch.kba || "",
