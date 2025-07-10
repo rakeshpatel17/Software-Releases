@@ -1,88 +1,6 @@
-// import React from 'react';
-// import PropTypes from 'prop-types';
-// import EditableFieldComponent from '../EditableFieldComponent';
-// import { securityIssuesUpdate } from '../../api/updateIssuesdes';
 
-// function SecurityIssuesTable({ issues, Productsdata, patchname, refreshProductsData, img}) {
-//   const severityColors = {
-//     low: '#008000',
-//     medium: '#FFD700',
-//     high: '#FF8C00',
-//     critical: '#FF0000'
-//   };
 
-//   return (
-//     <div className="security-issues-table">
-//       {issues.length > 0 ? (
-//         <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '8px' }}>
-//           <thead>
-//             <tr>
-//               <th>CVE ID</th>
-//               <th>CVSS Score</th>
-//               <th>Severity</th>
-//               <th>Affected Libraries</th>
-//               {/* <th>Library Path</th> */}
-//               <th>Description</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {issues.map((issue, idx) => (
-//               <tr key={idx}>
-//                 <td>{issue.cve_id}</td>
-//                 <td>{issue.cvss_score}</td>
-//                 <td style={{ color: severityColors[issue.severity.toLowerCase()], fontWeight: 'bold' }}>
-//                   {issue.severity}
-//                 </td>
-//                 <td>{issue.affected_libraries}</td>
-//                 {/* <td>{issue.library_path}</td> */}
-//                 <td>
-//                   <EditableFieldComponent
-//                     value={
-//                       Productsdata.find(p => p.name === img.product)?.product_security_des || '—'
-//                     }
-//                     onSave={async (newValue) => {
-//                         const updatedProducts = [...Productsdata]; // shallow copy
-//                         // Find product that contains this image
-//                         const productIndex = updatedProducts.findIndex(p =>
-//                             p.images.some(i =>
-//                                 i.image_name === img.image_name &&
-//                                 i.patch_build_number === img.patch_build_number
-//                             )
-//                         );
-//                       if (productIndex !== -1) {
-//                         updatedProducts[productIndex].product_security_des = newValue;
-//                         try {
-//                           await securityIssuesUpdate(patchname, { products_data: updatedProducts});
-//                           await refreshProductsData();
-//                         } catch (err) {
-//                           console.error(err);
-//                           alert('Update failed');
-//                         }
-//                       }
-//                     }}
-//                   />
-//                 </td>
-//               </tr>
-//             ))}
-//           </tbody>
-//         </table>
-//       ) : (
-//         <p style={{ marginTop: 8, fontStyle: 'italic' }}>No security issues...</p>
-//       )}
-//     </div>
-//   );
-// }
-
-// SecurityIssuesTable.propTypes = {
-//   issues: PropTypes.array.isRequired,
-//   productsData: PropTypes.array.isRequired,
-//   patchName: PropTypes.string.isRequired,
-//   refreshProductsData: PropTypes.func.isRequired
-// };
-
-// export default SecurityIssuesTable;
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Paper,
@@ -98,15 +16,71 @@ import {
 } from '@mui/material';
 import EditableFieldComponent from '../EditableFieldComponent';
 import { securityIssuesUpdate } from '../../api/updateIssuesdes';
+import { fetchDescription } from '../../api/fetchDescription ';
 
 export default function SecurityIssuesTable({
   issues,
   Productsdata,
   patchname,
-  refreshProductsData,
-  img
+  img,
+  allDetailedImages,
+  setDetailedImages
+
 }) {
   const theme = useTheme();
+  console.log("issues in sec table", issues);
+
+  const [descriptions, setDescriptions] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadAllDescriptions = async () => {
+      if (!issues || issues.length === 0) {
+        setIsLoading(false);
+        return;
+      }
+
+      const currentProduct = Productsdata.find(p => p.images?.some(i => i.image_name === img.image_name));
+      if (!currentProduct) {
+        setIsLoading(false);
+        return;
+      }
+
+      const descriptionPromises = issues.map(issue => {
+        const libs = Array.isArray(issue.affected_libraries) ? issue.affected_libraries.join(', ') : issue.affected_libraries;
+        const context = {
+          patchName: patchname,
+          productName: currentProduct.name,
+          cve_id: issue.cve_id,
+          cvss_score: issue.cvss_score,
+          severity: issue.severity,
+          affected_libraries: libs,
+        };
+
+        return fetchDescription(context).then(desc => ({
+          key: `${issue.cve_id}-${issue.cvss_score}`, // A unique key for this issue
+          description: desc
+        }));
+      });
+
+      const results = await Promise.all(descriptionPromises);
+
+      if (isMounted) {
+        const descriptionMap = results.reduce((acc, curr) => {
+          acc[curr.key] = curr.description;
+          return acc;
+        }, {});
+        setDescriptions(descriptionMap);
+        setIsLoading(false);
+      }
+    };
+
+    loadAllDescriptions();
+
+    return () => { isMounted = false; }; // Cleanup function
+  }, [issues, Productsdata, patchname, img]);
 
   // Pagination state
   const [page, setPage] = React.useState(0);
@@ -132,55 +106,53 @@ export default function SecurityIssuesTable({
     high: '#FF8C00',
     critical: '#FF0000'
   };
-  // console.log("issues", issues)
-  // console.log("products", Productsdata)
-
-  const handleSaveDescription = async (issue, newValue) => {
-    if (!img || !img.image_name) {
-      console.error("img is missing or invalid. Cannot determine context for saving.");
-      return;
-    }
 
 
-    const matchedProduct = Productsdata.find(product =>
-      product.images.some(image =>
-        image.image_name === img.image_name &&
-        image.security_issues.some(secIssue => secIssue.cve_id === issue.cve_id)
-      )
-    );
-
-    if (!matchedProduct) {
-      console.error("Could not find a matching product for this issue in the local data.");
-      return;
-    }
-
-
+const handleSaveDescription = async (issue, newValue) => {
+    const currentProduct = Productsdata.find(p => p.images?.some(i => i.image_name === img.image_name));
+    if (!currentProduct) return;
+    
+    const libs = Array.isArray(issue.affected_libraries) ? issue.affected_libraries.join(', ') : issue.affected_libraries;
     const payload = {
-      productName: matchedProduct.name,    
-      cveId: issue.cve_id,                  
-      product_security_des: newValue        
+      productName: currentProduct.name,
+      cveId: issue.cve_id,
+      cvss_score: issue.cvss_score,
+      severity: issue.severity,
+      affected_libraries: libs,
+      product_security_des: newValue
     };
-
-    console.log("Payload being sent to securityIssuesUpdate:", payload);
-
+    
     try {
-
       await securityIssuesUpdate(patchname, payload);
+      console.log("Database update successful!");
 
-      refreshProductsData();
-      console.log("Description saved successfully!");
+    
+      const newDetailedImages = allDetailedImages.map(imageInState => {
+        if (imageInState.image_name !== img.image_name) {
+          return imageInState;
+        }
+        
+        return {
+          ...imageInState,
+          security_issues: (imageInState.security_issues || []).map(issueInState => {
+            if (issueInState.cve_id === issue.cve_id && issueInState.cvss_score === issue.cvss_score) {
+              return { ...issueInState, product_security_des: newValue };
+            }
+            return issueInState;
+          })
+        };
+      });
+
+      setDetailedImages(newDetailedImages);
+
+      const issueKey = `${issue.cve_id}-${issue.cvss_score}`;
+      setDescriptions(prev => ({ ...prev, [issueKey]: newValue || '—' }));
 
     } catch (err) {
-      console.error("API error while saving description:", err.message);
+      console.error("Save failed:", err);
+      alert("Save failed, please try again.");
     }
   };
-
-
-
-
-
-
-
 
 
   return (
@@ -215,68 +187,58 @@ export default function SecurityIssuesTable({
           </TableHead>
 
           <TableBody>
-            {paginated.map((issue, idx) => {
-              const libs = Array.isArray(issue.affected_libraries)
-                ? issue.affected_libraries.join(', ')
-                : issue.affected_libraries;
+  {isLoading ? (
+    <TableRow>
+      <TableCell colSpan={5} align="center" sx={{ py: 4, fontStyle: 'italic' }}>
+        Loading ...
+      </TableCell>
+    </TableRow>
+  ) : (
+    paginated.map((issue, idx) => {
+      // Define `libs` here so it's available for the row
+      const libs = Array.isArray(issue.affected_libraries)
+        ? issue.affected_libraries.join(', ')
+        : issue.affected_libraries;
 
-              return (
-                <TableRow key={idx} hover>
-                  <TableCell>{issue.cve_id}</TableCell>
-                  <TableCell align="center">{issue.cvss_score}</TableCell>
-                  <TableCell align="center">
-                    <Typography
-                      sx={{
-                        color: severityColors[issue.severity.toLowerCase()] || theme.palette.text.primary,
-                        fontWeight: 'bold'
-                      }}
-                    >
-                      {issue.severity}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>{libs}</TableCell>
-                  <TableCell align="center">
-                    <EditableFieldComponent
-                      value={
-                        issue.product_security_des || '—'
-                      }
-
-                      // onSave={async (newValue) => {
-                      //   const updated = [...Productsdata];
-                      //   const idxProd = updated.findIndex(p =>
-                      //     p.images.some(i =>
-                      //       i.image_name === img.image_name &&
-                      //       i.patch_build_number === img.patch_build_number
-                      //     )
-                      //   );
-                      //   if (idxProd !== -1) {
-                      //     updated[idxProd].product_security_des = newValue;
-                      //     try {
-                      //       await securityIssuesUpdate(patchname, {
-                      //         products_data: updated
-                      //       });
-                      //       await refreshProductsData();
-                      //     } catch (err) {
-                      //       console.error(err);
-                      //       alert('Update failed');
-                      //     }
-                      //   }
-                      // }}
-                      onSave={(newValue) => handleSaveDescription(issue, newValue)}
-                    />
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-
-            {issues.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={5} align="center" sx={{ py: 4, fontStyle: 'italic' }}>
-                  No security issues...
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
+      return (
+        <TableRow key={idx} hover>
+          <TableCell>{issue.cve_id}</TableCell>
+          <TableCell align="center">{issue.cvss_score}</TableCell>
+          <TableCell align="center">
+            <Typography
+              sx={{
+                color: severityColors[issue.severity.toLowerCase()] || theme.palette.text.primary,
+                fontWeight: 'bold'
+              }}
+            >
+              {issue.severity}
+            </Typography>
+          </TableCell>
+          <TableCell>{libs}</TableCell>
+          <TableCell align="center">
+            <EditableFieldComponent
+              value={
+                // Look up the value from the state you fetched in useEffect.
+                // The key must match the key you created when fetching.
+                descriptions[`${issue.cve_id}-${issue.cvss_score}`] || '—'
+              }
+              onSave={(newValue) => handleSaveDescription(issue, newValue)}
+            />
+          </TableCell>
+        </TableRow>
+      );
+    })
+  )}
+  
+  {/* This part for empty issues is correct */}
+  {issues.length === 0 && !isLoading && (
+    <TableRow>
+      <TableCell colSpan={5} align="center" sx={{ py: 4, fontStyle: 'italic' }}>
+        No security issues...
+      </TableCell>
+    </TableRow>
+  )}
+</TableBody>
         </Table>
       </TableContainer>
 
@@ -302,6 +264,7 @@ SecurityIssuesTable.propTypes = {
   issues: PropTypes.array.isRequired,
   Productsdata: PropTypes.array.isRequired,
   patchname: PropTypes.string.isRequired,
-  refreshProductsData: PropTypes.func.isRequired,
-  img: PropTypes.object.isRequired
+  img: PropTypes.object.isRequired,
+  allDetailedImages: PropTypes.array.isRequired,
+  setDetailedImages: PropTypes.func.isRequired
 };
