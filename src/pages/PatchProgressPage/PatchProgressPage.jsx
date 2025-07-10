@@ -65,7 +65,7 @@ function PatchProgressPage() {
 
     if (activeFilters.length === 0) return true;
 
-    const completedSet = new Set(completedProducts.map(p => p.name.toLowerCase()));
+    const completedSet = new Set(completedProducts.map(p => p.toLowerCase()));
     const wantsCompleted = activeFilters.includes('completed');
     const isCompleted = completedSet.has(productKey.toLowerCase());
 

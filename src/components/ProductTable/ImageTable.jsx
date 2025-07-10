@@ -274,7 +274,7 @@ import {
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon   from '@mui/icons-material/KeyboardArrowUp';
-
+import hydrateImages from '../../api/hydrateImages';
 import EditableFieldComponent from '../EditableFieldComponent';
 import ToggleButtonComponent  from '../ToggleButton/ToggleButton';
 import SeverityFilterButtons  from '../Button/SeverityFilterButtons';
@@ -311,7 +311,24 @@ export default function ImageTable({
   const [loading, setLoading]   = useState(true);
   const [Productsdata, setProductsdata] = useState([]);
   const [imageJarsMap, setImageJarsMap] = useState({});
-//   console.log("patch jars are : ", patchJars);
+  const [detailedImages, setDetailedImages] = useState([]);
+  const [hydrating, setHydrating] = useState(true);
+
+  useEffect(() => {
+    // whenever `images` prop changes, hydrate them
+    if (!images.length) {
+      setDetailedImages([]);
+      setHydrating(false);
+      return;
+    }
+
+    setHydrating(true);
+    hydrateImages(images)
+      .then(full => setDetailedImages(full))
+      .catch(() => setDetailedImages([]))
+      .finally(() => setHydrating(false));
+  }, [images]);
+  console.log("detailed images : ",detailedImages);
   // whenever images or patchname changes, fetch jars per image
   useEffect(() => {
     if (!images.length || !patchJars.length) return;
@@ -484,7 +501,7 @@ export default function ImageTable({
         </TableHead>
 
         <TableBody>
-          {images.map((img, idx) => {
+          {detailedImages.map((img, idx) => {
             // console.log("image data is : ", img);
             // pull this image's own jars array:
             // const imageJars = img.jars || [];
