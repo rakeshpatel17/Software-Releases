@@ -12,7 +12,6 @@ import Form from "./components/Form/Form";
 import CompareImage from "./pages/ImageCompare/CompareImage"
 import { RouteProvider } from "./components/RouteContext/RouteContext";
 import { Toaster } from "react-hot-toast";
-import ProductPatchProgressPage from "./pages/PatchProgressPage/ProductPatchProgressPage";
 
 // PrivateRoute component: checks if authenticated
 function PrivateRoute({ isAuthenticated, children }) {
@@ -52,7 +51,7 @@ function AppRoutes({ isLoggedIn, handleLoginSuccess, handleLogout }) {
         >
           <Route
             path="/patches/:patchName/products/:productName"
-            element={<ProductPatchProgressPage />}
+            element={<PatchProgressPage />}
           />
           <Route index element={<Navigate to="dashboard" />} />
           <Route path="dashboard" element={<Dashboard />} />

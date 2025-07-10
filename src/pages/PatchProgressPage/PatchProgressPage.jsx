@@ -1,483 +1,258 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useParams, useOutletContext } from 'react-router-dom';
 import ImageTable from '../../components/ProductTable/ImageTable';
-import './PatchProgressPage.css';
-import { useParams } from 'react-router-dom';
-import EditableFieldComponent from '../../components/EditableFieldComponent';
-import ToggleButtonComponent from '../../components/ToggleButton/ToggleButton';
-import { useOutletContext } from 'react-router-dom';
-import { getPatchById } from '../../api/getPatchById';
-import getProductCompletion from '../../api/productCompletion';
-import LoadingSpinner from '../../components/Loading/LoadingSpinner';
 import HelmCharts from '../../components/HelmCharts/HelmCharts';
-import patch_image_jars from '../../api/patch_image_jars';
-import { update_patch_image_jar } from '../../api/update_patch_image_jar';
+import LoadingSpinner from '../../components/Loading/LoadingSpinner';
 import RefreshButton from '../../components/Button/RefreshButton';
-import JarTable from '../../components/JarTable/JarTable';
-import getPatchProductDetail from '../../api/PatchProductDetail';
 import ProgressBar from '../../components/ProgressBar/ProgressBar';
-import get_patch_progress from '../../api/get_patch_progress';
-import { getPatchDetailsById } from '../../api/getPatchDetailsById';
-import exportToExcel from '../../api/exportToExcel';
-import { Pencil, X, Download } from 'lucide-react';
 import Tooltip from '../../components/ToolTip/ToolTip';
+import { Download } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+// API Imports
+import { getPatchById } from '../../api/getPatchById';
+import getProductCompletion from '../../api/productCompletion';
+import get_patch_progress from '../../api/get_patch_progress';
+import getProductPatchProgress from '../../api/getProductPatchProgress';
+import PatchProductSpecificDetails from '../../api/PatchProductSpecificDetails';
+import getPatchProductDetail from '../../api/PatchProductDetail';
+import patch_image_jars from '../../api/patch_image_jars';
+import exportToExcel from '../../api/exportToExcel';
+
+import './PatchProgressPage.css';
 
 function PatchProgressPage() {
-  const { searchTerm, setTitle, activeFilters, setFilterOptions } = useOutletContext();
-  const { id } = useParams();
-  const [productJars, setProductJars] = useState({});
-  const [filteredProducts, setFilteredProducts] = useState({});
-  const [images, setImages] = useState([]);
-  
-  //product complete and not complete 
-  // const [filter, setFilter] = useState('all');
+    const { searchTerm, setTitle, activeFilters, setFilterOptions } = useOutletContext();
+    const { id, patchName, productName } = useParams();
 
-  const [completedProducts, setCompletedProducts] = useState({});
-  const [notCompletedProducts, setNotCompletedProducts] = useState({});
+    const patchId = id || patchName;
+    const isSingleProductMode = !!productName;
 
-  const [loading, setLoading] = useState(true);
-  const [patch, setPatch] = useState(null);
+    const [products, setProducts] = useState([]);
+    const [patchData, setPatchData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [progress, setProgress] = useState(0);
 
-  const [patchData, setPatchData] = useState({});
+    const [completedProducts, setCompletedProducts] = useState([]);
+    const [notCompletedProducts, setNotCompletedProducts] = useState([]);
 
 
-  useEffect(() => {
-    const fetchCompletionData = async () => {
-      try {
-        const data = await getProductCompletion(id);
-        if (data) {
-          setCompletedProducts(data.completed_products || []);
-          setNotCompletedProducts(data.incomplete_products || []);
+    const initialFetch = useCallback(async () => {
+        if (!patchId) return;
+        setLoading(true);
+        try {
+            if (isSingleProductMode) {
+                const response = await PatchProductSpecificDetails(patchId, productName);
+                const patchObject = response?.[0];
+                if (patchObject?.products?.[0]) {
+                    setProducts(patchObject.products);
+                    setPatchData(patchObject);
+                } else {
+                    toast.error(`Could not find product "${productName}" in patch "${patchId}".`);
+                    setProducts([]);
+                }
+            } else {
+                const [patchDetails, completionData] = await Promise.all([
+                    getPatchById(patchId),
+                    getProductCompletion(patchId)
+                ]);
+                setProducts(patchDetails.products || []);
+                setPatchData(patchDetails);
+                setCompletedProducts(completionData.completed_products || []);
+                setNotCompletedProducts(completionData.incomplete_products || []);
+            }
+        } catch (error) {
+            console.error("Failed to fetch initial patch data:", error);
+            toast.error("Failed to load patch details.");
+        } finally {
+            setLoading(false);
         }
-      } catch (error) {
-        console.error("Failed to fetch completion status:", error);
-        toast.error("Could not load completion status.");
-      }
-    };
-
-    fetchCompletionData();
-  }, [id]);
-
-  const finalFilteredProducts = Object.entries(productJars).filter(([productKey]) => {
-    const searchTermMatch = productKey.toLowerCase().includes(searchTerm.toLowerCase());
-    if (!searchTermMatch) return false;
-
-    if (activeFilters.length === 0) return true;
-
-    const completedSet = new Set(completedProducts.map(p => p.toLowerCase()));
-    const wantsCompleted = activeFilters.includes('completed');
-    const isCompleted = completedSet.has(productKey.toLowerCase());
-
-    const wantsNotCompleted = activeFilters.includes('not_completed');
-    // A product is "not completed" if it's not in the completed set.
-    const isNotCompleted = !isCompleted;
-
-    if (wantsCompleted && wantsNotCompleted) return true; // If both are checked, show all
-    if (wantsCompleted) return isCompleted;
-    if (wantsNotCompleted) return isNotCompleted;
-
-    return true;
-  });
-
-  useEffect(() => {
-    // async function fetchData() {
-    //   setLoading(true);
-    //   const data = await getPatchById(id);
-
-    //   // Create an empty map.
-    //   const productMap = {};
-
-    //   // Loop over each product and fetch its jars.
-    //   for (const prod of data.products) {
-    //     const key = prod.name;
-
-    //     // Wait for patch_product_jars to resolve for this (patch, product).
-    //     const ppj = await patch_product_jars(id, prod.name);
-
-    //     // Build the entry for this product.
-    //     productMap[key] = {
-    //       images: prod.images,
-    //       jars: ppj.map(jar => ({
-    //         name: jar.name,
-    //         version: jar.version,
-    //         current_version: jar.current_version,
-    //         remarks: jar.remarks || "",
-    //         updated: jar.updated || false
-    //       })),
-    //       helm_charts: prod.helm_charts
-    //     };
-    //   }
-
-    //   setProductJars(productMap);
-    //   setFilteredProducts(productMap);
-    //   setPatch(data);
-    //   setLoading(false);
-    // }
-
-    // fetchData();
-    async function fetchData() {
-      setLoading(true);
-      const data = await getPatchById(id);
-
-      // Now props.images includes a `.jars` array under each image.
-      const productMap = data.products.reduce((map, prod) => {
-        map[prod.name] = {
-          images: prod.images,
-          helm_charts: prod.helm_charts
-        };
-        return map;
-      }, {});
-
-      setProductJars(productMap);
-      setFilteredProducts(productMap);
-      setPatch(data);
-      setLoading(false);
-      setPatchData(data);
-    }
-
-    fetchData();
-  }, [id]);
-
-  const getDate = () => {
-    const today = new Date();
-
-    // Extract day, month, and year
-    let day = today.getDate();
-    let month = today.getMonth() + 1;
-    let year = today.getFullYear();
-
-    // Add leading zero to day and month if needed
-    day = day < 10 ? '0' + day : day;
-    month = month < 10 ? '0' + month : month;
-
-    // Format the date as dd/mm/yyyy
-    const formattedDate = `${day}-${month}-${year}`;
-    return formattedDate;
-  }
-  useEffect(() => {
-    if (searchTerm.trim() === '') {
-      setFilteredProducts(productJars); // show all if search is empty
-    } else {
-      const lowerSearch = searchTerm.toLowerCase();
-      const filtered = Object.fromEntries(
-        Object.entries(productJars).filter(([product]) =>
-          product.toLowerCase().includes(lowerSearch)
-        )
-      );
-      setFilteredProducts(filtered);
-    }
-  }, [searchTerm]);
-
-  const highlightText = (text, highlight) => {
-    if (!highlight) return text;
-
-    const regex = new RegExp(`(${highlight})`, 'gi');
-    const parts = text.split(regex);
-
-    return parts.map((part, i) =>
-      part.toLowerCase() === highlight.toLowerCase() ? (
-        <mark key={i} style={{ backgroundColor: 'yellow' }}>{part}</mark>
-      ) : (
-        part
-      )
-    );
-  };
-
-
-  const filterOptions = [
-    { value: 'completed', label: `Completed (${completedProducts.length})` },
-    { value: 'not_completed', label: `Not Completed (${notCompletedProducts.length})` }
-  ];
-
-  useEffect(() => {
-    setTitle(`${id} Progress`);
-    setFilterOptions(filterOptions);
-    return () => {
-      setFilterOptions(null);
-    };
-  }, [id, setTitle, completedProducts, notCompletedProducts, setFilterOptions]);
-
-  const [progress, setProgress] = useState(null);
-
-  useEffect(() => {
-    const fetchProgress = async () => {
-      const result = await get_patch_progress(id);
-      // console.log(`Patch ${patchName} progress: ${result}%`);
-      setProgress(result); // result should be a number like 33.33
-    };
-
-    if (id) fetchProgress();
-  }, [id]);
-
-
-
-  if (loading) return <LoadingSpinner />;
-
-
-  const handleProductRefresh = async (productKey) => {
-    // event.preventDefault();
-    try {
-      console.log("Refreshing product:", productKey);
-
-      const responseData = await getPatchProductDetail(id, productKey);
-
-      if (!Array.isArray(responseData) || responseData.length === 0) {
-        console.error("Invalid response format:", responseData);
-        alert(`Failed to refresh ${productKey}: Invalid server response.`);
-        return;
-      }
-
-      const patchData = responseData[0];
-      const product = (patchData.products || []).find(
-        (p) => p.name.toLowerCase() === productKey.toLowerCase()
-      );
-
-      if (!product) {
-        console.error("Product not found in patch:", productKey);
-        alert(`Product ${productKey} not found in response.`);
-        return;
-      }
-
-      // Clean and format security issues
-      product.images.forEach((img) => {
-        img.security_issues = (img.security_issues || []).map((issue) => ({
-          ...issue,
-          product_security_des:
-            issue.product_security_des ||
-            issue.product_security_description ||
-            "",
-        }));
-      });
-
-      const updatedProduct = {
-        images: JSON.parse(JSON.stringify(product.images || [])),
-        jars: (patchData.jars || []).map((jar) => ({
-          name: jar.name,
-          version: jar.version,
-          current_version: jar.current_version,
-          remarks: jar.remarks || "",
-          updated: jar.updated || false,
-        })),
-        helm_charts: product.helm_charts || "Not Released",
-      };
-
-      setProductJars((prev) => ({
-        ...prev,
-        [productKey]: updatedProduct,
-      }));
-
-      setFilteredProducts((prev) => ({
-        ...prev,
-        [productKey]: updatedProduct,
-      }));
-
-      console.log(` Successfully refreshed ${productKey}`, updatedProduct);
-    } catch (error) {
-      console.error(` Error refreshing ${productKey}:`, error);
-      alert(`Failed to refresh ${productKey}: ${error.message}`);
-    }
-  };
-
-
-  const handlePageRefresh = async (id) => {
-    // setLoading(true);
-
-    try {
-      const data = await getPatchProductDetail(id);
-      const progressresult = get_patch_progress(id);
-      const productMap = {};
-      // for (const prod of data.products) {
-      //     const key = prod.name;
-      //     const ppj = await patch_product_jars(id, prod.name);
-      //     productMap[key] = {
-      //         images: prod.images,
-      //         jars: ppj.map(jar => ({
-      //             name: jar.name,
-      //             version: jar.version,
-      //             current_version: jar.current_version,
-      //             remarks: jar.remarks || "",
-      //             updated: jar.updated || false
-      //         })),
-      //         helm_charts: prod.helm_charts
-      //     };
-      // }
-      for (const prod of data.products) {
-        const key = prod.name;
-        const images = prod.images;
-
-        // Fetch jars per‐image, then flatten them into one array for this product
-        let allJars = [];
-        await Promise.all(images.map(async img => {
-          const ijs = await patch_image_jars(id, img.image_name);
-          if (Array.isArray(ijs)) {
-            allJars = allJars.concat(
-              ijs.map(jar => ({
-                name: jar.name,
-                version: jar.version,
-                current_version: jar.current_version,
-                remarks: jar.remarks || "",
-                updated: jar.updated || false
-              }))
-            );
-          }
-        }));
-
-        productMap[key] = {
-          images,
-          jars: allJars,
-          helm_charts: prod.helm_charts
-        };
-      }
-      setProductJars(productMap);
-      setFilteredProducts(productMap);
-      setPatch(data);
-      // setProgress(progressresult);
-      setProgress(isNaN(progressresult) ? 0 : progressresult);
-
-
-    } catch (err) {
-      console.error("Failed to refresh patch data:", err);
-    }
-    // finally {
-    //     setLoading(false);
-    // }
-  };
-
-  const handleJarsUpdate = (productKey, updatedJars) => {
-    setProductJars(prev => ({
-      ...prev,
-      [productKey]: {
-        ...prev[productKey],
-        jars: updatedJars
-      }
-    }));
-    setFilteredProducts(prev => ({
-      ...prev,
-      [productKey]: {
-        ...prev[productKey],
-        jars: updatedJars
-      }
-    }));
-  };
-
-
-
-
-
-
-  return (
-    <div>
-
-      <div className="top-bar">
-        <div className="progress-export">
-          <div className="progress-container" style={{ pointerEvents: "none" }}>
-            <ProgressBar value={progress} label="Patch Progress" />
-          </div >    
-          {!loading && (
-            <button
-              className="export-btn"
-              onClick={() =>
-                exportToExcel(
-                  patchData.products,
-                  `${id}_vulnerabilities_${getDate()}`
-                )
-              }
-            >
-              <Tooltip text="Export Security issues" position="down">
-                <Download size={20} /></Tooltip>
-            </button>
-
-          )}
-           <div className='refresh'><RefreshButton onRefresh={() => handlePageRefresh(id)} /></div> 
-          {/* <div className="filter-menu-container">
-            <CompletionFilter filter={filter} setFilter={setFilter} counts={counts} />
-          </div> */}
-        </div>
-         </div>
-    
-
-      {/* <div style={{ height: '56px' }}></div> */}
-      {finalFilteredProducts.length === 0 ? (
-        <div style={{ marginTop: '100px', textAlign: 'center', fontSize: '18px' }}>
-          No products match the current filter criteria.
-        </div>
-      ) : (
-
-        <div className="dashboard-main">
-          <div className="dashboard-header">
-            {/* <h2 className="dashboard-title">{id} Progress</h2> */}
-          </div>
-          <div className="table-scroll-wrapper">
-              {finalFilteredProducts.map(([productKey, productObj], index) => {
-
-                const { jars, images } = productObj;
-                return (
-                  <div className='patchProgress' key={index}>
-                    <div className="product-table-container">
-                      <div className="d-flex align-items-center mb-3" style={{ position: 'relative' }}>
-                        <h2 className="mb-0 mx-auto">
-                          {highlightText(productKey.toUpperCase(), searchTerm)}
-                        </h2>
-                        {/* <button
-                        onClick={() => handleProductRefresh(productKey)}
-                        className="btn p-0 bg-transparent border-0"
-                        title="Refresh"
-                        style={{ position: 'absolute', right: '3px', marginRight: '3px' }}
-                      >
-                        <i className="bi bi-arrow-clockwise fs-5"></i>
-                      </button> */}
-                        <RefreshButton onRefresh={() => handleProductRefresh(productKey)} />
-
-                      </div>
-                      {/* JarTable component */}
-                      {/* <JarTable
-                      id={id}
-                      productKey={productKey}
-                      jars={productObj.jars}
-                      onJarsUpdate={(updatedJars) => handleJarsUpdate(productKey, updatedJars)}
-                    /> */}
-                      <div className="image-table-wrapper">
-                        {/* now pass this product’s own images */}
-                        {/* <ImageTable images={images} patchname={patch?.name} /> */}
-                        {console.log("images sending to image table : ",productObj.images)}
-                        <ImageTable
-                          key={productObj.name + JSON.stringify(productObj.images)}
-                          images={productObj.images}
-                          patchJars={patch.jars}
-                          productKey={productKey}
-                          patchname={patch?.name}
-                          searchTerm={searchTerm}
-                          // onJarsUpdate={(updatedJars) =>
-                          //   handleJarsUpdate(productKey, updatedJars)
-                          // }
-                          onImageJarsUpdate={(imageName, updatedJars) =>
-                            // bubble up so PatchProgressPage can merge into state
-                            setProductJars(prev => ({
-                              ...prev,
-                              [productKey]: {
-                                ...prev[productKey],
-                                images: prev[productKey].images.map(img =>
-                                  img.image_name === imageName
-                                    ? { ...img, jars: updatedJars }
-                                    : img
-                                )
-                              }
-                            }))
-                          }
-                        />
-                      </div>
-                      <div className="image-table-wrapper">
-                        <HelmCharts product={productObj} />
-                      </div>
-                    </div>
-                  </div>
+    }, [patchId, productName, isSingleProductMode]);
+
+    useEffect(() => {
+        initialFetch();
+    }, [initialFetch]);
+
+    const handleProductRefresh = async (productKey) => {
+        if (!productKey) return;
+        const toastId = `refresh-${productKey}`;
+        try {
+            toast.loading(`Refreshing ${productKey}...`, { id: toastId });
+            const response = await getPatchProductDetail(patchId, productKey);
+            const refreshedProductData = response?.[0]?.products?.[0];
+            if (refreshedProductData) {
+                let allJars = [];
+                if (refreshedProductData.images && Array.isArray(refreshedProductData.images)) {
+                    const jarArrays = await Promise.all(
+                        refreshedProductData.images.map(img => patch_image_jars(patchId, img.image_name))
+                    );
+                    allJars = jarArrays.flat().filter(Boolean);
+                }
+                const fullyRefreshedProduct = { ...refreshedProductData, jars: allJars };
+                setProducts(prevProducts =>
+                    prevProducts.map(p => p.name === productKey ? fullyRefreshedProduct : p)
                 );
-              })}
-          </div>
-        </div>)}</div>
-  );
+                toast.success(`${productKey} refreshed!`, { id: toastId });
+            } else { throw new Error("Product data not found in response."); }
+        } catch (error) {
+            console.error(`Error refreshing ${productKey}:`, error);
+            toast.error(`Failed to refresh ${productKey}.`, { id: toastId });
+        }
+    };
+
+    const handlePageRefresh = async () => {
+        if (!patchId || isSingleProductMode) return; // This function is now only for multi-product mode
+        toast.loading("Refreshing all data...", { id: 'full-refresh' });
+        try {
+            const data = await getPatchProductDetail(patchId);
+            const productsWithJars = await Promise.all(
+                data.products.map(async (prod) => {
+                    let allJars = [];
+                    if (prod.images && Array.isArray(prod.images)) {
+                        const jarArrays = await Promise.all(
+                            prod.images.map(img => patch_image_jars(patchId, img.image_name))
+                        );
+                        allJars = jarArrays.flat().filter(Boolean);
+                    }
+                    return { ...prod, jars: allJars };
+                })
+            );
+            setProducts(productsWithJars);
+            setPatchData(data);
+            toast.success("All data refreshed!", { id: 'full-refresh' });
+        } catch (error) {
+            console.error("Failed to perform page refresh:", error);
+            toast.error("Could not refresh data.", { id: 'full-refresh' });
+        }
+    };
+    
+    useEffect(() => {
+        const fetchProgress = async () => {
+            if (!patchId) return;
+            const progressValue = isSingleProductMode
+                ? await getProductPatchProgress(patchId, productName)
+                : await get_patch_progress(patchId);
+            setProgress(progressValue || 0);
+        };
+        fetchProgress();
+    }, [patchId, productName, isSingleProductMode, products]);
+
+    useEffect(() => {
+        if (isSingleProductMode) {
+            setTitle(`Progress for ${productName} in ${patchId}`);
+            setFilterOptions(null);
+        } else {
+            setTitle(`${patchId} Progress`);
+            const options = [
+                { value: 'completed', label: `Completed (${completedProducts.length})` },
+                { value: 'not_completed', label: `Not Completed (${notCompletedProducts.length})` }
+            ];
+            setFilterOptions(options);
+        }
+        return () => { setTitle(""); setFilterOptions(null); };
+    }, [isSingleProductMode, patchId, productName, setTitle, setFilterOptions, completedProducts, notCompletedProducts]);
+
+    const finalProductsToDisplay = useMemo(() => {
+        if (isSingleProductMode) return products;
+        const completedSet = new Set(completedProducts.map(p => p.toLowerCase()));
+        return products.filter(product => {
+            const lowerProductName = product.name.toLowerCase();
+            const searchTermMatch = lowerProductName.includes(searchTerm.toLowerCase());
+            if (!searchTermMatch) return false;
+            if (activeFilters.length === 0) return true;
+            const isCompleted = completedSet.has(lowerProductName);
+            const wantsCompleted = activeFilters.includes('completed');
+            const wantsNotCompleted = activeFilters.includes('not_completed');
+            if (wantsCompleted && wantsNotCompleted) return true;
+            if (wantsCompleted) return isCompleted;
+            if (wantsNotCompleted) return !isCompleted;
+            return false;
+        });
+    }, [products, searchTerm, activeFilters, isSingleProductMode, completedProducts]);
+    
+    const handleImageJarsUpdate = (productKey, imageName, updatedJars) => {
+        setProducts(prevProducts =>
+            prevProducts.map(product => {
+                if (product.name === productKey) {
+                    const newImages = product.images.map(img => 
+                        img.image_name === imageName ? { ...img, jars: updatedJars } : img
+                    );
+                    return { ...product, images: newImages };
+                }
+                return product;
+            })
+        );
+    };
+    
+    const highlightText = (text, highlight) => {
+        if (!highlight || isSingleProductMode) return text;
+        const regex = new RegExp(`(${highlight})`, 'gi');
+        return text.split(regex).map((part, i) =>
+            part.toLowerCase() === highlight.toLowerCase() ? <mark key={i}>{part}</mark> : part
+        );
+    };
+    
+    const getDate = () => new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
+    
+    if (loading) return <LoadingSpinner />;
+
+    return (
+        <div>
+            <div className="top-bar">
+                <div className="progress-export">
+                    <div className="progress-container" style={{ pointerEvents: "none" }}>
+                        <ProgressBar value={progress} label="Patch Progress" />
+                    </div>
+                    {products.length > 0 && (
+                        <button className="export-btn" onClick={() => exportToExcel(products, `${patchId}_${productName || 'all'}_vulnerabilities_${getDate()}`)}>
+                            <Tooltip text="Export Security Issues" position="down"><Download size={20} /></Tooltip>
+                        </button>
+                    )}
+                    <div className='refresh'>
+                        {!isSingleProductMode && (
+                            <RefreshButton onRefresh={handlePageRefresh} tooltipText="Refresh All Products"/>
+                        )}
+                    </div>
+                </div>
+            </div>
+            {finalProductsToDisplay.length === 0 ? (
+                <div style={{ marginTop: '100px', textAlign: 'center', fontSize: '18px' }}>
+                    {isSingleProductMode ? 'Product data not found.' : 'No products match the current filters.'}
+                </div>
+            ) : (
+                <div className="dashboard-main">
+                    <div className="table-scroll-wrapper">
+                        {finalProductsToDisplay.map((product) => (
+                        <div className='patchProgress' key={product.name}>
+                            <div className="product-table-container">
+                                <div className="d-flex align-items-center mb-3" style={{ position: 'relative' }}>
+                                    <h2 className="mb-0 mx-auto">{highlightText(product.name.toUpperCase(), searchTerm)}</h2>
+                                    <RefreshButton onRefresh={() => handleProductRefresh(product.name)} tooltipText={`Refresh ${product.name}`}/>
+                                </div>
+                                <div className="image-table-wrapper">
+                                    <ImageTable
+                                        key={`${product.name}-${JSON.stringify(product.images)}`}
+                                        images={product.images || []}
+                                        patchJars={patchData?.jars || product.jars || []}
+                                        productKey={product.name}
+                                        patchname={patchId}
+                                        searchTerm={searchTerm}
+                                        onImageJarsUpdate={(imageName, updatedJars) => 
+                                            handleImageJarsUpdate(product.name, imageName, updatedJars)
+                                        }
+                                    />
+                                </div>
+                                <div className="image-table-wrapper">
+                                    <HelmCharts product={product} />
+                                </div>
+                            </div>
+                        </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
 }
 
 export default PatchProgressPage;
-
