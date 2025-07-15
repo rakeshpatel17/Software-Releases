@@ -9,6 +9,7 @@ const common_headers = {
   "Content-Type": "application/json",
   "Authorization": authHeader,
 };
+
 export const getPatchesByProduct = async (productName) => {
   if (!productName) {
     const errorMsg = "Product name cannot be empty.";
@@ -26,6 +27,16 @@ export const getPatchesByProduct = async (productName) => {
       },
     });
 
+   
+
+    // If the status is 404, it means the product exists but has no patches.
+    // This is a valid case, so we return an empty array.
+    if (response.status === 404) {
+      return []; 
+    }
+
+
+    // For any other non-successful status, throw an error.
     if (!response.ok) {
       throw new Error(`Failed to fetch patches for product ${productName}. Status: ${response.status}`);
     }
@@ -34,6 +45,7 @@ export const getPatchesByProduct = async (productName) => {
     return data;
 
   } catch (error) {
+    // This will now only catch true errors (network issues, 500s, etc.)
     console.error("API Error:", error.message);
     throw error;
   }
