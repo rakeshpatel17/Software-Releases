@@ -8,13 +8,14 @@ const common_headers = {
   'Authorization': authHeader,
 };
 
-const hydrateImages = async (images) => {
-    console.log("images sednding are  : ", images);
+const hydrateImages = async (products) => {
+    // console.log("products sednding are  : ", products);
+    
   try {
-    const res = await fetch(`${base_url}/images/hydrate/`, {
+    const res = await fetch(`${base_url}/hydrate-product-images/`, {
       method:  'POST',
       headers: { ...common_headers },
-      body:    JSON.stringify(images),
+      body:    JSON.stringify({"products":products}),
     });
     if (!res.ok) throw new Error(`Hydrate failed: ${res.status}`);
     return await res.json();

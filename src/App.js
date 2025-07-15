@@ -10,7 +10,7 @@ import PatchProgressPage from "./pages/PatchProgressPage/PatchProgressPage";
 import MainLayout from "./Layouts/MainLayout";
 import Form from "./components/Form/Form";
 import CompareImage from "./pages/ImageCompare/CompareImage"
-import { RouteProvider } from "./components/RouteContext/RouteContext";
+import { RouteProvider } from "./components/RouteContext/RouteContext"; 
 import { Toaster } from "react-hot-toast";
 
 // PrivateRoute component: checks if authenticated
@@ -61,7 +61,6 @@ function AppRoutes({ isLoggedIn, handleLoginSuccess, handleLogout }) {
           <Route path="patches/:patchName" element={<PatchPage />} />
           <Route path="progress/:id" element={<PatchProgressPage />} />
           <Route path="tools/comparison" element={<CompareImage />} />
-          
         </Route>
 
         {/* Redirect any unknown routes */}
@@ -87,16 +86,16 @@ function App() {
 
   return (
     <BrowserRouter>
-      <RouteProvider>
+    <RouteProvider>
         <Toaster position="top-right" />
-        <AppRoutes
-          isLoggedIn={isLoggedIn}
-          handleLoginSuccess={handleLoginSuccess}
-          handleLogout={handleLogout}
-        />
+      <AppRoutes
+        isLoggedIn={isLoggedIn}
+        handleLoginSuccess={handleLoginSuccess}
+        handleLogout={handleLogout}
+      />
       </RouteProvider>
     </BrowserRouter>
-
+    
   );
 }
 
