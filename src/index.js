@@ -5,7 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import ErrorBoundary from './components/ErrorBoundary';
-// import { QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './queryClient';
 // import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
@@ -13,12 +13,12 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <ErrorBoundary>
-      {/* <QueryClientProvider client={queryClient}> */}
+      <QueryClientProvider client={queryClient}>
        <App />
         {/* {process.env.NODE_ENV === 'development' && (
           <ReactQueryDevtools initialIsOpen={false} />
         )} */}
-      {/* </QueryClientProvider> */}
+      </QueryClientProvider>
     </ErrorBoundary>
   </React.StrictMode>
 );

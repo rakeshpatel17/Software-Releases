@@ -49,6 +49,10 @@ function AppRoutes({ isLoggedIn, handleLoginSuccess, handleLogout }) {
             </PrivateRoute>
           }
         >
+          <Route
+            path="/patches/:patchName/products/:productName"
+            element={<PatchProgressPage />}
+          />
           <Route index element={<Navigate to="dashboard" />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="addpatch" element={<Form />} />

@@ -149,7 +149,7 @@
 //                         return b.cvss_score - a.cvss_score;          // then CVSS desc
 //                     })
 //                     .filter(issue => selectedLevels.has(issue.severity.toLowerCase()));
-            
+
 //                  return (
 //                     <React.Fragment key={idx}>
 //                         <tr>
@@ -273,16 +273,16 @@ import {
   useTheme,
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon   from '@mui/icons-material/KeyboardArrowUp';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 import EditableFieldComponent from '../EditableFieldComponent';
-import ToggleButtonComponent  from '../ToggleButton/ToggleButton';
-import SeverityFilterButtons  from '../Button/SeverityFilterButtons';
+import ToggleButtonComponent from '../ToggleButton/ToggleButton';
+import SeverityFilterButtons from '../Button/SeverityFilterButtons';
 import JarFilterButtons from '../Button/JarFilterButtons';
-import SecurityIssuesTable    from '../SecurityIssuesTable/SecurityIssuesTable';
-import JarTable               from '../JarTable/JarTable';
+import SecurityIssuesTable from '../SecurityIssuesTable/SecurityIssuesTable';
+import JarTable from '../JarTable/JarTable';
 import patch_image_jars from '../../api/patch_image_jars';
-import { getPatchById }         from '../../api/getPatchById';
+import { getPatchById } from '../../api/getPatchById';
 import { securityIssuesUpdate } from '../../api/updateIssuesdes';
 import ExpandableSection from '../ExpandableSection/ExpandableSection';
 import ToggleLockIcon from '../ToggleLockIcon'
@@ -303,12 +303,13 @@ export default function ImageTable({
   productKey,
   patchname,
   searchTerm,
-//   onJarsUpdate,
+  //   onJarsUpdate,
   onImageJarsUpdate
 }) {
   const theme = useTheme();
+  const [detailedImages,setDetailedImages]=useState([]);
   const [expanded, setExpanded] = useState({});
-  const [loading, setLoading]   = useState(true);
+  const [loading, setLoading] = useState(true);
   const [Productsdata, setProductsdata] = useState([]);
   const [imageJarsMap, setImageJarsMap] = useState({});
 //   console.log("patch jars are : ", patchJars);
@@ -335,7 +336,7 @@ export default function ImageTable({
               ...rj,
               version: versionLookup[rj.name]
             }));
-        //   console.log(`merged for ${img.image_name}:`, merged);
+          //   console.log(`merged for ${img.image_name}:`, merged);
 
           return { image_name: img.image_name, jars: merged };
         })
@@ -356,11 +357,11 @@ export default function ImageTable({
   }, [images, patchJars, patchname]);
   // Toggles for Registry, OT2, Helm
   const [toggleRegistry, setToggleRegistry] = useState([]);
-  const [toggleOT2,      setToggleOT2]      = useState([]);
-  const [toggleHelm,     setToggleHelm]     = useState([]);
+  const [toggleOT2, setToggleOT2] = useState([]);
+  const [toggleHelm, setToggleHelm] = useState([]);
 
   // severity filtering
-  const levels = ['critical','high','medium','low'];
+  const levels = ['critical', 'high', 'medium', 'low'];
   const [selectedLevels, setSelectedLevels] = useState(new Set(levels));
   const toggleLevel = lvl => {
     setSelectedLevels(s => {
@@ -379,34 +380,34 @@ export default function ImageTable({
 
   // Helpers
   const getToggleValue = dbValue => {
-    const options = ['Released','Not Released','Not Applicable'];
-    const idx = options.findIndex(o => o.toLowerCase() === (dbValue||'').toLowerCase());
+    const options = ['Released', 'Not Released', 'Not Applicable'];
+    const idx = options.findIndex(o => o.toLowerCase() === (dbValue || '').toLowerCase());
     return idx >= 0 ? options[idx] : 'Not Released';
   };
-  const severityOrder = { critical:1, high:2, medium:3, low:4 };
+  const severityOrder = { critical: 1, high: 2, medium: 3, low: 4 };
 
   //jars filtering
-    const [selectedJarStatuses, setSelectedJarStatuses] = useState(new Set(['updated','not updated']));
-    const toggleJarStatus = status => {
-        setSelectedJarStatuses(s => {
-            const copy = new Set(s);
-            copy.has(status) ? copy.delete(status) : copy.add(status);
-            return copy;
-        });
-    };
-    const toggleAllJars = () => {
-        setSelectedJarStatuses(s =>
-            s.size === 2
-            ? new Set()
-            : new Set(['updated','not updated'])
-        );
-    };
+  const [selectedJarStatuses, setSelectedJarStatuses] = useState(new Set(['updated', 'not updated']));
+  const toggleJarStatus = status => {
+    setSelectedJarStatuses(s => {
+      const copy = new Set(s);
+      copy.has(status) ? copy.delete(status) : copy.add(status);
+      return copy;
+    });
+  };
+  const toggleAllJars = () => {
+    setSelectedJarStatuses(s =>
+      s.size === 2
+        ? new Set()
+        : new Set(['updated', 'not updated'])
+    );
+  };
 
   // Compute filteredJars
-    // const filteredJars = jars.filter(j => {
-    // const status = j.updated ? 'updated' : 'not updated';
-    // return selectedJarStatuses.has(status);
-    // });
+  // const filteredJars = jars.filter(j => {
+  // const status = j.updated ? 'updated' : 'not updated';
+  // return selectedJarStatuses.has(status);
+  // });
 
   // load products_data
   useEffect(() => {
@@ -422,8 +423,8 @@ export default function ImageTable({
   useEffect(() => {
     if (!images.length) return;
     setToggleRegistry(images.map(i => getToggleValue(i.registry)));
-    setToggleOT2     (images.map(i => getToggleValue(i.ot2_pass)));
-    setToggleHelm    (images.map(i => getToggleValue(i.helm_charts)));
+    setToggleOT2(images.map(i => getToggleValue(i.ot2_pass)));
+    setToggleHelm(images.map(i => getToggleValue(i.helm_charts)));
   }, [images]);
 
   const handleExpand = idx =>
@@ -436,8 +437,8 @@ export default function ImageTable({
   };
 
   const handleRegistryToggle = handleToggle(toggleRegistry, setToggleRegistry);
-  const handleOT2Toggle      = handleToggle(toggleOT2,      setToggleOT2);
-  const handleHelmToggle     = handleToggle(toggleHelm,     setToggleHelm);
+  const handleOT2Toggle = handleToggle(toggleOT2, setToggleOT2);
+  const handleHelmToggle = handleToggle(toggleHelm, setToggleHelm);
 
   // Column labels in order, matching SecurityIssuesTable style:
   const headers = [
@@ -467,7 +468,7 @@ export default function ImageTable({
               <TableCell
                 key={label}
                 align={
-                  ['Registry','OT2 Pass','Status','More Details'].includes(label)
+                  ['Registry', 'OT2 Pass', 'Status', 'More Details'].includes(label)
                     ? 'center'
                     : 'left'
                 }
@@ -491,19 +492,19 @@ export default function ImageTable({
             const imageJars = imageJarsMap[img.image_name] || [];
             // filter if you still need statuses:
             const filteredJars = imageJars.filter(j => {
-                const status = j.updated ? 'updated' : 'not updated';
-                return selectedJarStatuses.has(status);
+              const status = j.updated ? 'updated' : 'not updated';
+              return selectedJarStatuses.has(status);
             });
             // sort & filter security issues
             const displayed = img.security_issues
               .slice()
-              .sort((a,b)=>{
+              .sort((a, b) => {
                 const sa = severityOrder[a.severity.toLowerCase()];
                 const sb = severityOrder[b.severity.toLowerCase()];
-                if (sa!==sb) return sa-sb;
+                if (sa !== sb) return sa - sb;
                 return b.cvss_score - a.cvss_score;
               })
-              .filter(i=> selectedLevels.has(i.severity.toLowerCase()));
+              .filter(i => selectedLevels.has(i.severity.toLowerCase()));
 
             return (
               <React.Fragment key={idx}>
@@ -535,31 +536,31 @@ export default function ImageTable({
 
                   <TableCell>
                     <ToggleButtonComponent
-                      options={['Released','Not Released','Not Applicable']}
+                      options={['Released', 'Not Released', 'Not Applicable']}
                       value={toggleRegistry[idx]}
-                      onToggle={val=>handleRegistryToggle(idx, val)}
+                      onToggle={val => handleRegistryToggle(idx, val)}
                     />
                   </TableCell>
 
                   <TableCell>
                     <ToggleButtonComponent
-                      options={['Released','Not Released','Not Applicable']}
+                      options={['Released', 'Not Released', 'Not Applicable']}
                       value={toggleOT2[idx]}
-                      onToggle={val=>handleOT2Toggle(idx, val)}
+                      onToggle={val => handleOT2Toggle(idx, val)}
                     />
                   </TableCell>
 
                   <TableCell>
                     {img.security_issues.length === 0
                       ? <Typography color="success.main" fontWeight="bold">✔ Success</Typography>
-                      : <Typography color="error.main"   fontWeight="bold">✖ Fail</Typography>}
+                      : <Typography color="error.main" fontWeight="bold">✖ Fail</Typography>}
                   </TableCell>
 
                   {/* Only one arrow, last column: */}
                   <TableCell align="center">
                     <IconButton
                       size="small"
-                      onClick={()=>handleExpand(idx)}
+                      onClick={() => handleExpand(idx)}
                     >
                       {expanded[idx]
                         ? <KeyboardArrowUpIcon />
@@ -588,9 +589,10 @@ export default function ImageTable({
                               href={img.twistlock_report_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              style={{ color: theme.palette.primary.light,
+                              style={{
+                                color: theme.palette.primary.light,
                                 textDecoration: 'none',
-                               }}
+                              }}
                             >
                               View Report
                             </a>
@@ -624,27 +626,31 @@ export default function ImageTable({
                             }}
                             img={img}
                           /> */}
-                          <ExpandableSection 
+                          <ExpandableSection
                             title={"Security Issues"}
                             actions={
-                                <SeverityFilterButtons
-                                    allIssues={img.security_issues}
-                                    selectedLevels={selectedLevels}
-                                    onToggleLevel={toggleLevel}
-                                    onToggleAll={toggleAll}
-                                />
+                              <SeverityFilterButtons
+                                allIssues={img.security_issues}
+                                selectedLevels={selectedLevels}
+                                onToggleLevel={toggleLevel}
+                                onToggleAll={toggleAll}
+                              />
                             }>
 
-                                <SecurityIssuesTable
-                                    issues={displayed}
-                                    Productsdata={Productsdata}
-                                    patchname={patchname}
-                                    refreshProductsData={async ()=>{
-                                    const fresh = await getPatchById(patchname);
-                                    setProductsdata(fresh.products);
-                                    }}
-                                    img={img}
-                                />
+                            <SecurityIssuesTable
+                              issues={displayed}
+                              Productsdata={Productsdata}
+                              patchname={patchname}
+                              // refreshProductsData={async ()=>{
+                              // const fresh = await getPatchById(patchname);
+                              // setProductsdata(fresh.products);
+                              // }}
+                              img={img}
+                              // Pass the state that actually CONTROLS the UI
+                              allDetailedImages={detailedImages}
+                              // Pass the state SETTER for that state
+                              setDetailedImages={setDetailedImages}
+                            />
                           </ExpandableSection>
                         </Box>
 
@@ -662,14 +668,14 @@ export default function ImageTable({
                           <ExpandableSection
                             title="Jars"
                             actions={
-                                <JarFilterButtons
+                              <JarFilterButtons
                                 allJars={filteredJars}
                                 selectedStatuses={selectedJarStatuses}
                                 onToggleStatus={toggleJarStatus}
                                 onToggleAll={toggleAllJars}
-                                />
+                              />
                             }
-                            >
+                          >
                             {/* <JarTable
                                 jars={filteredJars}
                                 id={patchname}
@@ -683,8 +689,8 @@ export default function ImageTable({
                               onJarsUpdate={(updatedJars) =>
                                 onImageJarsUpdate(img.image_name, updatedJars)
                               }
-                            />         
-                            </ExpandableSection>
+                            />
+                          </ExpandableSection>
                         </Box>
                       </Box>
                     </Collapse>
