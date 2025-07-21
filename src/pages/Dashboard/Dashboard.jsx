@@ -11,8 +11,6 @@ import { useOutletContext } from "react-router-dom";
 function Dashboard() {
   const [showForm, setShowForm] = useState(false);
   const [fetchedPatches, setFetchedPatches] = useState([]);
-  // const [selectedPatch, setSelectedPatch] = useState(null);
-
   const navigate = useNavigate();
 
   const { searchTerm, setTitle, setPatchVersion, activeFilters, setFilterOptions } = useOutletContext();
@@ -87,17 +85,6 @@ function Dashboard() {
 
   return (
     <div className="dashboard-main">
-      {/* <div className="dashboard-header"> */}
-      {/* <h2 className="dashboard-title">Overview</h2> */}
-      {/* {!showForm && !selectedPatch && (
-              <button
-              className="add-patch-button"
-              onClick={() => navigate('/addpatch')}
-            >
-              ➕ Add Patch
-            </button>
-            )} */}
-      {/* </div>      */}
 
       {showForm ? (
         <Form onCancel={() => setShowForm(false)} />
