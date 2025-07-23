@@ -1,19 +1,23 @@
 import  { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 import './Login.css';
 import companyImage from '../../assets/company_name.png'; 
 
-export default function Login({ onLoginSuccess }) {
+export default function Login() {
+
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    if (email === "admin@opentext.com" && password === "123") {
-      onLoginSuccess();
-    } else {
-      setError("Invalid email or username");
-      setTimeout(() => setError(""), 3000);
+    try {
+      await login(email, password);
+    } catch {
+      setError('Invalid email or password');
+      setTimeout(() => setError(''), 3000);
     }
   };
 
