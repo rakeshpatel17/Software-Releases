@@ -40,14 +40,10 @@ import SideNavbar from "../components/Side-nav/SideNavbar";
 import TopNavbar from "../components/Top-nav/TopNavbar";
 import "./MainLayout.css";
 import { useState, useEffect,useCallback  } from "react";
-import { jwtDecode } from 'jwt-decode';
 
 
 const MainLayout = ({ onLogout }) => {
-  const authTokens = JSON.parse(localStorage.authTokens);
-  const decoded = jwtDecode(authTokens.access);
-  const role = decoded.role;
-  console.log("role : " +role);
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [title, setTitle] = useState('');
   const [patchVersion, setPatchVersion] = useState('');
