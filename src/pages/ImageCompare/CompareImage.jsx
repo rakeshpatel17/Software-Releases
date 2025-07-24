@@ -28,61 +28,6 @@ export default function CompareImage() {
         return patches.find(p => p.name === patchName);
     };
 
-    // const handleCompare = () => {
-    //     if (!patch1 || !patch2) return;
-
-    //     if (patch1 === patch2) {
-    //         alert('Patch 1 and Patch 2 should not be the same.');
-    //         setPatch1('');
-    //         setPatch2('');
-    //         setComparedImages([]);
-    //         setShowComparison(false);
-    //         return;
-    //     }
-
-    //     const patchData1 = getPatchData(patch1);
-    //     const patchData2 = getPatchData(patch2);
-    //     if (!patchData1 || !patchData2) return;
-
-    //     const comparison = [];
-
-    //     patchData1.products.forEach(product1 => {
-    //         const product2 = patchData2.products.find(p => p.name === product1.name);
-    //         if (!product2) return;
-
-    //         const commonImages = product1.images.filter(img1 =>
-    //             product2.images.some(img2 => img2.image_name === img1.image_name)
-    //         );
-
-    //         if (commonImages.length > 0) {
-    //             const rows = commonImages.map(img1 => {
-    //                 const img2 = product2.images.find(i => i.image_name === img1.image_name);
-    //                 return {
-    //                     image_name: img1.image_name,
-    //                     patch1: img1,
-    //                     patch2: img2,
-    //                     remarks: ''
-    //                 };
-
-    //             });
-
-    //             comparison.push({ product: product1.name, images: rows });
-    //         }
-    //     });
-
-    //     if (comparison.length === 0) {
-    //         alert('No common images found between the selected patches.');
-    //         setPatch1('');
-    //         setPatch2('');
-    //         setComparedImages([]);
-    //         setShowComparison(false);
-    //         return;
-    //     }
-
-    //     setComparedImages(comparison);
-    //     setShowComparison(true);
-    // };
-   
     const handleCompare = () => {
     if (!patch1 || !patch2) return;
 

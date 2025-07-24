@@ -7,6 +7,8 @@ import SeverityCount from '../SeverityCount/SeverityCount';
 import ProgressBar from '../ProgressBar/ProgressBar';
 import get_patch_progress from '../../api/get_patch_progress';
 import toast from 'react-hot-toast';
+import { dismissibleError } from '../Toast/customToast';
+import { dismissibleSuccess } from '../Toast/customToast';
 
 const Card = ({ info, setPatches, products = [], onProgressClick, progressFetcher, className = '', children, ...rest }) => {
   const { title, description, image, badge, footer, kba } = info || {};
@@ -18,15 +20,17 @@ const Card = ({ info, setPatches, products = [], onProgressClick, progressFetche
     if (userConfirmed) {
       try {
         const result = await deletePatch(patchName);
-        toast.success(result.message || 'Patch deleted successfully');
+        // toast.success(result.message || 'Patch deleted successfully');
+        dismissibleSuccess(result.message || 'Patch deleted successfully');
         setPatches(prev => prev.filter(patch => patch.title !== patchName));
       } catch (err) {
         console.error("Delete patch error:", err);
         const errorMessage = err.response?.data?.message || `Unable to delete Patch ${patchName}`;
-        toast.error(errorMessage);
+        // toast.error(errorMessage);
+        dismissibleError(errorMessage);
       }
     } else {
-      toast('Patch deletion cancelled', { icon: 'ℹ️' });
+      dismissibleError('Patch deletion cancelled', { icon: 'ℹ️' });
     }
   };
 
