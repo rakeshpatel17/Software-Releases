@@ -1,6 +1,6 @@
 .compare-container {
-  width: 90%;             
-  max-width: 1200px;       
+  width: 90%;
+  max-width: 1200px;
   margin: 40px auto;
   padding: 40px;
   border: 2px solid #ccc;
@@ -9,30 +9,25 @@
   font-family: Arial, sans-serif;
 }
 
-
 .compare-container h2 {
   text-align: center;
   margin-bottom: 25px;
   font-size: 24px;
 }
+
 .dropdown-row {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center; 
+  gap: 20px;
   margin-bottom: 20px;
-}
-
-.dropdown-row.two-columns .dropdown-group {
-  margin-right: 0;
 }
 
 .dropdown-group {
   flex: 1;
-  min-width: 250px;
-  margin-right: 20px;
-}
-
-.dropdown-group:last-child {
-  margin-right: 0;
+  min-width: 250px; 
+  display: flex;
+  flex-direction: column;
 }
 
 .dropdown-group label {
@@ -41,13 +36,73 @@
   font-size: 16px;
 }
 
-select {
-  padding: 14px;
-  font-size: 18px;
-  height: 48px;
-  border-radius: 6px;
-  border: 1px solid #999;
+
+.custom-dropdown {
+  position: relative;
   width: 100%;
+}
+
+
+.dropdown-button {
+  box-sizing: border-box; 
+  width: 100%;
+  height: 48px;
+  padding: 14px;
+  background-color: #fff;
+  border: 1px solid #999;
+  border-radius: 6px;
+  font-size: 18px; 
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; 
+}
+
+.dropdown-button::after {
+  content: '';
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #333;
+  margin-left: 10px;
+}
+
+.dropdown-list {
+  position: absolute;
+  top: 100%; 
+  left: 0;
+  width: 100%;
+  margin-top: 4px;
+  padding: 0;
+  list-style: none;
+  background-color: #fff;
+  border: 1px solid #999;
+  border-radius: 6px;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  max-height: 320px; 
+  overflow-y: auto; 
+}
+
+.dropdown-item {
+  padding: 14px; 
+  font-size: 16px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
+}
+
+.dropdown-item.selected {
+  background-color: #e0eafc;
+  font-weight: bold;
 }
 
 
@@ -70,6 +125,7 @@ select {
 
 .compare-table {
   margin-top: 30px;
+  overflow-x: auto; 
 }
 
 table {
@@ -87,4 +143,9 @@ th {
   background-color: #20338b;
   color: white;
   font-weight: bold;
+}
+
+.product-row td {
+    background-color: #e9ecef;
+    font-weight: bold;
 }

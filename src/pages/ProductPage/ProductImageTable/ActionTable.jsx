@@ -11,10 +11,13 @@ import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete'; // Import Delete Icon
 import ImageDialog from './ImageDialog';
-import { createReleaseProductImage } from '../../api/createReleaseProductImage';
-import { updateReleaseProductImage } from '../../api/ReleaseProductImage';
-import { deleteReleaseProductImage } from '../../api/deleteReleaseProductImage'; // Import Delete API
+import { createReleaseProductImage } from '../../../api/createReleaseProductImage';
+import { updateReleaseProductImage } from '../../../api/ReleaseProductImage';
+import { deleteReleaseProductImage } from '../../../api/deleteReleaseProductImage'; // Import Delete API
 import toast from 'react-hot-toast';
+
+import { dismissibleError } from '../../../components/Toast/customToast';
+import { dismissibleSuccess } from '../../../components/Toast/customToast';
 
 
 const ImageTable = ({
@@ -54,13 +57,15 @@ const ImageTable = ({
         if (window.confirm(`Are you sure you want to delete the image "${imageToDelete.image_name}"?`)) {
             try {
                 await deleteReleaseProductImage(release, product, imageToDelete.image_name);
-                toast.success(`${imageToDelete.image_name} deleted successfully`);
+                // toast.success(`${imageToDelete.image_name} deleted successfully`);
+                dismissibleSuccess(`${imageToDelete.image_name} deleted successfully`)
                 onImageDelete(release, imageToDelete.image_name);
             } catch (error) {
                 console.error("Failed to delete image:", error);
                 // alert(`Could not delete the image: ${error.message}`);
                 const errorMessage = error.response?.data?.message || `Unable to delete image`;
-                toast.error(errorMessage);
+                // toast.error(errorMessage);
+                dismissibleError(errorMessage);
             }
         }
     };
@@ -114,7 +119,8 @@ const ImageTable = ({
         if (dialogMode === 'add') {
             try {
                 const createdImage = await createReleaseProductImage({ release, product, ...newData });
-                toast.success(`image added successfully`);
+                // toast.success(`image added successfully`);
+                dismissibleSuccess(`image added successfully`);
                 if (createdImage) { 
                     const newImageForrelease = {
                     ...newData,
@@ -125,7 +131,8 @@ const ImageTable = ({
             } catch (err) {
                 console.error("Failed to add image:", err);
                 const errorMessage = err.response?.data?.message || `Unable to add image`;
-                toast.error(errorMessage);
+                // toast.error(errorMessage);
+                dismissibleError(errorMessage)
             }
         }
         setDialogOpen(false);
