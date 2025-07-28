@@ -1,5 +1,5 @@
 import React from 'react';
-import { updateReleaseProductImage } from '../../api/ReleaseProductImage';
+import { updateReleaseProductImage } from '../../../api/ReleaseProductImage';
 import {
     Dialog, DialogTitle, DialogContent, DialogActions,
     Grid, TextField, Typography, Button, Box
