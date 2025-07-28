@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react';
 import get_patches from '../../../api/patches';
 import getImageDetails from '../../../api/imageDetails';
 
+
+import { dismissibleError } from '../../../components/Toast/customToast';
+import { dismissibleSuccess } from '../../../components/Toast/customToast';
+
 export const useImageComparison = (setTitle) => {
     const [patch1, setPatch1] = useState('');
     const [patch2, setPatch2] = useState('');
@@ -34,7 +38,8 @@ export const useImageComparison = (setTitle) => {
     const handleCompare = async () => {
         if (!patch1 || !patch2) return;
         if (patch1 === patch2) {
-            alert('Patch 1 and Patch 2 should not be the same.');
+            // alert('Patch 1 and Patch 2 should not be the same.');
+            dismissibleError('Patch 1 and Patch 2 should not be the same.');
             setPatch1('');
             setPatch2('');
             return;
@@ -86,7 +91,8 @@ export const useImageComparison = (setTitle) => {
             });
 
             if (matchedPairs.length === 0) {
-                alert('No common images found between the selected patches.');
+                // alert('No common images found between the selected patches.');
+                dismissibleError('No common images found between the selected patches.')
                 setPatch1('');
                 setPatch2('');
                 return;
@@ -117,7 +123,8 @@ export const useImageComparison = (setTitle) => {
             });
 
             if (finalComparison.length === 0) {
-                alert('Could not fetch details for any common images.');
+                // alert('Could not fetch details for any common images.');
+                dismissibleError('Could not fetch details for any common images.')
                 setPatch1('');
                 setPatch2('');
                 return;
@@ -142,7 +149,9 @@ export const useImageComparison = (setTitle) => {
 
         } catch (error) {
             console.error("Failed during image comparison:", error);
-            alert("An error occurred. Please check the console.");
+            // alert("An error occurred. Please check the console.");
+            dismissibleError(`An error occurred. ${error}`)
+
         } finally {
             setIsLoading(false);
         }
