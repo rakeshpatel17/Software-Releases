@@ -6,7 +6,7 @@ const logout_api = async (authTokens, setAuthTokens, setUser) => {
   try {
     if (authTokens && authTokens.refresh) {
       // Sending logout request to the backend
-      console.log("sending request to :",base_url+'/logout/');
+      // console.log("sending request to :",base_url+'/logout/');
       await axios.post(
         `${base_url}/logout/`, 
         { refresh_token: authTokens.refresh },
