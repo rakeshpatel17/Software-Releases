@@ -1,3 +1,4 @@
+import axios from "axios";
 const base_url = process.env.REACT_APP_BACKEND_URL;; // Backend URL
 const username = process.env.REACT_APP_USERNAME;
 const password = process.env.REACT_APP_PASSWORD;
@@ -10,18 +11,26 @@ const deleteReleaseProductImage = async (release, productName, imageName, update
   try {
     const endpoint = `${base_url}/release-images/${release}/${productName}/${imageName}/`;
 
-    const response = await fetch(endpoint, {
-      method: "DELETE", 
+    // const response = await fetch(endpoint, {
+    //   method: "DELETE", 
+    //   headers: common_headers,
+    //   body: JSON.stringify(updateData)
+    // });
+
+    // if (!response.ok) {
+    //   throw new Error("Failed to delete image");
+    // }
+
+    //  const text = await response.text();
+    // return text ? JSON.parse(text) : {};
+
+        const response = await axios.delete(endpoint, {
       headers: common_headers,
-      body: JSON.stringify(updateData)
+      data: updateData // axios automatically stringifies the data
     });
 
-    if (!response.ok) {
-      throw new Error("Failed to delete image");
-    }
+    return response.data || {};
 
-     const text = await response.text();
-    return text ? JSON.parse(text) : {};
   } catch (error) {
     console.error("Error :", error);
     return null;

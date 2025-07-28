@@ -1,3 +1,4 @@
+import axios from 'axios';
 const base_url = process.env.REACT_APP_BACKEND_URL;
 const username = process.env.REACT_APP_USERNAME;
 const password = process.env.REACT_APP_PASSWORD;
@@ -17,18 +18,24 @@ export async function update_patch_image_jar(patchName, imageName, jarName, body
   try {
     const endpoint = `${base_url}/patchimagejars/${encodeURIComponent(patchName)}/${encodeURIComponent(imageName)}/${encodeURIComponent(jarName)}/`;
 
-    const response = await fetch(endpoint, {
-      method: "PATCH",
-      headers: common_headers,
-      body: JSON.stringify(body)
+    // const response = await fetch(endpoint, {
+    //   method: "PATCH",
+    //   headers: common_headers,
+    //   body: JSON.stringify(body)
+    // });
+
+    // if (!response.ok) {
+    //   console.error("Failed to PATCH image-jar:", response.statusText);
+    //   return null;
+    // }
+
+    // return await response.json(); // { status: "success", current_version, remarks, updated }
+
+     const response = await axios.patch(endpoint, body, {
+      headers: common_headers
     });
 
-    if (!response.ok) {
-      console.error("Failed to PATCH image-jar:", response.statusText);
-      return null;
-    }
-
-    return await response.json(); // { status: "success", current_version, remarks, updated }
+    return response.data;
   } catch (err) {
     console.error("Error in update_patch_image_jar:", err);
     return null;

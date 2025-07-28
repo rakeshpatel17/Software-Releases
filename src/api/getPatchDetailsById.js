@@ -10,16 +10,23 @@ const getPatchDetailsById = async (patchName) => {
   try {
     const endpoint = `${base_url}/patches/${patchName}/details`; // Endpoint to fetch all patches
 
-    const response = await fetch(endpoint, {
-      method: "GET",
-      headers: {
-        ...common_headers,
-      }
+    // const response = await fetch(endpoint, {
+    //   method: "GET",
+    //   headers: {
+    //     ...common_headers,
+    //   }
+    // });
+
+    // if (!response.ok) throw new Error("Failed to fetch patches");
+
+    // const data = await response.json();
+    const response = await axios.get(endpoint, {
+      headers: common_headers,
     });
 
-    if (!response.ok) throw new Error("Failed to fetch patches");
+    // On success, axios provides the parsed data in `response.data`.
+    const data = response.data;
 
-    const data = await response.json();
     if (Array.isArray(data)) {
       return data[0] || null;
     }

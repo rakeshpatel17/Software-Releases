@@ -1,3 +1,4 @@
+import axios from 'axios';
 const base_url = process.env.REACT_APP_BACKEND_URL;; // Backend URL
 const username = process.env.REACT_APP_USERNAME;
 const password = process.env.REACT_APP_PASSWORD;
@@ -10,21 +11,25 @@ const AllReleaseProductImage = async () => {
   try {
     const endpoint = `${base_url}/release-images/`; // Endpoint to fetch all patches
 
-    const response = await fetch(endpoint, {
-      method: "GET",
-      headers: {
-        ...common_headers,
-      }
+    // const response = await fetch(endpoint, {
+    //   method: "GET",
+    //   headers: {
+    //     ...common_headers,
+    //   }
+    // });
+     const response = await axios.get(endpoint, {
+      headers: common_headers,
     });
 
-    if (!response.ok) throw new Error("Failed to fetch patches");
 
-     const data = await response.json();
+    // if (!response.ok) throw new Error("Failed to fetch patches");
+
+    //  const data = await response.json();
     // if (Array.isArray(data)) {
     //   return data[0] || null;
     // }
 
-    return data;
+    return response.data;
   } catch (error) {
     console.error("Error in ReleaseProductImage:", error);
     return null;
