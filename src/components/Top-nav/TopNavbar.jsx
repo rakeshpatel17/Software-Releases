@@ -6,6 +6,7 @@ import ForwardButtonComponent from '../Button/ForwardButtonComponent';
 import Heading from '../Side-nav/Heading/Heading';
 import AddPatchButton from '../Button/AddPatchButton';
 import { getRole } from '../../context/getRole';
+import RoleVisibility from '../../RoleVisibility';
 
 function TopNavbar({ onSearch,onFilterChange, onLogout, title, patchVersion, searchTerm, searchPlaceholder, filterOptions, initialFilters }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -40,7 +41,9 @@ function TopNavbar({ onSearch,onFilterChange, onLogout, title, patchVersion, sea
       </div>
 
       <div className="right-controls">
-        <AddPatchButton className="add-patch-button" release={patchVersion} />
+        <RoleVisibility roles={['admin']}>
+            <AddPatchButton className="add-patch-button" release={patchVersion} />
+        </RoleVisibility>
         {/* <SearchBar onSearch={onSearch}  value={searchTerm} /> */}
         <SearchBar
           onSearch={onSearch}
