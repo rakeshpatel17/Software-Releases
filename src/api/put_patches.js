@@ -1,8 +1,8 @@
 import axios from "axios";
 const base_url = process.env.REACT_APP_BACKEND_URL; // Backend URL
-const username = process.env.REACT_APP_USERNAME;
-const password = process.env.REACT_APP_PASSWORD;
-const authHeader = 'Basic ' + btoa(`${username}:${password}`);
+const authTokens = JSON.parse(localStorage.getItem('authTokens'));
+const accessToken = authTokens?.access;  // Access token for API calls
+const authHeader = accessToken ? `Bearer ${accessToken}` : '';
 const common_headers = {
     "Content-Type": "application/json",
     'Authorization': authHeader
@@ -34,7 +34,7 @@ const put_patches = async (patchname, formData) => {
     const endpoint = `${base_url}/patches/${encodeURIComponent(patchname)}/`;
 
     const response = await axios.put(endpoint, formData, {
-        headers: common_headers,
+        // headers: common_headers,
     });
 
     // On success, axios provides the parsed data directly in `response.data`.

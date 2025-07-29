@@ -1,8 +1,11 @@
 import axios from "axios";
 const base_url = process.env.REACT_APP_BACKEND_URL;; // Backend URL
-const username = process.env.REACT_APP_USERNAME;
-const password = process.env.REACT_APP_PASSWORD;
-const authHeader = 'Basic ' + btoa(`${username}:${password}`);
+// const username = process.env.REACT_APP_USERNAME;
+// const password = process.env.REACT_APP_PASSWORD;
+// const authHeader = 'Basic ' + btoa(`${username}:${password}`);
+const authTokens = JSON.parse(localStorage.getItem('authTokens'));
+const accessToken = authTokens?.access;  // Access token for API calls
+const authHeader = accessToken ? `Bearer ${accessToken}` : '';
 const common_headers = {
   "Content-Type": "application/json",
   'Authorization': authHeader
@@ -26,7 +29,7 @@ const createReleaseProductImage = async (data) => {
 
     // Use axios.post(url, data, config)
     const response = await axios.post(endpoint, data, {
-      headers: common_headers,
+      // headers: common_headers,
     });
 
     // Axios automatically handles JSON and throws errors on failure.

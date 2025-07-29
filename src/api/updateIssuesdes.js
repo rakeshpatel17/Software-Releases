@@ -51,9 +51,9 @@ import axios from 'axios';
 
 export const securityIssuesUpdate = async (patchName, payload) => {
   const base_url = process.env.REACT_APP_BACKEND_URL;
-  const username = process.env.REACT_APP_USERNAME;
-  const password = process.env.REACT_APP_PASSWORD;
-  const authHeader = 'Basic ' + btoa(`${username}:${password}`);
+  const authTokens = JSON.parse(localStorage.getItem('authTokens'));
+  const accessToken = authTokens?.access;  // Access token for API calls
+  const authHeader = accessToken ? `Bearer ${accessToken}` : '';
   
   const headers = {
     'Content-Type': 'application/json',
@@ -78,7 +78,7 @@ export const securityIssuesUpdate = async (patchName, payload) => {
 
   try {
     // Use axios.patch(url, data, config)
-    const response = await axios.patch(fullUrl, requestBody, { headers });
+    const response = await axios.patch(fullUrl, requestBody, /*{ headers }*/);
 
     return response.data || { message: 'Update successful' };
 

@@ -1,9 +1,8 @@
 import axios from "axios";
 const base_url = process.env.REACT_APP_BACKEND_URL;
-const username = process.env.REACT_APP_USERNAME;
-const password = process.env.REACT_APP_PASSWORD;
-
-const authHeader = 'Basic ' + btoa(`${username}:${password}`);
+const authTokens = JSON.parse(localStorage.getItem('authTokens'));
+const accessToken = authTokens?.access;  // Access token for API calls
+const authHeader = accessToken ? `Bearer ${accessToken}` : '';
 
 const common_headers = {
   "Content-Type": "application/json",
@@ -46,7 +45,7 @@ export const getPatchesByProduct = async (productName) => {
 
 
     const response = await axios.get(url, {
-      headers: common_headers,
+      // headers: common_headers,
     });
 
     // On a successful 2xx response, axios provides the data directly.

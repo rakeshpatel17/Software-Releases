@@ -41,7 +41,9 @@ import TopNavbar from "../components/Top-nav/TopNavbar";
 import "./MainLayout.css";
 import { useState, useEffect,useCallback  } from "react";
 
+
 const MainLayout = ({ onLogout }) => {
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [title, setTitle] = useState('');
   const [patchVersion, setPatchVersion] = useState('');

@@ -1,9 +1,14 @@
 import axios from "axios";
 const base_url = process.env.REACT_APP_BACKEND_URL;
-const username = process.env.REACT_APP_USERNAME;
-const password = process.env.REACT_APP_PASSWORD;
+// const username = process.env.REACT_APP_USERNAME;
+// const password = process.env.REACT_APP_PASSWORD;
 
-const authHeader = 'Basic ' + btoa(`${username}:${password}`);
+// const authHeader = 'Basic ' + btoa(`${username}:${password}`);
+
+const authTokens = JSON.parse(localStorage.getItem('authTokens'));
+const accessToken = authTokens?.access;  // Access token for API calls
+const authHeader = accessToken ? `Bearer ${accessToken}` : '';
+
 const common_headers = {
   'Content-Type': 'application/json', // This is required for sending a JSON body
   'Authorization': authHeader
@@ -58,7 +63,7 @@ export const fetchDescription = async (context) => {
   // } 
    try {
     const response = await axios.post(fullUrl, requestBody, {
-      headers: common_headers,
+      // headers: common_headers,
     });
 
     return response.data.product_security_des || '—';

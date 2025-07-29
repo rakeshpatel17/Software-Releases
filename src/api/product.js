@@ -16,10 +16,10 @@ const get_products = async () => {
     // const data = await response.json();
     // return data;
      const response = await axios.get("/product.json", {
-      headers: {
-        "Content-Type": "application/json"
-        // No Authorization needed for local file
-      }
+      // headers: {
+      //   "Content-Type": "application/json"
+      //   // No Authorization needed for local file
+      // }
     });
 
     // On success, axios provides the parsed data in `response.data`.

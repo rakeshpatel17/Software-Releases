@@ -5,7 +5,7 @@ import BackButtonComponent from '../Button/BackButtonComponent';
 import ForwardButtonComponent from '../Button/ForwardButtonComponent';
 import Heading from '../Side-nav/Heading/Heading';
 import AddPatchButton from '../Button/AddPatchButton';
-
+import { getRole } from '../../context/getRole';
 
 function TopNavbar({ onSearch,onFilterChange, onLogout, title, patchVersion, searchTerm, searchPlaceholder, filterOptions, initialFilters }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -61,8 +61,8 @@ function TopNavbar({ onSearch,onFilterChange, onLogout, title, patchVersion, sea
 
           {dropdownOpen && (
             <div className="dropdown">
-              <p>Welcome, Admin!</p>
-              <p>Email: admin@opentext.com</p>
+              <p>Welcome, {getRole()}</p>
+              {/* <p>Email: admin@opentext.com</p> */}
               <hr />
               <button onClick={onLogout}>Logout</button>
             </div>

@@ -1,11 +1,14 @@
 import axios from "axios";
 const base_url = process.env.REACT_APP_BACKEND_URL; // Backend URL
-const username = process.env.REACT_APP_USERNAME;
-const password = process.env.REACT_APP_PASSWORD;
-const authHeader = 'Basic ' + btoa(`${username}:${password}`);
+// const username = process.env.REACT_APP_USERNAME;
+// const password = process.env.REACT_APP_PASSWORD;
+// const authHeader = 'Basic ' + btoa(`${username}:${password}`);
+const authTokens = JSON.parse(localStorage.getItem('authTokens'));
+const accessToken = authTokens?.access;  // Access token for API calls
+const authHeader = accessToken ? `Bearer ${accessToken}` : '';
 const common_headers = {
   "Content-Type": "application/json",
-  'Authorization': authHeader
+   'Authorization': authHeader,
 };
 
 const get_patches = async (releaseId = null) => {
@@ -23,7 +26,7 @@ const get_patches = async (releaseId = null) => {
 
     // const data = await response.json();
      const response = await axios.get(endpoint, {
-      headers: common_headers,
+      // headers: common_headers,
     });
     const data = response.data;
 
