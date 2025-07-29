@@ -1,13 +1,7 @@
 import axios from 'axios';
 const base_url = process.env.REACT_APP_BACKEND_URL;
-const authTokens = JSON.parse(localStorage.getItem('authTokens'));
-const accessToken = authTokens?.access;  // Access token for API calls
-const authHeader = accessToken ? `Bearer ${accessToken}` : '';
 
-const common_headers = {
-  "Content-Type": "application/json",
-  "Authorization": authHeader
-};
+
 
 const patch_image_jars = async (patchName, imageName) => {
   if (!patchName || !imageName) {
@@ -19,24 +13,9 @@ const patch_image_jars = async (patchName, imageName) => {
     // Updated URL: /patchimagejars/{patch_name}/{image_name}/
     const endpoint = `${base_url}/patchimagejars/${encodeURIComponent(patchName)}/${encodeURIComponent(imageName)}/`;
 
-    // const response = await fetch(endpoint, {
-    //   method: "GET",
-    //   headers: {
-    //     ...common_headers
-    //   }
-    // });
+  
 
-    // if (!response.ok) {
-    //   throw new Error(`Failed to fetch patch-image jars: ${response.statusText}`);
-    // }
-
-    // const data = await response.json();
-    // // Expecting { "jars": [ { name, current_version, remarks, updated }, … ] }
-    // return data.jars ?? [];
-
-    const response = await axios.get(endpoint, {
-      // headers: common_headers
-    });
+    const response = await axios.get(endpoint);
         return response.data.jars ?? [];
 
   } catch (error) {
