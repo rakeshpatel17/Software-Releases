@@ -9,6 +9,7 @@ import get_patch_progress from '../../api/get_patch_progress';
 import toast from 'react-hot-toast';
 import { dismissibleError } from '../Toast/customToast';
 import { dismissibleSuccess } from '../Toast/customToast';
+import RoleVisibility from '../../RoleVisibility';
 
 const Card = ({ info, setPatches, products = [], onProgressClick, progressFetcher, className = '', children, ...rest }) => {
   const { title, description, image, badge, footer, kba } = info || {};
@@ -115,12 +116,14 @@ const Card = ({ info, setPatches, products = [], onProgressClick, progressFetche
       {footer && (
         <div className="card-footer">
           {/* delete button */}
-          <button className='patch-btn' onClick={(e) => {
-            e.stopPropagation();
-            handleDelete(title);
-          }}>
-            <Trash2 size={18} />
-          </button>
+          <RoleVisibility roles={['admin']}>
+            <button className='patch-btn' onClick={(e) => {
+              e.stopPropagation();
+              handleDelete(title);
+            }}>
+              <Trash2 size={18} />
+            </button>
+          </RoleVisibility>
           Release Date: {new Date(footer).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',

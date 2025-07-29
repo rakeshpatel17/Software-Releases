@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { AuthProvider, useAuth} from './context/AuthContext';
+import ProtectedRoute from "./ProtectedRoute";
 
 import { useState } from "react";
 import Login from "./components/Login/Login";
@@ -15,31 +16,16 @@ import CompareImage from "./pages/ImageCompare/CompareImage"
 import { RouteProvider } from "./components/RouteContext/RouteContext"; 
 import { Toaster } from "react-hot-toast";
 
-// // PrivateRoute component: checks if authenticated
-// function PrivateRoute({ isAuthenticated, children }) {
-//   return isAuthenticated ? children : <Navigate to="/login" />;
-// }
+
 
 // PrivateRoute wrapper
-function PrivateRoute({ children }) {
-  const { user } = useAuth();
-  return user ? children : <Navigate to="/login" />;
-}
+// function PrivateRoute({ children }) {
+//   const { user } = useAuth();
+//   return user ? children : <Navigate to="/login" />;
+// }
 
 function AppRoutes() {
   const { user, logout } = useAuth();
-  // const navigate = useNavigate();
-
-  // // Wrap the passed handlers to also trigger navigation
-  // const onLoginSuccess = () => {
-  //   handleLoginSuccess();
-  //   navigate('/dashboard'); // redirect after login
-  // };
-
-  // const onLogout = () => {
-  //   handleLogout();
-  //   navigate('/login'); // redirect on logout
-  // };
 
   return (
     <>
@@ -49,9 +35,9 @@ function AppRoutes() {
         <Route
           path="/"
           element={
-            <PrivateRoute >
+            <ProtectedRoute >
               <MainLayout onLogout={logout} />
-            </PrivateRoute>
+            </ProtectedRoute>
           }
         >
           <Route
@@ -60,7 +46,12 @@ function AppRoutes() {
           />
           <Route index element={<Navigate to="dashboard" />} />
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="addpatch" element={<Form />} />
+          <Route 
+            path="addpatch" 
+            element={
+              <ProtectedRoute roles={['admin']}><Form /></ProtectedRoute>
+            } 
+          />
           <Route path="releases/:id" element={<ReleasePatches />} />
           <Route path="products/:productName" element={<ProductPage />} />
           <Route path="patches/:patchName" element={<PatchPage />} />
@@ -76,30 +67,7 @@ function AppRoutes() {
 }
 
 function App() {
-  // Initialize state from local storage
-  // const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem("isLoggedIn") === "true");
-
-  // const handleLoginSuccess = () => {
-  //   setIsLoggedIn(true);
-  //   localStorage.setItem("isLoggedIn", "true"); // Saving login status in local storage
-  // };
-
-  // const handleLogout = () => {
-  //   setIsLoggedIn(false);
-  //   localStorage.removeItem("isLoggedIn"); // Removing login status from local storage
-  // };
-
   return (
-    // <BrowserRouter>
-    // <RouteProvider>
-    //     <Toaster position="top-right" />
-    //   <AppRoutes
-    //     isLoggedIn={isLoggedIn}
-    //     handleLoginSuccess={handleLoginSuccess}
-    //     handleLogout={handleLogout}
-    //   />
-    //   </RouteProvider>
-    // </BrowserRouter>
      <AuthProvider>
         <BrowserRouter>
             <RouteProvider>
