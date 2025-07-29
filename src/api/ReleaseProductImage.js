@@ -1,3 +1,4 @@
+import axios from "axios";
 const base_url = process.env.REACT_APP_BACKEND_URL;; // Backend URL
 const authTokens = JSON.parse(localStorage.getItem('authTokens'));
 const accessToken = authTokens?.access;  // Access token for API calls
@@ -10,17 +11,22 @@ const updateReleaseProductImage = async (release, productName, imageName, update
   try {
     const endpoint = `${base_url}/release-images/${release}/${productName}/${imageName}/`;
 
-    const response = await fetch(endpoint, {
-      method: "PUT", // or PATCH if partial update
-      headers: common_headers,
-      body: JSON.stringify(updateData)
+    // const response = await fetch(endpoint, {
+    //   method: "PUT", // or PATCH if partial update
+    //   headers: common_headers,
+    //   body: JSON.stringify(updateData)
+    // });
+
+    // if (!response.ok) {
+    //   throw new Error("Failed to update image");
+    // }
+
+    // return await response.json();
+     const response = await axios.put(endpoint, updateData, {
+      // headers: common_headers
     });
 
-    if (!response.ok) {
-      throw new Error("Failed to update image");
-    }
-
-    return await response.json();
+    return response.data;
   } catch (error) {
     console.error("Error updating ReleaseProductImage:", error);
     return null;

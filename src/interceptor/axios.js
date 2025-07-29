@@ -1,49 +1,65 @@
 import axios from "axios";
-const host_url = process.env.REACT_APP_HOST_URL;
-const auth = JSON.parse(localStorage.getItem('authTokens'));
-const refresh_token = auth?.refresh;
-let refresh = false;
+const host_url = process.env.REACT_APP_HOST_URL || 'https://default-url.com';
+const auth = () => JSON.parse(localStorage.getItem('authTokens') || '{}');
+
+// Ensure every request includes the latest access token
+// Request interceptor
+axios.interceptors.request.use(config => {
+  const { access } = auth();
+  if (access) {
+    config.headers.Authorization = `Bearer ${access}`;
+  }
+  return config;
+});
+
+// Response interceptor
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach(p => (error ? p.reject(error) : p.resolve(token)));
+  failedQueue = [];
+};
+
 axios.interceptors.response.use(
-  resp => resp,
-  async error => {
-    if (error.response?.status === 401 && !refresh) {
-      refresh = true;
+  res => res,
+  async err => {
+    const original = err.config;
+    const { refresh } = auth();
+
+    if (err.response?.status === 401 && !original._retry) {
+      if (isRefreshing) {
+        return new Promise((res, rej) => {
+          failedQueue.push({ resolve: res, reject: rej });
+        }).then(token => {
+          original.headers.Authorization = `Bearer ${token}`;
+          return axios(original);
+        });
+      }
+
+      original._retry = true;
+      isRefreshing = true;
+
+      if (!refresh) {
+        return Promise.reject(new Error("No refresh token found"));
+      }
 
       try {
-        const response = await axios.post(
-          `${host_url}/token/refresh/`,
-          {
-            refresh_token: refresh_token
-          },
-          {
-            headers: { 'Content-Type': 'application/json' },
-            withCredentials: true
-          }
-        );
-
-        if (response.status === 200) {
-          const newAccess = response.data.access;
-          const newRefresh = response.data.refresh;
-          const newAuthTokens = {
-            access: newAccess,
-            refresh: newRefresh,
-          };
-          localStorage.setItem('authTokens', JSON.stringify(newAuthTokens));
-          axios.defaults.headers.common['Authorization'] = `Bearer ${newAccess}`;
-        //   localStorage.setItem('access_token', newAccess);
-        //   localStorage.setItem('refresh_token', newRefresh);
-
-          // Retry the original failed request with new token
-          error.config.headers['Authorization'] = `Bearer ${newAccess}`;
-          return axios(error.config);
-        }
-      } catch (err) {
-        console.error("Token refresh failed", err);
-        // Optionally log out user here or redirect to login
+        const resp = await axios.post(`${host_url}/token/refresh/`, { refresh });
+        const newAuth = { access: resp.data.access, refresh: resp.data.refresh };
+        localStorage.setItem('authTokens', JSON.stringify(newAuth));
+        original.headers.Authorization = `Bearer ${newAuth.access}`;
+        processQueue(null, newAuth.access);
+        return axios(original);
+      } catch (e) {
+        processQueue(e, null);
+        // Optionally trigger logout if refresh fails
+        return Promise.reject(e);
+      } finally {
+        isRefreshing = false;
       }
     }
 
-    refresh = false;
-    return Promise.reject(error);
+    return Promise.reject(err);
   }
 );

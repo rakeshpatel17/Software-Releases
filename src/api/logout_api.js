@@ -11,9 +11,9 @@ const logout_api = async (authTokens, setAuthTokens, setUser) => {
         `${base_url}/logout/`, 
         { refresh_token: authTokens.refresh },
         {
-            headers: {
-              Authorization: `Bearer ${authTokens.access}`,  // Add Authorization header
-            }
+            // headers: {
+            //   Authorization: `Bearer ${authTokens.access}`,  // Add Authorization header
+            // }
         });
 
       // Clearing tokens and user data from state and localStorage
