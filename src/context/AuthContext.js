@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.authTokens = JSON.stringify(res.data);
             req.headers.Authorization = `Bearer ${res.data.access}`;
             } catch {
-            logout();
+                logout();
             }
         } else {
             req.headers.Authorization = `Bearer ${authTokens.access}`;

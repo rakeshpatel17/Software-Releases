@@ -2,6 +2,12 @@ import axios from "axios";
 const host_url = process.env.REACT_APP_HOST_URL || 'https://default-url.com';
 const auth = () => JSON.parse(localStorage.getItem('authTokens') || '{}');
 
+// Helper to clear tokens & redirect
+const forceLogout = () => {
+  localStorage.removeItem("authTokens");
+  window.location.href = "/login";
+};
+
 // Ensure every request includes the latest access token
 // Request interceptor
 axios.interceptors.request.use(config => {
@@ -26,6 +32,12 @@ axios.interceptors.response.use(
   async err => {
     const original = err.config;
     const { refresh } = auth();
+    
+    // If the *refresh* endpoint itself failed, force logout immediately**
+    if (original.url?.includes("/token/refresh/")) {
+      forceLogout();
+      return Promise.reject(err);
+    }
 
     if (err.response?.status === 401 && !original._retry) {
       if (isRefreshing) {
@@ -41,6 +53,7 @@ axios.interceptors.response.use(
       isRefreshing = true;
 
       if (!refresh) {
+        forceLogout();
         return Promise.reject(new Error("No refresh token found"));
       }
 
@@ -53,7 +66,7 @@ axios.interceptors.response.use(
         return axios(original);
       } catch (e) {
         processQueue(e, null);
-        // Optionally trigger logout if refresh fails
+        forceLogout();
         return Promise.reject(e);
       } finally {
         isRefreshing = false;
