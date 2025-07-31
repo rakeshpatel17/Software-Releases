@@ -4,7 +4,7 @@ import {
     Dialog, DialogTitle, DialogContent, DialogActions,
     Grid, TextField, Typography, Button, Box
 } from '@mui/material';
-
+import RoleVisibility from '../../../components/AuthorizedAction/RoleVisibility';
 const fields = [
     { key: 'registry_registry', label: 'Registry URL', group: 'Registry' },
     { key: 'registry_path', label: 'Registry Path', group: 'Registry' },
@@ -68,20 +68,31 @@ const ImageDialog = ({ open, mode = 'view', onClose, data = {}, onSave, renderIn
         <>
             {/* <DialogTitle>{mode === 'add' ? 'Add Image' : localEditMode ? 'Edit Image' : `View Image: ${data.image_name}`}</DialogTitle> */}
             <DialogContent dividers>
-                {mode === 'add' && ( <TextField label="Image Name" value={formData.image_name || ''} onChange={(e) => handleChange('image_name', e.target.value)} fullWidth margin="dense" required /> )}
+                {mode === 'add' && (<TextField label="Image Name" value={formData.image_name || ''} onChange={(e) => handleChange('image_name', e.target.value)} fullWidth margin="dense" required />)}
                 <Grid container spacing={2} sx={{ mt: mode === 'add' ? 1 : 0 }}>
                     {['Registry', 'OT2PaaS', 'Local'].map(group => (
                         <Grid item xs={12} md={4} key={group}>
                             <Typography variant="subtitle1" fontWeight="bold" gutterBottom>{group}</Typography>
-                            {groupedFields[group].map(field => ( <TextField key={field.key} label={field.label} value={formData[field.key] || ''} onChange={(e) => handleChange(field.key, e.target.value)} fullWidth margin="dense" InputProps={{ readOnly: isViewOnly }} /> ))}
+                            {groupedFields[group].map(field => (<TextField key={field.key} label={field.label} value={formData[field.key] || ''} onChange={(e) => handleChange(field.key, e.target.value)} fullWidth margin="dense" InputProps={{ readOnly: isViewOnly }} />))}
                         </Grid>
                     ))}
                 </Grid>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose}>Cancel</Button>
-                {mode === 'view' && (<Button variant="contained" onClick={handleToggleEdit} color={localEditMode ? 'success' : 'primary'}>{localEditMode ? 'Save' : 'Edit'}</Button>)}
+                <RoleVisibility roles={['admin', 'product_manager']}>
+                    {mode === 'view' && (
+                        <Button
+                            variant="contained"
+                            onClick={handleToggleEdit}
+                            color={localEditMode ? 'success' : 'primary'}
+                        >
+                            {localEditMode ? 'Save' : 'Edit'}
+                        </Button>
+                    )}
+                </RoleVisibility>
                 {mode !== 'view' && (<Button variant="contained" onClick={() => onSave(formData)}>Save</Button>)}
+                                <Button onClick={onClose}>Cancel</Button>
+
             </DialogActions>
         </>
     );

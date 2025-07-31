@@ -18,7 +18,8 @@ import toast from 'react-hot-toast';
 
 import { dismissibleError } from '../../../components/Toast/customToast';
 import { dismissibleSuccess } from '../../../components/Toast/customToast';
-
+import RoleVisibility from '../../../components/AuthorizedAction/RoleVisibility';
+import AuthorizedAction from '../../../components/AuthorizedAction/AuthorizedAction';
 
 const ImageTable = ({
     images = [], release, product,
@@ -217,9 +218,17 @@ const ImageTable = ({
                                                 </IconButton>
                                             </TableCell>
                                             <TableCell align="center">
-                                                <IconButton color="error" onClick={() => handleDelete(row)}>
-                                                    <DeleteIcon />
-                                                </IconButton>
+                                                 <AuthorizedAction allowedRoles={['admin', 'product_manager']}>
+                                                    {(isAuthorized, onUnauthorized) => (
+                                                        <IconButton
+                                                            color="error"
+                                                            onClick={isAuthorized ? () => handleDelete(row) : onUnauthorized}
+                                                            disabled={!isAuthorized}
+                                                        >
+                                                            <DeleteIcon />
+                                                        </IconButton>
+                                                    )}
+                                                </AuthorizedAction>
                                             </TableCell>
                                         </TableRow>
                                         <TableRow>
@@ -247,10 +256,16 @@ const ImageTable = ({
 
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 2, py: 1 }}>
                 <TablePagination component="div" count={imageData.length} page={page} onPageChange={handleChangePage} rowsPerPage={rowsPerPage} rowsPerPageOptions={[5, 10, 25]} onRowsPerPageChange={handleChangeRowsPerPage} />
+                   <RoleVisibility roles={['admin', 'product_manager']}>
                 <Box>
-                    <Button variant="contained" startIcon={editMode ? <SaveIcon /> : <EditIcon />} onClick={handleEditToggle} sx={{ mr: 2 }}>{editMode ? 'Save Names' : 'Edit'}</Button>
-                    <Button variant="contained" onClick={handleAddImage}>Add Image</Button>
+                    <Button variant="contained" startIcon={editMode ? <SaveIcon /> : <EditIcon />} onClick={handleEditToggle} sx={{ mr: 2 }}>
+                        {editMode ? 'Save Names' : 'Edit'}
+                    </Button>
+                    <Button variant="contained" onClick={handleAddImage}>
+                        Add Image
+                    </Button>
                 </Box>
+            </RoleVisibility>
             </Box>
 
             <ImageDialog open={dialogOpen} mode={dialogMode} data={dialogData} onClose={() => setDialogOpen(false)} onSave={handleDialogSave} />

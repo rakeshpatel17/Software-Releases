@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, IconButton, Typography, Paper } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ActionTable from '../ProductImageTable/ActionTable';
-
+import RoleVisibility from '../../../components/AuthorizedAction/RoleVisibility';
 export function ProductReleases({
     allReleases,
     groupedImages,
@@ -50,14 +50,16 @@ export function ProductReleases({
                     <div key={releaseName} className="release-group">
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                             <h3>Release: {releaseName}</h3>
-                            <IconButton
-                                color="error"
-                                onClick={() => onBatchDelete(releaseName, selectionForRelease)}
-                                disabled={selectionForRelease.length === 0}
-                                aria-label="delete selected"
-                            >
-                                <DeleteIcon />
-                            </IconButton>
+                              <RoleVisibility roles={['admin', 'product_manager']}>
+                                <IconButton
+                                    color="error"
+                                    onClick={() => onBatchDelete(releaseName, selectionForRelease)}
+                                    disabled={selectionForRelease.length === 0}
+                                    aria-label="delete selected"
+                                >
+                                    <DeleteIcon />
+                                </IconButton>
+                            </RoleVisibility>
                         </Box>
                         <ActionTable
                             images={groupedImages[releaseName] || []}

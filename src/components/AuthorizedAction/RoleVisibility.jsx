@@ -1,7 +1,7 @@
 //RoleVisibility.jsx
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useAuth } from './context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
 export default function RoleVisibility({ roles = [], children }) {
   const { user } = useAuth();

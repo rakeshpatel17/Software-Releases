@@ -6,7 +6,7 @@ import ForwardButtonComponent from '../Button/ForwardButtonComponent';
 import Heading from '../Side-nav/Heading/Heading';
 import AddPatchButton from '../Button/AddPatchButton';
 import { getRole } from '../../context/getRole';
-import RoleVisibility from '../../RoleVisibility';
+import RoleVisibility from '../AuthorizedAction/RoleVisibility';
 
 function TopNavbar({ onSearch,onFilterChange, onLogout, title, patchVersion, searchTerm, searchPlaceholder, filterOptions, initialFilters }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);

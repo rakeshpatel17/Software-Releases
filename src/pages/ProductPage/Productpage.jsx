@@ -48,7 +48,7 @@ function ProductPage() {
             setSelectedImages(prev => ({ ...prev, [release]: [] }));
         }
     };
-
+    
     if (isLoading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>

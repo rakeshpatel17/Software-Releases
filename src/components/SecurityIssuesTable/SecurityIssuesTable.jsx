@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import RoleVisibility from '../AuthorizedAction/RoleVisibility';
 import {
   Paper,
   Table,
@@ -15,6 +16,7 @@ import {
 import EditableFieldComponent from '../EditableFieldComponent';
 import { securityIssuesUpdate } from '../../api/updateIssuesdes';
 import { fetchDescription } from '../../api/fetchDescription ';
+import { useAuth } from '../../context/AuthContext';
 
 export default function SecurityIssuesTable({
   issues,
@@ -25,11 +27,13 @@ export default function SecurityIssuesTable({
   setDetailedImages
 }) {
   const theme = useTheme();
+  const { user } = useAuth(); 
+
 
   const [descriptions, setDescriptions] = useState({});
 
 
-useEffect(() => {
+  useEffect(() => {
     let isMounted = true;
 
     const loadAllDescriptions = async () => {
@@ -38,7 +42,7 @@ useEffect(() => {
         return; // Nothing to fetch
       }
 
-     
+
       const issuesToFetch = issues.filter(issue => {
         const issueKey = `${issue.cve_id}-${issue.cvss_score}`;
         return !descriptions.hasOwnProperty(issueKey);
@@ -52,7 +56,7 @@ useEffect(() => {
       if (!currentProduct) {
         return;
       }
-      
+
       const descriptionPromises = issuesToFetch.map(issue => {
         const libs = Array.isArray(issue.affected_libraries) ? issue.affected_libraries.join(', ') : issue.affected_libraries;
         const context = {
@@ -63,7 +67,7 @@ useEffect(() => {
           severity: issue.severity,
           affected_libraries: libs,
         };
-        
+
         return fetchDescription(context).then(desc => ({
           key: `${issue.cve_id}-${issue.cvss_score}`,
           description: desc
@@ -77,7 +81,7 @@ useEffect(() => {
           acc[curr.key] = curr.description;
           return acc;
         }, {});
-        
+
         setDescriptions(prevDescriptions => ({
           ...prevDescriptions,
           ...newDescriptionMap,
@@ -97,17 +101,17 @@ useEffect(() => {
   const severityColors = { low: '#008000', medium: '#FFD700', high: '#FF8C00', critical: '#FF0000' };
 
 
-const handleSaveDescription = async (issue, newValue) => {
+  const handleSaveDescription = async (issue, newValue) => {
 
     const issueKey = `${issue.cve_id}-${issue.cvss_score}`;
     setDescriptions(prev => ({ ...prev, [issueKey]: newValue || '—' }));
 
     const currentProduct = Productsdata.find(p => p.images?.some(i => i.image_name === img.image_name));
     if (!currentProduct) {
-        console.error("Could not find product context for saving.");
-        return;
+      console.error("Could not find product context for saving.");
+      return;
     }
-    
+
     const libs = Array.isArray(issue.affected_libraries) ? issue.affected_libraries.join(', ') : issue.affected_libraries;
     const payload = {
       productName: currentProduct.name,
@@ -117,7 +121,7 @@ const handleSaveDescription = async (issue, newValue) => {
       affected_libraries: libs,
       product_security_des: newValue
     };
-    
+
     try {
       await securityIssuesUpdate(patchname, payload);
       console.log("Database update successful!");
@@ -148,10 +152,12 @@ const handleSaveDescription = async (issue, newValue) => {
               const libs = Array.isArray(issue.affected_libraries) ? issue.affected_libraries.join(', ') : issue.affected_libraries;
 
               const issueKey = `${issue.cve_id}-${issue.cvss_score}`;
-             
+
               const displayDescription = descriptions.hasOwnProperty(issueKey)
                 ? (descriptions[issueKey] || '—')
                 : 'Loading...';
+
+              const canEdit = user && ['admin', 'product_manager'].includes(user.role);
 
               return (
                 <TableRow key={idx} hover>
@@ -164,15 +170,19 @@ const handleSaveDescription = async (issue, newValue) => {
                   </TableCell>
                   <TableCell>{libs}</TableCell>
                   <TableCell align="center">
-                    <EditableFieldComponent
-                      value={displayDescription}
-                      onSave={(newValue) => handleSaveDescription(issue, newValue)}
-                    />
+                    {canEdit ? (
+                  <EditableFieldComponent
+                    value={displayDescription}
+                    onSave={(newValue) => handleSaveDescription(issue, newValue)}
+                  />
+                ) : (
+                  <Typography variant="body2">{displayDescription}</Typography>
+                )}
                   </TableCell>
                 </TableRow>
               );
             })}
-            
+
             {issues.length === 0 && (
               <TableRow>
                 <TableCell colSpan={5} align="center" sx={{ py: 4, fontStyle: 'italic' }}>

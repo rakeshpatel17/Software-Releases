@@ -9,7 +9,7 @@ import get_patch_progress from '../../api/get_patch_progress';
 import toast from 'react-hot-toast';
 import { dismissibleError } from '../Toast/customToast';
 import { dismissibleSuccess } from '../Toast/customToast';
-import RoleVisibility from '../../RoleVisibility';
+import RoleVisibility from '../AuthorizedAction/RoleVisibility';
 
 const Card = ({ info, setPatches, products = [], onProgressClick, progressFetcher, className = '', children, ...rest }) => {
   const { title, description, image, badge, footer, kba } = info || {};
