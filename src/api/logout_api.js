@@ -1,6 +1,6 @@
 // logout.js
 import axios from 'axios';
-const base_url = process.env.REACT_APP_BACKEND_URL;
+const base_url = process.env.REACT_APP_HOST_URL;
 
 const logout_api = async (authTokens, setAuthTokens, setUser) => {
   try {
@@ -8,7 +8,7 @@ const logout_api = async (authTokens, setAuthTokens, setUser) => {
       // Sending logout request to the backend
       // console.log("sending request to :",base_url+'/logout/');
       await axios.post(
-        `${base_url}/logout/`, 
+        `${base_url}/security/logout/`, 
         { refresh_token: authTokens.refresh },
         {
             // headers: {

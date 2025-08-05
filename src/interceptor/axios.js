@@ -34,7 +34,7 @@ axios.interceptors.response.use(
     const { refresh } = auth();
     
     // If the *refresh* endpoint itself failed, force logout immediately**
-    if (original.url?.includes("/token/refresh/")) {
+    if (original.url?.includes("/security/token/refresh/")) {
       forceLogout();
       return Promise.reject(err);
     }
@@ -58,7 +58,7 @@ axios.interceptors.response.use(
       }
 
       try {
-        const resp = await axios.post(`${host_url}/token/refresh/`, { refresh });
+        const resp = await axios.post(`${host_url}/security/token/refresh/`, { refresh });
         const newAuth = { access: resp.data.access, refresh: resp.data.refresh };
         localStorage.setItem('authTokens', JSON.stringify(newAuth));
         original.headers.Authorization = `Bearer ${newAuth.access}`;
